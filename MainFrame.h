@@ -8,8 +8,11 @@
 #include <deque>
 #include <opencv2/opencv.hpp>
 
-using namespace std;
+#include "VideoCapture.h"
+#include "FrameProcessor.h"
 
+//using namespace std;
+//using namespace bgslibrary;
 
 class MyConfigData{
 public:	
@@ -48,11 +51,19 @@ public:
 ///////////////////// config
 	MyConfigData	m_configData;
 	wxString 		m_strSourcePath;
-	
-	
+
+///////////////////// bgs	
+    bgslibrary::VideoCapture* videoCapture;
+    bgslibrary::FrameProcessor* frameProcessor;
+    bool useVideo;
+    std::string filename;
+    bool useCamera;
+    int cameraId;
+    long frameToStop;	
 	
 
 protected:
+    virtual void OnVideoBGSubtraction(wxCommandEvent& event);
     virtual void OnViewMsgPane(wxCommandEvent& event);
     virtual void OnFileOpen(wxCommandEvent& event);
 };

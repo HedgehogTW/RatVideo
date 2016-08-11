@@ -50,6 +50,8 @@ protected:
     wxMenuItem* m_menuItemExit;
     wxMenu* m_menuView;
     wxMenuItem* m_menuItemViewMsgPane;
+    wxMenu* m_menuVideo;
+    wxMenuItem* m_menuItemVideoBGSubtraction;
     wxMenu* m_nameHelp;
     wxMenuItem* m_menuItem9;
     wxStatusBar* m_statusBar;
@@ -62,6 +64,7 @@ protected:
     virtual void OnFileOpen(wxCommandEvent& event) { event.Skip(); }
     virtual void OnExit(wxCommandEvent& event) { event.Skip(); }
     virtual void OnViewMsgPane(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnVideoBGSubtraction(wxCommandEvent& event) { event.Skip(); }
     virtual void OnAbout(wxCommandEvent& event) { event.Skip(); }
 
 public:

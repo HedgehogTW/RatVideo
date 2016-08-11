@@ -1,5 +1,190 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="RatVideo" InternalType="GUI">
+  <VirtualDirectory Name="package_bgs">
+    <VirtualDirectory Name="ae">
+      <File Name="package_bgs/ae/KDE.cpp"/>
+      <File Name="package_bgs/ae/KDE.h"/>
+      <File Name="package_bgs/ae/KernelTable.cpp"/>
+      <File Name="package_bgs/ae/KernelTable.h"/>
+      <File Name="package_bgs/ae/NPBGmodel.cpp"/>
+      <File Name="package_bgs/ae/NPBGmodel.h"/>
+      <File Name="package_bgs/ae/NPBGSubtractor.cpp"/>
+      <File Name="package_bgs/ae/NPBGSubtractor.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="av">
+      <File Name="package_bgs/av/TBackground.cpp"/>
+      <File Name="package_bgs/av/TBackground.h"/>
+      <File Name="package_bgs/av/TBackgroundVuMeter.cpp"/>
+      <File Name="package_bgs/av/TBackgroundVuMeter.h"/>
+      <File Name="package_bgs/av/VuMeter.cpp"/>
+      <File Name="package_bgs/av/VuMeter.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="bl">
+      <File Name="package_bgs/bl/sdLaMa091.cpp"/>
+      <File Name="package_bgs/bl/sdLaMa091.h"/>
+      <File Name="package_bgs/bl/SigmaDeltaBGS.cpp"/>
+      <File Name="package_bgs/bl/SigmaDeltaBGS.h"/>
+      <File Name="package_bgs/bl/stdbool.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="ck">
+      <File Name="package_bgs/ck/block.h"/>
+      <File Name="package_bgs/ck/graph.cpp"/>
+      <File Name="package_bgs/ck/graph.h"/>
+      <File Name="package_bgs/ck/LbpMrf.cpp"/>
+      <File Name="package_bgs/ck/LbpMrf.h"/>
+      <File Name="package_bgs/ck/maxflow.cpp"/>
+      <File Name="package_bgs/ck/MEDefs.cpp"/>
+      <File Name="package_bgs/ck/MEDefs.hpp"/>
+      <File Name="package_bgs/ck/MEHistogram.cpp"/>
+      <File Name="package_bgs/ck/MEHistogram.hpp"/>
+      <File Name="package_bgs/ck/MEImage.cpp"/>
+      <File Name="package_bgs/ck/MEImage.hpp"/>
+      <File Name="package_bgs/ck/MotionDetection.cpp"/>
+      <File Name="package_bgs/ck/MotionDetection.hpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="db">
+      <File Name="package_bgs/db/imbs.cpp"/>
+      <File Name="package_bgs/db/imbs.hpp"/>
+      <File Name="package_bgs/db/IndependentMultimodalBGS.cpp"/>
+      <File Name="package_bgs/db/IndependentMultimodalBGS.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="dp">
+      <File Name="package_bgs/dp/AdaptiveMedianBGS.cpp"/>
+      <File Name="package_bgs/dp/AdaptiveMedianBGS.h"/>
+      <File Name="package_bgs/dp/Bgs.h"/>
+      <File Name="package_bgs/dp/BgsParams.h"/>
+      <File Name="package_bgs/dp/DPAdaptiveMedianBGS.cpp"/>
+      <File Name="package_bgs/dp/DPAdaptiveMedianBGS.h"/>
+      <File Name="package_bgs/dp/DPEigenbackgroundBGS.cpp"/>
+      <File Name="package_bgs/dp/DPEigenbackgroundBGS.h"/>
+      <File Name="package_bgs/dp/DPGrimsonGMMBGS.cpp"/>
+      <File Name="package_bgs/dp/DPGrimsonGMMBGS.h"/>
+      <File Name="package_bgs/dp/DPMeanBGS.cpp"/>
+      <File Name="package_bgs/dp/DPMeanBGS.h"/>
+      <File Name="package_bgs/dp/DPPratiMediodBGS.cpp"/>
+      <File Name="package_bgs/dp/DPPratiMediodBGS.h"/>
+      <File Name="package_bgs/dp/DPTextureBGS.cpp"/>
+      <File Name="package_bgs/dp/DPTextureBGS.h"/>
+      <File Name="package_bgs/dp/DPWrenGABGS.cpp"/>
+      <File Name="package_bgs/dp/DPWrenGABGS.h"/>
+      <File Name="package_bgs/dp/DPZivkovicAGMMBGS.cpp"/>
+      <File Name="package_bgs/dp/DPZivkovicAGMMBGS.h"/>
+      <File Name="package_bgs/dp/Eigenbackground.cpp"/>
+      <File Name="package_bgs/dp/Eigenbackground.h"/>
+      <File Name="package_bgs/dp/Error.cpp"/>
+      <File Name="package_bgs/dp/Error.h"/>
+      <File Name="package_bgs/dp/GrimsonGMM.cpp"/>
+      <File Name="package_bgs/dp/GrimsonGMM.h"/>
+      <File Name="package_bgs/dp/Image.cpp"/>
+      <File Name="package_bgs/dp/Image.h"/>
+      <File Name="package_bgs/dp/MeanBGS.cpp"/>
+      <File Name="package_bgs/dp/MeanBGS.h"/>
+      <File Name="package_bgs/dp/PratiMediodBGS.cpp"/>
+      <File Name="package_bgs/dp/PratiMediodBGS.h"/>
+      <File Name="package_bgs/dp/TextureBGS.cpp"/>
+      <File Name="package_bgs/dp/TextureBGS.h"/>
+      <File Name="package_bgs/dp/WrenGA.cpp"/>
+      <File Name="package_bgs/dp/WrenGA.h"/>
+      <File Name="package_bgs/dp/ZivkovicAGMM.cpp"/>
+      <File Name="package_bgs/dp/ZivkovicAGMM.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="lb">
+      <File Name="package_bgs/lb/BGModel.cpp"/>
+      <File Name="package_bgs/lb/BGModel.h"/>
+      <File Name="package_bgs/lb/BGModelFuzzyGauss.cpp"/>
+      <File Name="package_bgs/lb/BGModelFuzzyGauss.h"/>
+      <File Name="package_bgs/lb/BGModelFuzzySom.cpp"/>
+      <File Name="package_bgs/lb/BGModelFuzzySom.h"/>
+      <File Name="package_bgs/lb/BGModelGauss.cpp"/>
+      <File Name="package_bgs/lb/BGModelGauss.h"/>
+      <File Name="package_bgs/lb/BGModelMog.cpp"/>
+      <File Name="package_bgs/lb/BGModelMog.h"/>
+      <File Name="package_bgs/lb/BGModelSom.cpp"/>
+      <File Name="package_bgs/lb/BGModelSom.h"/>
+      <File Name="package_bgs/lb/LBAdaptiveSOM.cpp"/>
+      <File Name="package_bgs/lb/LBAdaptiveSOM.h"/>
+      <File Name="package_bgs/lb/LBFuzzyAdaptiveSOM.cpp"/>
+      <File Name="package_bgs/lb/LBFuzzyAdaptiveSOM.h"/>
+      <File Name="package_bgs/lb/LBFuzzyGaussian.cpp"/>
+      <File Name="package_bgs/lb/LBFuzzyGaussian.h"/>
+      <File Name="package_bgs/lb/LBMixtureOfGaussians.cpp"/>
+      <File Name="package_bgs/lb/LBMixtureOfGaussians.h"/>
+      <File Name="package_bgs/lb/LBSimpleGaussian.cpp"/>
+      <File Name="package_bgs/lb/LBSimpleGaussian.h"/>
+      <File Name="package_bgs/lb/Types.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="my">
+      <File Name="package_bgs/my/MyBGS.cpp"/>
+      <File Name="package_bgs/my/MyBGS.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="pl">
+      <File Name="package_bgs/pl/BackgroundSubtractorLBSP.cpp"/>
+      <File Name="package_bgs/pl/BackgroundSubtractorLBSP.h"/>
+      <File Name="package_bgs/pl/BackgroundSubtractorLOBSTER.cpp"/>
+      <File Name="package_bgs/pl/BackgroundSubtractorLOBSTER.h"/>
+      <File Name="package_bgs/pl/BackgroundSubtractorSuBSENSE.cpp"/>
+      <File Name="package_bgs/pl/BackgroundSubtractorSuBSENSE.h"/>
+      <File Name="package_bgs/pl/DistanceUtils.h"/>
+      <File Name="package_bgs/pl/LBSP.cpp"/>
+      <File Name="package_bgs/pl/LBSP.h"/>
+      <File Name="package_bgs/pl/LOBSTER.cpp"/>
+      <File Name="package_bgs/pl/LOBSTER.h"/>
+      <File Name="package_bgs/pl/RandUtils.h"/>
+      <File Name="package_bgs/pl/SuBSENSE.cpp"/>
+      <File Name="package_bgs/pl/SuBSENSE.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="sjn">
+      <File Name="package_bgs/sjn/SJN_MultiCueBGS.cpp"/>
+      <File Name="package_bgs/sjn/SJN_MultiCueBGS.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="tb">
+      <File Name="package_bgs/tb/FuzzyChoquetIntegral.cpp"/>
+      <File Name="package_bgs/tb/FuzzyChoquetIntegral.h"/>
+      <File Name="package_bgs/tb/FuzzySugenoIntegral.cpp"/>
+      <File Name="package_bgs/tb/FuzzySugenoIntegral.h"/>
+      <File Name="package_bgs/tb/FuzzyUtils.cpp"/>
+      <File Name="package_bgs/tb/FuzzyUtils.h"/>
+      <File Name="package_bgs/tb/MRF.cpp"/>
+      <File Name="package_bgs/tb/MRF.h"/>
+      <File Name="package_bgs/tb/PerformanceUtils.cpp"/>
+      <File Name="package_bgs/tb/PerformanceUtils.h"/>
+      <File Name="package_bgs/tb/PixelUtils.cpp"/>
+      <File Name="package_bgs/tb/PixelUtils.h"/>
+      <File Name="package_bgs/tb/T2FGMM.cpp"/>
+      <File Name="package_bgs/tb/T2FGMM.h"/>
+      <File Name="package_bgs/tb/T2FGMM_UM.cpp"/>
+      <File Name="package_bgs/tb/T2FGMM_UM.h"/>
+      <File Name="package_bgs/tb/T2FGMM_UV.cpp"/>
+      <File Name="package_bgs/tb/T2FGMM_UV.h"/>
+      <File Name="package_bgs/tb/T2FMRF.cpp"/>
+      <File Name="package_bgs/tb/T2FMRF.h"/>
+      <File Name="package_bgs/tb/T2FMRF_UM.cpp"/>
+      <File Name="package_bgs/tb/T2FMRF_UM.h"/>
+      <File Name="package_bgs/tb/T2FMRF_UV.cpp"/>
+      <File Name="package_bgs/tb/T2FMRF_UV.h"/>
+    </VirtualDirectory>
+    <File Name="package_bgs/AdaptiveBackgroundLearning.cpp"/>
+    <File Name="package_bgs/AdaptiveBackgroundLearning.h"/>
+    <File Name="package_bgs/AdaptiveSelectiveBackgroundLearning.cpp"/>
+    <File Name="package_bgs/AdaptiveSelectiveBackgroundLearning.h"/>
+    <File Name="package_bgs/FrameDifferenceBGS.cpp"/>
+    <File Name="package_bgs/FrameDifferenceBGS.h"/>
+    <File Name="package_bgs/GMG.cpp"/>
+    <File Name="package_bgs/GMG.h"/>
+    <File Name="package_bgs/IBGS.h"/>
+    <File Name="package_bgs/KNNBGS.cpp"/>
+    <File Name="package_bgs/KNNBGS.h"/>
+    <File Name="package_bgs/MixtureOfGaussianV1BGS.cpp"/>
+    <File Name="package_bgs/MixtureOfGaussianV1BGS.h"/>
+    <File Name="package_bgs/MixtureOfGaussianV2BGS.cpp"/>
+    <File Name="package_bgs/MixtureOfGaussianV2BGS.h"/>
+    <File Name="package_bgs/StaticFrameDifferenceBGS.cpp"/>
+    <File Name="package_bgs/StaticFrameDifferenceBGS.h"/>
+    <File Name="package_bgs/WeightedMovingMeanBGS.cpp"/>
+    <File Name="package_bgs/WeightedMovingMeanBGS.h"/>
+    <File Name="package_bgs/WeightedMovingVarianceBGS.cpp"/>
+    <File Name="package_bgs/WeightedMovingVarianceBGS.h"/>
+  </VirtualDirectory>
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
@@ -7,6 +192,14 @@
     <File Name="MainFrame.cpp"/>
     <File Name="wxcrafter.cpp"/>
     <File Name="wxcrafter_bitmaps.cpp"/>
+    <File Name="FrameProcessor.cpp"/>
+    <File Name="FrameProcessor.h"/>
+    <File Name="IFrameProcessor.h"/>
+    <File Name="PreProcessor.cpp"/>
+    <File Name="PreProcessor.h"/>
+    <File Name="VideoCapture.cpp"/>
+    <File Name="VideoCapture.h"/>
+    <File Name="Config.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="MainFrame.h"/>
@@ -15,6 +208,10 @@
   <VirtualDirectory Name="resources">
     <File Name="wxcrafter.wxcp"/>
     <File Name="win_resources.rc"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="package_analysis">
+    <File Name="package_analysis/ForegroundMaskAnalysis.cpp"/>
+    <File Name="package_analysis/ForegroundMaskAnalysis.h"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
@@ -30,7 +227,7 @@
       <Compiler Options="-g;-O0;-Wall;$(shell wx-config --cflags) " C_Options="-g;-O0;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
         <IncludePath Value="C:/GSL/include"/>
-        <IncludePath Value="C:/opencv/build/x64/include"/>
+        <IncludePath Value="C:/opencv/build/x64/mingw/include"/>
       </Compiler>
       <Linker Options="$(shell wx-config --libs);-mwindows" Required="yes">
         <LibraryPath Value="C:/GSL/x64/lib"/>
@@ -41,7 +238,9 @@
         <Library Value="libopencv_highgui310.dll.a"/>
         <Library Value="libopencv_imgcodecs310.dll.a"/>
         <Library Value="libopencv_imgproc310.dll.a"/>
+        <Library Value="libopencv_videoio310.dll.a"/>
         <Library Value="libopencv_video310.dll.a"/>
+        <Library Value="libopencv_features2d310.dll.a"/>
       </Linker>
       <ResourceCompiler Options="$(shell wx-config --rcflags)" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="no" IsGUIProgram="yes" IsEnabled="yes"/>

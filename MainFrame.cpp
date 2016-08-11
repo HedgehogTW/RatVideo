@@ -17,8 +17,8 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
-using namespace std;
-using namespace cv;
+//using namespace std;
+//using namespace cv;
 
 MainFrame *	MainFrame::m_pThis=NULL;
 
@@ -128,7 +128,7 @@ void MainFrame::OnFileOpen(wxCommandEvent& event)
 
 void MainFrame::openFile(wxString &fileName)
 {
-	wxBeginBusyCursor();
+//	wxBeginBusyCursor();
 	DeleteContents();
 
 	cv::VideoCapture vidCap(fileName.ToStdString());
@@ -137,10 +137,20 @@ void MainFrame::openFile(wxString &fileName)
 	}
 		
 	m_strSourcePath = fileName;
-	myMsgOutput("++++++++++++++++++++++++++++++++++++++++++++++++\n");
+	myMsgOutput("\n++++++++++++++++++++++++++++++++++++++++++++++++\n");
 	myMsgOutput( "Load ... " + fileName + "\n");
-	
-	wxEndBusyCursor();
+/*
+    namedWindow("Rat0",1);
+    while(1){
+		Mat frame;
+		if(!vidCap.grab()) break;
+		vidCap.retrieve(frame);
+
+		imshow("Rat0", frame);
+		if(waitKey(20) >= 0) break;
+    }
+*/	
+//	wxEndBusyCursor();
 
 }
 void MainFrame::OnViewMsgPane(wxCommandEvent& event)
@@ -149,4 +159,23 @@ void MainFrame::OnViewMsgPane(wxCommandEvent& event)
 	pane.Show(!pane.IsShown());
 
 	m_auimgr21->Update();	
+}
+void MainFrame::OnVideoBGSubtraction(wxCommandEvent& event)
+{
+
+	videoCapture = new VideoCapture;
+	frameProcessor = new FrameProcessor;
+
+	frameProcessor->init();
+	frameProcessor->frameToStop = frameToStop;
+
+	videoCapture->setFrameProcessor(frameProcessor);
+
+	if (useVideo)
+		videoCapture->setVideo(filename);
+
+	videoCapture->start();
+
+	delete frameProcessor;
+	delete videoCapture;
 }
