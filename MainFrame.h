@@ -8,7 +8,7 @@
 #include <deque>
 #include <opencv2/opencv.hpp>
 
-#include "VideoCapture.h"
+
 #include "FrameProcessor.h"
 
 //using namespace std;
@@ -53,7 +53,7 @@ public:
 	wxString 		m_strSourcePath;
 
 ///////////////////// bgs	
-    bgslibrary::VideoCapture* videoCapture;
+//    bgslibrary::VideoCapture* videoCapture;
     bgslibrary::FrameProcessor* frameProcessor;
     bool useVideo;
     std::string filename;
@@ -63,6 +63,7 @@ public:
 	
 
 protected:
+    virtual void OnBookPageChanged(wxAuiNotebookEvent& event);
     virtual void OnVideoBGSubtraction(wxCommandEvent& event);
     virtual void OnViewMsgPane(wxCommandEvent& event);
     virtual void OnFileOpen(wxCommandEvent& event);

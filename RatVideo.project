@@ -197,9 +197,6 @@
     <File Name="IFrameProcessor.h"/>
     <File Name="PreProcessor.cpp"/>
     <File Name="PreProcessor.h"/>
-    <File Name="VideoCapture.cpp"/>
-    <File Name="VideoCapture.h"/>
-    <File Name="Config.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="MainFrame.h"/>

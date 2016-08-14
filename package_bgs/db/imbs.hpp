@@ -31,7 +31,7 @@
 #include <iostream>
 #include <vector>
 
-using namespace cv;
+//using namespace cv;
 using namespace std;
 
 class BackgroundSubtractorIMBS
@@ -57,13 +57,13 @@ public:
   //! the destructor
   ~BackgroundSubtractorIMBS();
   //! the update operator
-  void apply(InputArray image, OutputArray fgmask, double learningRate=-1.);
+  void apply(cv::InputArray image, cv::OutputArray fgmask, double learningRate=-1.);
 
   //! computes a background image which shows only the highest bin for each pixel
-  void getBackgroundImage(OutputArray backgroundImage) const;
+  void getBackgroundImage(cv::OutputArray backgroundImage) const;
 
   //! re-initiaization method
-  void initialize(Size frameSize, int frameType);
+  void initialize(cv::Size frameSize, int frameType);
 
 private:
   //method for creating the background model
@@ -81,29 +81,29 @@ private:
   //method for getting the current time
   double getTimestamp();
   //method for converting from RGB to HSV
-  Mat convertImageRGBtoHSV(const Mat& imageRGB);
+  cv::Mat convertImageRGBtoHSV(const cv::Mat& imageRGB);
   //method for changing the bg in case of sudden changes 
   void changeBg();
 
   //current input RGB frame
-  Mat frame;
-  vector<Mat> frameBGR;
+  cv::Mat frame;
+  vector<cv::Mat> frameBGR;
   //frame size
-  Size frameSize;
+  cv::Size frameSize;
   //frame type
   int frameType;
   //total number of pixels in frame
   unsigned int numPixels;
   //current background sample
-  Mat bgSample;
-  vector<Mat> bgSampleBGR;
+  cv::Mat bgSample;
+  vector<cv::Mat> bgSampleBGR;
   //current background image which shows only the highest bin for each pixel
   //(just for displaying purposes)
-  Mat bgImage;
+  cv::Mat bgImage;
   //current foreground mask
-  Mat fgmask;
+  cv::Mat fgmask;
 
-  Mat fgfiltered;
+  cv::Mat fgfiltered;
 
   //number of fps
   double fps;
@@ -113,12 +113,12 @@ private:
   double prev_timestamp;
   double initial_tick_count;
   //initial message to be shown until the first bg model is ready 
-  Mat initialMsgGray;
-  Mat initialMsgRGB;
+  cv::Mat initialMsgGray;
+  cv::Mat initialMsgRGB;
 
   //struct for modeling the background values for a single pixel
   typedef struct {
-    Vec3b* binValues;
+    cv::Vec3b* binValues;
     uchar* binHeights;
     bool* isFg;
   } Bins;
@@ -127,7 +127,7 @@ private:
 public:
   //struct for modeling the background values for the entire frame
   typedef struct {
-    Vec3b* values;
+    cv::Vec3b* values;
     bool* isValid;
     bool* isFg;
     uchar* counter;
@@ -161,7 +161,7 @@ private:
   uchar FOREGROUND_LABEL;
   //persistence map
   unsigned int* persistenceMap;
-  Mat persistenceImage;
+  cv::Mat persistenceImage;
 
   bool morphologicalFiltering;
 

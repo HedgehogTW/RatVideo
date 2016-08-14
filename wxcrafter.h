@@ -22,7 +22,12 @@
 #include <wx/aui/auibar.h>
 #include <map>
 #include <wx/toolbar.h>
+#include <wx/aui/auibook.h>
 #include <wx/panel.h>
+#include <wx/imaglist.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
+#include <wx/checkbox.h>
 #include <wx/richtext/richtextctrl.h>
 #if wxVERSION_NUMBER >= 2900
 #include <wx/persist.h>
@@ -57,6 +62,25 @@ protected:
     wxStatusBar* m_statusBar;
     wxAuiManager* m_auimgr21;
     wxAuiToolBar* m_auibar23;
+    wxAuiNotebook* m_auiBook;
+    wxPanel* m_panelKDE;
+    wxStaticText* m_staticText59;
+    wxTextCtrl* m_textCtrlframesToLearn;
+    wxStaticText* m_staticText63;
+    wxTextCtrl* m_textCtrlSequenceLen;
+    wxStaticText* m_staticText67;
+    wxTextCtrl* m_textCtrlTimeWinSize;
+    wxStaticText* m_staticText71;
+    wxCheckBox* m_checkBoxSDEstFlag;
+    wxStaticText* m_staticText75;
+    wxCheckBox* m_checkBoxlUseColorRatiosFlag;
+    wxStaticText* m_staticText79;
+    wxTextCtrl* m_textCtrlThreshold;
+    wxStaticText* m_staticText85;
+    wxTextCtrl* m_textCtrlAlpha;
+    wxPanel* m_panelMoGv1;
+    wxPanel* m_panelMoGv2;
+    wxPanel* m_panel51;
     wxPanel* m_panel25;
     wxRichTextCtrl* m_richTextMsg;
 
@@ -66,15 +90,35 @@ protected:
     virtual void OnViewMsgPane(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoBGSubtraction(wxCommandEvent& event) { event.Skip(); }
     virtual void OnAbout(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnBookPageChanged(wxAuiNotebookEvent& event) { event.Skip(); }
 
 public:
     wxMenuBar* GetMenuBar() { return m_menuBar; }
     wxStatusBar* GetStatusBar() { return m_statusBar; }
     wxAuiToolBar* GetAuibar23() { return m_auibar23; }
+    wxStaticText* GetStaticText59() { return m_staticText59; }
+    wxTextCtrl* GetTextCtrlframesToLearn() { return m_textCtrlframesToLearn; }
+    wxStaticText* GetStaticText63() { return m_staticText63; }
+    wxTextCtrl* GetTextCtrlSequenceLen() { return m_textCtrlSequenceLen; }
+    wxStaticText* GetStaticText67() { return m_staticText67; }
+    wxTextCtrl* GetTextCtrlTimeWinSize() { return m_textCtrlTimeWinSize; }
+    wxStaticText* GetStaticText71() { return m_staticText71; }
+    wxCheckBox* GetCheckBoxSDEstFlag() { return m_checkBoxSDEstFlag; }
+    wxStaticText* GetStaticText75() { return m_staticText75; }
+    wxCheckBox* GetCheckBoxlUseColorRatiosFlag() { return m_checkBoxlUseColorRatiosFlag; }
+    wxStaticText* GetStaticText79() { return m_staticText79; }
+    wxTextCtrl* GetTextCtrlThreshold() { return m_textCtrlThreshold; }
+    wxStaticText* GetStaticText85() { return m_staticText85; }
+    wxTextCtrl* GetTextCtrlAlpha() { return m_textCtrlAlpha; }
+    wxPanel* GetPanelKDE() { return m_panelKDE; }
+    wxPanel* GetPanelMoGv1() { return m_panelMoGv1; }
+    wxPanel* GetPanelMoGv2() { return m_panelMoGv2; }
+    wxAuiNotebook* GetAuiBook() { return m_auiBook; }
+    wxPanel* GetPanel51() { return m_panel51; }
     wxRichTextCtrl* GetRichTextMsg() { return m_richTextMsg; }
     wxPanel* GetPanel25() { return m_panel25; }
     wxAuiManager* GetAuimgr21() { return m_auimgr21; }
-    MainFrameBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("My Frame"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(550,550), long style = wxCAPTION|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCLOSE_BOX);
+    MainFrameBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("My Frame"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(700,550), long style = wxCAPTION|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCLOSE_BOX);
     virtual ~MainFrameBaseClass();
 };
 

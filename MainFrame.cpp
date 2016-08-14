@@ -18,7 +18,8 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
 //using namespace std;
-//using namespace cv;
+using namespace cv;
+using namespace bgslibrary;
 
 MainFrame *	MainFrame::m_pThis=NULL;
 
@@ -49,7 +50,7 @@ MainFrame::MainFrame(wxWindow* parent)
 
 	this->Connect(wxID_FILE1, wxID_FILE9, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMRUFile), NULL, this);
 	
-	SetSize(550, 550);
+	SetSize(700, 550);
 	Center();	
 	
 	DeleteContents();
@@ -113,7 +114,7 @@ void MainFrame::OnFileOpen(wxCommandEvent& event)
 	    wxString pathName = OpenDialog->GetPath();
 		m_FileHistory->AddFileToHistory(pathName);
 		strInitFile = pathName;
-		m_Filename = pathName;
+		
 		openFile(pathName);	
 	    //wxSize sz = m_scrollWin->setImage(pathName);
 	    //wxString str;
@@ -131,11 +132,11 @@ void MainFrame::openFile(wxString &fileName)
 //	wxBeginBusyCursor();
 	DeleteContents();
 
-	cv::VideoCapture vidCap(fileName.ToStdString());
-	if(vidCap.isOpened()==false) {
-		myMsgOutput( "Load ... " + fileName + " ERROR\n");
-	}
-		
+//	cv::VideoCapture vidCap(fileName.ToStdString());
+//	if(vidCap.isOpened()==false) {
+//		myMsgOutput( "Load ... " + fileName + " ERROR\n");
+//	}
+	m_Filename = fileName;		
 	m_strSourcePath = fileName;
 	myMsgOutput("\n++++++++++++++++++++++++++++++++++++++++++++++++\n");
 	myMsgOutput( "Load ... " + fileName + "\n");
@@ -162,20 +163,50 @@ void MainFrame::OnViewMsgPane(wxCommandEvent& event)
 }
 void MainFrame::OnVideoBGSubtraction(wxCommandEvent& event)
 {
-
-	videoCapture = new VideoCapture;
+//	myMsgOutput( "Load ... " + m_Filename);
+	m_Filename = "d:\\tmp\\1218(4).AVI";
+	cv::VideoCapture vidCap(m_Filename.ToStdString());
+	if(vidCap.isOpened()==false) {
+		myMsgOutput( "Load ... " + m_Filename + " ERROR\n");
+		return;
+	}
+    int64 start_time;
+    int64 delta_time;
+    double freq;
+    double fps;	
+	int frameNumber = 0;
 	frameProcessor = new FrameProcessor;
-
 	frameProcessor->init();
-	frameProcessor->frameToStop = frameToStop;
+//	frameProcessor->frameToStop = frameToStop;
 
-	videoCapture->setFrameProcessor(frameProcessor);
+    do
+    {
+		frameNumber++;
 
-	if (useVideo)
-		videoCapture->setVideo(filename);
+		cv::Mat frame;
+		vidCap >> frame;
+		if (frame.empty()) break;
 
-	videoCapture->start();
+		cv::Mat img_input;
+		frame.copyTo(img_input);
+		cv::imshow("Input", img_input);
+
+		start_time = cv::getTickCount();
+
+		frameProcessor->process(img_input);
+		delta_time = cv::getTickCount() - start_time;
+		freq = cv::getTickFrequency();
+		fps = freq / delta_time;
+		//std::cout << "FPS: " << fps << std::endl;
+		if(cv::waitKey(20) >= 0) break;
+		
+	}while(1);
 
 	delete frameProcessor;
-	delete videoCapture;
+
+}
+void MainFrame::OnBookPageChanged(wxAuiNotebookEvent& event)
+{
+	int tab = m_auiBook->GetSelection();
+	myMsgOutput("OnBookPageChanged %d\n", tab);
 }

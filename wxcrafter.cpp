@@ -71,11 +71,116 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_auibar23->AddTool(wxID_OPEN, _("Open"), wxArtProvider::GetBitmap(wxART_FILE_OPEN, wxART_TOOLBAR, wxDefaultSize), wxNullBitmap, wxITEM_NORMAL, wxT(""), wxT(""), NULL);
     m_auibar23->Realize();
     
+    m_auiBook = new wxAuiNotebook(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(250,250)), wxAUI_NB_TAB_FIXED_WIDTH|wxBK_DEFAULT);
+    m_auiBook->SetName(wxT("m_auiBook"));
+    
+    m_auimgr21->AddPane(m_auiBook, wxAuiPaneInfo().Direction(wxAUI_DOCK_CENTER).Layer(0).Row(0).Position(0).BestSize(100,100).MinSize(100,100).MaxSize(100,100).CaptionVisible(false).MaximizeButton(false).CloseButton(false).MinimizeButton(false).PinButton(false));
+    
+    m_panelKDE = new wxPanel(m_auiBook, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_auiBook, wxSize(-1,-1)), wxTAB_TRAVERSAL);
+    m_auiBook->AddPage(m_panelKDE, _("KDE"), true);
+    
+    wxFlexGridSizer* flexGridSizer92 = new wxFlexGridSizer(0, 2, 0, 10);
+    flexGridSizer92->SetFlexibleDirection( wxBOTH );
+    flexGridSizer92->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+    m_panelKDE->SetSizer(flexGridSizer92);
+    
+    m_staticText59 = new wxStaticText(m_panelKDE, wxID_ANY, _("frames To Learn"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    
+    flexGridSizer92->Add(m_staticText59, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_textCtrlframesToLearn = new wxTextCtrl(m_panelKDE, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrlframesToLearn->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer92->Add(m_textCtrlframesToLearn, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_staticText63 = new wxStaticText(m_panelKDE, wxID_ANY, _("Sequence Length"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    
+    flexGridSizer92->Add(m_staticText63, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_textCtrlSequenceLen = new wxTextCtrl(m_panelKDE, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrlSequenceLen->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer92->Add(m_textCtrlSequenceLen, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_staticText67 = new wxStaticText(m_panelKDE, wxID_ANY, _("Time Window Size"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    
+    flexGridSizer92->Add(m_staticText67, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_textCtrlTimeWinSize = new wxTextCtrl(m_panelKDE, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrlTimeWinSize->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer92->Add(m_textCtrlTimeWinSize, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_staticText71 = new wxStaticText(m_panelKDE, wxID_ANY, _("SD Estimation Flag"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    
+    flexGridSizer92->Add(m_staticText71, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_checkBoxSDEstFlag = new wxCheckBox(m_panelKDE, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    m_checkBoxSDEstFlag->SetValue(false);
+    
+    flexGridSizer92->Add(m_checkBoxSDEstFlag, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_staticText75 = new wxStaticText(m_panelKDE, wxID_ANY, _("lUse Color Ratios Flag"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    
+    flexGridSizer92->Add(m_staticText75, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_checkBoxlUseColorRatiosFlag = new wxCheckBox(m_panelKDE, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    m_checkBoxlUseColorRatiosFlag->SetValue(false);
+    
+    flexGridSizer92->Add(m_checkBoxlUseColorRatiosFlag, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_staticText79 = new wxStaticText(m_panelKDE, wxID_ANY, _("threshold"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    
+    flexGridSizer92->Add(m_staticText79, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_textCtrlThreshold = new wxTextCtrl(m_panelKDE, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrlThreshold->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer92->Add(m_textCtrlThreshold, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_staticText85 = new wxStaticText(m_panelKDE, wxID_ANY, _("alpha"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    
+    flexGridSizer92->Add(m_staticText85, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_textCtrlAlpha = new wxTextCtrl(m_panelKDE, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrlAlpha->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer92->Add(m_textCtrlAlpha, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_panelMoGv1 = new wxPanel(m_auiBook, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_auiBook, wxSize(-1,-1)), wxTAB_TRAVERSAL);
+    m_auiBook->AddPage(m_panelMoGv1, _("MoG_v1"), false);
+    
+    wxBoxSizer* boxSizer55 = new wxBoxSizer(wxVERTICAL);
+    m_panelMoGv1->SetSizer(boxSizer55);
+    
+    m_panelMoGv2 = new wxPanel(m_auiBook, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_auiBook, wxSize(-1,-1)), wxTAB_TRAVERSAL);
+    m_auiBook->AddPage(m_panelMoGv2, _("MoG_v2"), false);
+    
+    m_panel51 = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), wxTAB_TRAVERSAL);
+    wxFont m_panel51Font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
+    m_panel51Font.SetStyle(wxFONTSTYLE_ITALIC);
+    m_panel51->SetFont(m_panel51Font);
+    
+    m_auimgr21->AddPane(m_panel51, wxAuiPaneInfo().Caption(_("Global Setting")).Direction(wxAUI_DOCK_RIGHT).Layer(0).Row(0).Position(0).BestSize(200,100).MinSize(200,100).MaxSize(200,100).CaptionVisible(true).MaximizeButton(false).CloseButton(false).MinimizeButton(false).PinButton(false));
+    
+    wxBoxSizer* boxSizer53 = new wxBoxSizer(wxVERTICAL);
+    m_panel51->SetSizer(boxSizer53);
+    
     m_panel25 = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), wxTAB_TRAVERSAL);
     wxFont m_panel25Font(10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Calibri"));
     m_panel25->SetFont(m_panel25Font);
     
-    m_auimgr21->AddPane(m_panel25, wxAuiPaneInfo().Name(wxT("MsgPane")).Caption(_("Message Pane")).Direction(wxAUI_DOCK_CENTER).Layer(0).Row(0).Position(0).BestSize(100,300).MinSize(100,300).MaxSize(100,300).CaptionVisible(true).MaximizeButton(false).CloseButton(true).MinimizeButton(false).PinButton(false));
+    m_auimgr21->AddPane(m_panel25, wxAuiPaneInfo().Name(wxT("MsgPane")).Caption(_("Message Pane")).Direction(wxAUI_DOCK_BOTTOM).Layer(0).Row(0).Position(0).BestSize(100,150).MinSize(100,150).MaxSize(100,300).CaptionVisible(true).MaximizeButton(false).CloseButton(true).MinimizeButton(false).PinButton(false));
     m_auimgr21->Update();
     
     wxBoxSizer* boxSizer27 = new wxBoxSizer(wxVERTICAL);
@@ -85,8 +190,17 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     boxSizer27->Add(m_richTextMsg, 1, wxALL|wxEXPAND, WXC_FROM_DIP(5));
     
+    
+    #if wxVERSION_NUMBER >= 2900
+    if(!wxPersistenceManager::Get().Find(m_auiBook)){
+        wxPersistenceManager::Get().RegisterAndRestore(m_auiBook);
+    } else {
+        wxPersistenceManager::Get().Restore(m_auiBook);
+    }
+    #endif
+    
     SetName(wxT("MainFrameBaseClass"));
-    SetSize(550,550);
+    SetSize(700,550);
     if (GetSizer()) {
          GetSizer()->Fit(this);
     }
@@ -109,6 +223,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     this->Connect(m_menuItemVideoBGSubtraction->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnVideoBGSubtraction), NULL, this);
     this->Connect(m_menuItem9->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
     this->Connect(wxID_OPEN, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnFileOpen), NULL, this);
+    m_auiBook->Connect(wxEVT_COMMAND_AUINOTEBOOK_PAGE_CHANGED, wxAuiNotebookEventHandler(MainFrameBaseClass::OnBookPageChanged), NULL, this);
     
 }
 
@@ -120,6 +235,7 @@ MainFrameBaseClass::~MainFrameBaseClass()
     this->Disconnect(m_menuItemVideoBGSubtraction->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnVideoBGSubtraction), NULL, this);
     this->Disconnect(m_menuItem9->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
     this->Disconnect(wxID_OPEN, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnFileOpen), NULL, this);
+    m_auiBook->Disconnect(wxEVT_COMMAND_AUINOTEBOOK_PAGE_CHANGED, wxAuiNotebookEventHandler(MainFrameBaseClass::OnBookPageChanged), NULL, this);
     
     m_auimgr21->UnInit();
     delete m_auimgr21;
