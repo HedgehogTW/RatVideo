@@ -17,6 +17,11 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
+
+#include "PreProcessor.h"
+#include "package_bgs/ae/KDE.h"
+#include "package_bgs/MixtureOfGaussianV2BGS.h"
+
 //using namespace std;
 using namespace cv;
 using namespace bgslibrary;
@@ -53,7 +58,12 @@ MainFrame::MainFrame(wxWindow* parent)
 	SetSize(700, 550);
 	Center();	
 	
-	DeleteContents();
+//	m_bgs = NULL;
+//	m_bgs = new KDE;
+
+//	DeleteContents();
+
+	SetPageKDE();
 }
 
 MainFrame::~MainFrame()
@@ -69,8 +79,20 @@ MainFrame::~MainFrame()
 void MainFrame::DeleteContents()
 {
 	// TODO: Add your specialized code here and/or call the base class
-	wxConfigBase *pConfig = wxConfigBase::Get();
-
+//	wxConfigBase *pConfig = wxConfigBase::Get();
+/*
+	if(m_bgs) {
+		delete m_bgs;
+		m_bgs = NULL;
+	}
+ */
+	if(m_pPreProcessor)  {
+		delete m_pPreProcessor;
+		m_pPreProcessor = NULL;
+	}
+	
+	if(m_vidCap.isOpened()) m_vidCap.release();
+		
 }
 void MainFrame::OnMRUFile(wxCommandEvent& event)
 {
@@ -95,6 +117,84 @@ void MainFrame::OnAbout(wxCommandEvent& event)
     info.SetDescription(_("Short description goes here"));
     ::wxAboutBox(info);
 }
+
+void MainFrame::SetPageKDE()
+{
+
+	CvFileStorage* fs = cvOpenFileStorage("./config/KDE.xml", 0, CV_STORAGE_READ);
+
+	framesToLearn = cvReadIntByName(fs, 0, "framesToLearn", 10);
+	SequenceLength = cvReadIntByName(fs, 0, "SequenceLength", 50);
+	TimeWindowSize = cvReadIntByName(fs, 0, "TimeWindowSize", 100);
+	SDEstimationFlag = cvReadIntByName(fs, 0, "SDEstimationFlag", 1);
+	lUseColorRatiosFlag = cvReadIntByName(fs, 0, "lUseColorRatiosFlag", 1);
+	th = cvReadRealByName(fs, 0, "th", 10e-8);
+	alpha = cvReadRealByName(fs, 0, "alpha", 0.3);
+	//showOutput = cvReadIntByName(fs, 0, "showOutput", true);
+
+	cvReleaseFileStorage(&fs);		
+	
+	wxString  s1, s2, s3, s4, s5, s6;
+	s1 << framesToLearn;
+	s2 << SequenceLength;
+	s3 << TimeWindowSize;
+	s4 << th;
+	s5 << alpha;
+	
+	m_textCtrlframesToLearn->SetValue(s1);
+	m_textCtrlSequenceLen->SetValue(s2);
+	m_textCtrlTimeWinSize->SetValue(s3);
+	m_checkBoxSDEstFlag->SetValue(SDEstimationFlag);
+	m_checkBoxlUseColorRatiosFlag->SetValue(lUseColorRatiosFlag);
+	m_textCtrlThreshold->SetValue(s4);
+	m_textCtrlAlpha->SetValue(s5);
+	
+}
+
+void MainFrame::SavePageKDE()
+{		
+	
+	wxString  str;
+	long a;
+	double  value;
+	
+	str = m_textCtrlframesToLearn->GetValue();
+	str.ToLong(&a);	
+	framesToLearn = a;
+	
+	str = m_textCtrlSequenceLen->GetValue();
+	str.ToLong(&a);	
+	SequenceLength = a;
+	
+	str = m_textCtrlTimeWinSize->GetValue();
+	str.ToLong(&a);	
+	TimeWindowSize = a;
+	
+	SDEstimationFlag = m_checkBoxSDEstFlag->GetValue();
+	lUseColorRatiosFlag = m_checkBoxlUseColorRatiosFlag->GetValue();
+	
+	str = m_textCtrlThreshold->GetValue();
+	str.ToDouble(&value);	
+	th = value;
+	
+	str = m_textCtrlAlpha->GetValue();
+	str.ToDouble(&value);	
+	alpha = value;	
+	
+	CvFileStorage* fs = cvOpenFileStorage("./config/KDE.xml", 0, CV_STORAGE_WRITE);
+
+	cvWriteInt(fs, "framesToLearn", framesToLearn);
+	cvWriteInt(fs, "SequenceLength", SequenceLength);
+	cvWriteInt(fs, "TimeWindowSize", TimeWindowSize);
+	cvWriteInt(fs, "SDEstimationFlag", SDEstimationFlag);
+	cvWriteInt(fs, "lUseColorRatiosFlag", lUseColorRatiosFlag);
+	cvWriteReal(fs, "th", th);
+	cvWriteReal(fs, "alpha", alpha);
+//	cvWriteInt(fs, "showOutput", showOutput);
+
+	cvReleaseFileStorage(&fs);	
+}
+
 void MainFrame::OnFileOpen(wxCommandEvent& event)
 {
 	wxString  strHistoryFile = wxEmptyString;
@@ -161,39 +261,73 @@ void MainFrame::OnViewMsgPane(wxCommandEvent& event)
 
 	m_auimgr21->Update();	
 }
-void MainFrame::OnVideoBGSubtraction(wxCommandEvent& event)
+void MainFrame::OnVideoBGSProcess(wxCommandEvent& event)
 {
-//	myMsgOutput( "Load ... " + m_Filename);
+	DeleteContents();
+		
+
+
 	m_Filename = "d:\\tmp\\1218(4).AVI";
-	cv::VideoCapture vidCap(m_Filename.ToStdString());
-	if(vidCap.isOpened()==false) {
+	m_vidCap.open(m_Filename.ToStdString());
+	if(m_vidCap.isOpened()==false) {
 		myMsgOutput( "Load ... " + m_Filename + " ERROR\n");
 		return;
 	}
-    int64 start_time;
+	myMsgOutput( "\nLoad ... " + m_Filename + " OK\n");
+	
+	m_pPreProcessor = new bgslibrary::PreProcessor;		
+	int tab = m_auiBook->GetSelection();
+	myMsgOutput("OnBookPageChanged %d\n", tab);
+	switch(tab) {
+		case 0:
+			SavePageKDE();
+			BGS_KDE();
+			break;
+		case 1:
+			break;
+		case 2:
+			break;
+	}
+
+}
+void MainFrame::OnBookPageChanged(wxAuiNotebookEvent& event)
+{
+	int tab = m_auiBook->GetSelection();
+	myMsgOutput("OnBookPageChanged %d\n", tab);
+}
+
+void MainFrame::BGS_KDE()
+{	
+	myMsgOutput("----------------------------KDE\n");
+	myMsgOutput("framesToLearn %d, SequenceLength %d, TimeWindowSize %d\n", framesToLearn, SequenceLength, TimeWindowSize);
+	myMsgOutput("SDEstimationFlag %d, lUseColorRatiosFlag %d\n", SDEstimationFlag, lUseColorRatiosFlag);
+	myMsgOutput("threshold %.5f, alpha %.2f\n", th, alpha);
+	
+	IBGS *bgs = new KDE;
+	
+	int64 start_time;
     int64 delta_time;
     double freq;
     double fps;	
 	int frameNumber = 0;
-	frameProcessor = new FrameProcessor;
-	frameProcessor->init();
-//	frameProcessor->frameToStop = frameToStop;
-
-    do
+	
+	cv::Mat img_input;
+	cv::Mat img_prep;
+   do
     {
 		frameNumber++;
 
-		cv::Mat frame;
-		vidCap >> frame;
-		if (frame.empty()) break;
+		m_vidCap >> img_input;
+		if (img_input.empty()) break;
 
-		cv::Mat img_input;
-		frame.copyTo(img_input);
 		cv::imshow("Input", img_input);
+
+		m_pPreProcessor->process(img_input, img_prep);
 
 		start_time = cv::getTickCount();
 
-		frameProcessor->process(img_input);
+		bgs->process(img_prep, m_mMask, m_mbkgmodel); // by default, it shows automatically the foreground mask image
+
 		delta_time = cv::getTickCount() - start_time;
 		freq = cv::getTickFrequency();
 		fps = freq / delta_time;
@@ -202,11 +336,7 @@ void MainFrame::OnVideoBGSubtraction(wxCommandEvent& event)
 		
 	}while(1);
 
-	delete frameProcessor;
+	delete bgs;
+//	m_bgs = NULL;
 
-}
-void MainFrame::OnBookPageChanged(wxAuiNotebookEvent& event)
-{
-	int tab = m_auiBook->GetSelection();
-	myMsgOutput("OnBookPageChanged %d\n", tab);
 }

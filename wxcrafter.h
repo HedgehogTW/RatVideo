@@ -48,6 +48,10 @@
 
 class MainFrameBaseClass : public wxFrame
 {
+public:
+    enum {
+        wxID_BGS_PROCESS = 10001,
+    };
 protected:
     wxMenuBar* m_menuBar;
     wxMenu* m_menuFile;
@@ -56,7 +60,7 @@ protected:
     wxMenu* m_menuView;
     wxMenuItem* m_menuItemViewMsgPane;
     wxMenu* m_menuVideo;
-    wxMenuItem* m_menuItemVideoBGSubtraction;
+    wxMenuItem* m_menuItemVideoBGSProcess;
     wxMenu* m_nameHelp;
     wxMenuItem* m_menuItem9;
     wxStatusBar* m_statusBar;
@@ -78,7 +82,6 @@ protected:
     wxTextCtrl* m_textCtrlThreshold;
     wxStaticText* m_staticText85;
     wxTextCtrl* m_textCtrlAlpha;
-    wxPanel* m_panelMoGv1;
     wxPanel* m_panelMoGv2;
     wxPanel* m_panel51;
     wxPanel* m_panel25;
@@ -88,7 +91,7 @@ protected:
     virtual void OnFileOpen(wxCommandEvent& event) { event.Skip(); }
     virtual void OnExit(wxCommandEvent& event) { event.Skip(); }
     virtual void OnViewMsgPane(wxCommandEvent& event) { event.Skip(); }
-    virtual void OnVideoBGSubtraction(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnVideoBGSProcess(wxCommandEvent& event) { event.Skip(); }
     virtual void OnAbout(wxCommandEvent& event) { event.Skip(); }
     virtual void OnBookPageChanged(wxAuiNotebookEvent& event) { event.Skip(); }
 
@@ -111,7 +114,6 @@ public:
     wxStaticText* GetStaticText85() { return m_staticText85; }
     wxTextCtrl* GetTextCtrlAlpha() { return m_textCtrlAlpha; }
     wxPanel* GetPanelKDE() { return m_panelKDE; }
-    wxPanel* GetPanelMoGv1() { return m_panelMoGv1; }
     wxPanel* GetPanelMoGv2() { return m_panelMoGv2; }
     wxAuiNotebook* GetAuiBook() { return m_auiBook; }
     wxPanel* GetPanel51() { return m_panel51; }

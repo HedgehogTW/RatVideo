@@ -8,8 +8,8 @@
 #include <deque>
 #include <opencv2/opencv.hpp>
 
-
-#include "FrameProcessor.h"
+#include "package_bgs/IBGS.h"
+#include "PreProcessor.h"
 
 //using namespace std;
 //using namespace bgslibrary;
@@ -26,6 +26,8 @@ public:
     MainFrame(wxWindow* parent);
     virtual ~MainFrame();
 
+	void BGS_KDE();
+	
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
 	
@@ -43,6 +45,8 @@ public:
 	void DeleteContents();
 	void OnMRUFile(wxCommandEvent& event);
 	void openFile(wxString &dirName);
+	void SetPageKDE();
+	void SavePageKDE();
 
 	static MainFrame *	m_pThis;
 	wxFileHistory* 		m_FileHistory;
@@ -53,18 +57,26 @@ public:
 	wxString 		m_strSourcePath;
 
 ///////////////////// bgs	
-//    bgslibrary::VideoCapture* videoCapture;
-    bgslibrary::FrameProcessor* frameProcessor;
-    bool useVideo;
-    std::string filename;
-    bool useCamera;
-    int cameraId;
-    long frameToStop;	
+	cv::VideoCapture m_vidCap;
+//	IBGS *m_bgs;
+	cv::Mat m_mMask;
+    cv::Mat m_mbkgmodel;
+    bgslibrary::PreProcessor* m_pPreProcessor;
+	
+///////////////////// KDE
+	int framesToLearn;	
+	int SequenceLength;
+	int TimeWindowSize;
+	int SDEstimationFlag;
+	int lUseColorRatiosFlag;
+	double th;
+	double alpha;
+
 	
 
 protected:
+    virtual void OnVideoBGSProcess(wxCommandEvent& event);
     virtual void OnBookPageChanged(wxAuiNotebookEvent& event);
-    virtual void OnVideoBGSubtraction(wxCommandEvent& event);
     virtual void OnViewMsgPane(wxCommandEvent& event);
     virtual void OnFileOpen(wxCommandEvent& event);
 };

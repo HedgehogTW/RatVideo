@@ -192,9 +192,6 @@
     <File Name="MainFrame.cpp"/>
     <File Name="wxcrafter.cpp"/>
     <File Name="wxcrafter_bitmaps.cpp"/>
-    <File Name="FrameProcessor.cpp"/>
-    <File Name="FrameProcessor.h"/>
-    <File Name="IFrameProcessor.h"/>
     <File Name="PreProcessor.cpp"/>
     <File Name="PreProcessor.h"/>
   </VirtualDirectory>

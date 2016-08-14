@@ -25,7 +25,7 @@ along with BGSLibrary.  If not, see <http://www.gnu.org/licenses/>.
 
 class KDE : public IBGS
 {
-private:
+public:
   NPBGSubtractor *p;
   int rows;
   int cols;
@@ -52,7 +52,7 @@ public:
 
   void process(const cv::Mat &img_input, cv::Mat &img_output, cv::Mat &img_bgmodel);
   
-private:
+public:
   void saveConfig();
   void loadConfig();
 };
