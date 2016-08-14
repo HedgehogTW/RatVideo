@@ -19,8 +19,58 @@
 #include <opencv2/highgui/highgui.hpp>
 
 #include "PreProcessor.h"
-#include "package_bgs/ae/KDE.h"
+#include "package_bgs/IBGS.h"
+
+#include "package_bgs/FrameDifferenceBGS.h"
+#include "package_bgs/StaticFrameDifferenceBGS.h"
+#include "package_bgs/WeightedMovingMeanBGS.h"
+#include "package_bgs/WeightedMovingVarianceBGS.h"
+//#include "package_bgs/MixtureOfGaussianV1BGS.h"
 #include "package_bgs/MixtureOfGaussianV2BGS.h"
+#include "package_bgs/AdaptiveBackgroundLearning.h"
+#if CV_MAJOR_VERSION >= 2 && CV_MINOR_VERSION >= 4 && CV_SUBMINOR_VERSION >= 3
+#include "package_bgs/GMG.h"
+#endif
+
+#include "package_bgs/dp/DPAdaptiveMedianBGS.h"
+#include "package_bgs/dp/DPGrimsonGMMBGS.h"
+#include "package_bgs/dp/DPZivkovicAGMMBGS.h"
+#include "package_bgs/dp/DPMeanBGS.h"
+#include "package_bgs/dp/DPWrenGABGS.h"
+#include "package_bgs/dp/DPPratiMediodBGS.h"
+#include "package_bgs/dp/DPEigenbackgroundBGS.h"
+#include "package_bgs/dp/DPTextureBGS.h"
+
+#include "package_bgs/tb/T2FGMM_UM.h"
+#include "package_bgs/tb/T2FGMM_UV.h"
+#include "package_bgs/tb/T2FMRF_UM.h"
+#include "package_bgs/tb/T2FMRF_UV.h"
+#include "package_bgs/tb/FuzzySugenoIntegral.h"
+#include "package_bgs/tb/FuzzyChoquetIntegral.h"
+
+#include "package_bgs/lb/LBSimpleGaussian.h"
+#include "package_bgs/lb/LBFuzzyGaussian.h"
+#include "package_bgs/lb/LBMixtureOfGaussians.h"
+#include "package_bgs/lb/LBAdaptiveSOM.h"
+#include "package_bgs/lb/LBFuzzyAdaptiveSOM.h"
+
+#include "package_bgs/ck/LbpMrf.h"
+
+//#include "package_bgs/jmo/MultiLayerBGS.h" // don't works with opencv3
+// The PBAS algorithm was removed from BGSLibrary because it is
+// based on patented algorithm ViBE
+// http://www2.ulg.ac.be/telecom/research/vibe/
+//#include "package_bgs/pt/PixelBasedAdaptiveSegmenter.h"
+#include "package_bgs/av/VuMeter.h"
+#include "package_bgs/ae/KDE.h"
+#include "package_bgs/db/IndependentMultimodalBGS.h"
+#include "package_bgs/sjn/SJN_MultiCueBGS.h"
+#include "package_bgs/bl/SigmaDeltaBGS.h"
+
+#include "package_bgs/pl/SuBSENSE.h"
+#include "package_bgs/pl/LOBSTER.h"
+
+#include "package_analysis/ForegroundMaskAnalysis.h"
 
 //using namespace std;
 using namespace cv;
@@ -58,6 +108,7 @@ MainFrame::MainFrame(wxWindow* parent)
 	SetSize(700, 550);
 	Center();	
 	
+	m_bStopProcess = false;
 //	m_bgs = NULL;
 //	m_bgs = new KDE;
 
@@ -86,6 +137,7 @@ void MainFrame::DeleteContents()
 		m_bgs = NULL;
 	}
  */
+	m_bStopProcess = false;
 	if(m_pPreProcessor)  {
 		delete m_pPreProcessor;
 		m_pPreProcessor = NULL;
@@ -265,8 +317,6 @@ void MainFrame::OnVideoBGSProcess(wxCommandEvent& event)
 {
 	DeleteContents();
 		
-
-
 	m_Filename = "d:\\tmp\\1218(4).AVI";
 	m_vidCap.open(m_Filename.ToStdString());
 	if(m_vidCap.isOpened()==false) {
@@ -313,6 +363,7 @@ void MainFrame::BGS_KDE()
 	
 	cv::Mat img_input;
 	cv::Mat img_prep;
+	m_bStopProcess = false;
    do
     {
 		frameNumber++;
@@ -332,6 +383,8 @@ void MainFrame::BGS_KDE()
 		freq = cv::getTickFrequency();
 		fps = freq / delta_time;
 		//std::cout << "FPS: " << fps << std::endl;
+		
+		if(m_bStopProcess)  break;
 		if(cv::waitKey(20) >= 0) break;
 		
 	}while(1);
@@ -339,4 +392,139 @@ void MainFrame::BGS_KDE()
 	delete bgs;
 //	m_bgs = NULL;
 
+}
+void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
+{
+	DeleteContents();
+	
+	int selBGS = m_listBoxBGS->GetSelection();
+	if(selBGS == wxNOT_FOUND) {
+		myMsgOutput( "No BGS algorithm selection\n");
+		return;		
+	}
+	wxString strBGS = m_listBoxBGS->GetString(selBGS);
+	
+	m_Filename = "d:\\tmp\\1218(4).AVI";
+	m_vidCap.open(m_Filename.ToStdString());
+	if(m_vidCap.isOpened()==false) {
+		myMsgOutput( "Load ... " + m_Filename + " ERROR\n");
+		return;
+	}
+	myMsgOutput( "\nLoad ... " + m_Filename + " OK, " + strBGS );
+	
+	IBGS *bgs = NULL;
+	if(strBGS.IsSameAs("FrameDifferenceBGS", false))
+		bgs = new FrameDifferenceBGS;
+	else if(strBGS.IsSameAs("StaticFrameDifferenceBGS", false))
+		bgs = new StaticFrameDifferenceBGS;
+	else if(strBGS.IsSameAs("WeightedMovingMeanBGS", false))
+		bgs = new WeightedMovingMeanBGS;
+	else if(strBGS.IsSameAs("WeightedMovingVarianceBGS", false))
+		bgs = new WeightedMovingVarianceBGS;
+	else if(strBGS.IsSameAs("MixtureOfGaussianV2BGS", false))
+		bgs = new MixtureOfGaussianV2BGS;
+	else if(strBGS.IsSameAs("AdaptiveBackgroundLearning", false))
+		bgs = new AdaptiveBackgroundLearning;
+	else if(strBGS.IsSameAs("DPAdaptiveMedianBGS", false))
+		bgs = new DPAdaptiveMedianBGS;		
+	else if(strBGS.IsSameAs("DPGrimsonGMMBGS", false))
+		bgs = new DPGrimsonGMMBGS;
+	else if(strBGS.IsSameAs("DPZivkovicAGMMBGS", false))
+		bgs = new DPZivkovicAGMMBGS;
+	else if(strBGS.IsSameAs("DPMeanBGS", false))
+		bgs = new DPMeanBGS;
+	else if(strBGS.IsSameAs("DPWrenGABGS", false))
+		bgs = new DPWrenGABGS;
+	else if(strBGS.IsSameAs("DPPratiMediodBGS", false))
+		bgs = new DPPratiMediodBGS;
+	else if(strBGS.IsSameAs("DPEigenbackgroundBGS", false))
+		bgs = new DPEigenbackgroundBGS;
+	else if(strBGS.IsSameAs("DPTextureBGS", false))
+		bgs = new DPTextureBGS;
+	else if(strBGS.IsSameAs("T2FGMM_UM", false))
+		bgs = new T2FGMM_UM;
+	else if(strBGS.IsSameAs("T2FGMM_UV", false))
+		bgs = new T2FGMM_UV;		
+	else if(strBGS.IsSameAs("T2FMRF_UM", false))
+		bgs = new T2FMRF_UM;
+	else if(strBGS.IsSameAs("T2FMRF_UV", false))
+		bgs = new T2FMRF_UV;
+	else if(strBGS.IsSameAs("FuzzySugenoIntegral", false))
+		bgs = new FuzzySugenoIntegral;
+	else if(strBGS.IsSameAs("FuzzyChoquetIntegral", false))
+		bgs = new FuzzyChoquetIntegral;
+	else if(strBGS.IsSameAs("LBSimpleGaussian", false))
+		bgs = new LBSimpleGaussian;
+	else if(strBGS.IsSameAs("LBFuzzyGaussian", false))
+		bgs = new LBFuzzyGaussian;		
+	else if(strBGS.IsSameAs("LBMixtureOfGaussians", false))
+		bgs = new LBMixtureOfGaussians;
+	else if(strBGS.IsSameAs("LBAdaptiveSOM", false))
+		bgs = new LBAdaptiveSOM;		
+	else if(strBGS.IsSameAs("LBFuzzyAdaptiveSOM", false))
+		bgs = new LBFuzzyAdaptiveSOM;	
+	else if(strBGS.IsSameAs("LbpMrf", false))
+		bgs = new LbpMrf;
+	else if(strBGS.IsSameAs("VuMeter", false))
+		bgs = new VuMeter;		
+	else if(strBGS.IsSameAs("KDE", false))
+		bgs = new KDE;
+	else if(strBGS.IsSameAs("IMBS", false))
+		bgs = new IndependentMultimodalBGS;
+	else if(strBGS.IsSameAs("MultiCueBGS", false))
+		bgs = new SJN_MultiCueBGS;
+	else if(strBGS.IsSameAs("SigmaDeltaBGS", false))
+		bgs = new SigmaDeltaBGS;		
+	else if(strBGS.IsSameAs("SuBSENSEBGS", false))
+		bgs = new SuBSENSEBGS;
+	else if(strBGS.IsSameAs("LOBSTERBGS", false))
+		bgs = new LOBSTERBGS;
+	
+	if(bgs==NULL) {
+		myMsgOutput( "No BGS algorithm create\n");
+		return;	
+	}
+	
+	m_pPreProcessor = new bgslibrary::PreProcessor;	
+	
+//	frameProcessor = new FrameProcessor;
+//	frameProcessor->init();
+	int64 start_time;
+    int64 delta_time;
+    double freq;
+    double fps;	
+	int frameNumber = 0;
+	
+	cv::Mat img_input;
+	cv::Mat img_prep;
+	m_bStopProcess = false;
+    do
+    {
+		frameNumber++;
+
+		m_vidCap >> img_input;
+		if (img_input.empty()) break;
+
+		cv::imshow("Input", img_input);
+		m_pPreProcessor->process(img_input, img_prep);
+
+		start_time = cv::getTickCount();
+
+		bgs->process(img_prep, m_mMask, m_mbkgmodel);
+
+		delta_time = cv::getTickCount() - start_time;
+		freq = cv::getTickFrequency();
+		fps = freq / delta_time;
+		//std::cout << "FPS: " << fps << std::endl;
+		if(m_bStopProcess)  break;
+		if(cv::waitKey(60) >= 0) break;
+		
+	}while(1);	
+//	delete frameProcessor;
+	delete bgs;
+}
+void MainFrame::OnVideoStop(wxCommandEvent& event)
+{
+	m_bStopProcess = true;
+	myMsgOutput( "OnVideoStop\n");
 }

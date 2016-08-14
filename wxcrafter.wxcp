@@ -1,7 +1,7 @@
 {
  "metadata": {
   "m_generatedFilesDir": ".",
-  "m_objCounter": 96,
+  "m_objCounter": 104,
   "m_includeFiles": [],
   "m_bitmapFunction": "wxC9ED9InitBitmapResources",
   "m_bitmapsFile": "wxcrafter_bitmaps.cpp",
@@ -455,6 +455,57 @@
            "m_noBody": false
           }],
          "m_children": []
+        }, {
+         "m_type": 4459,
+         "proportion": 0,
+         "border": 5,
+         "gbSpan": "1,1",
+         "gbPosition": "0,0",
+         "m_styles": [],
+         "m_sizerFlags": [],
+         "m_properties": [{
+           "type": "winid",
+           "m_label": "ID:",
+           "m_winid": "wxID_FRAME_PROCESSOR"
+          }, {
+           "type": "string",
+           "m_label": "Name:",
+           "m_value": "m_menuItemVideoFrameProcessor"
+          }, {
+           "type": "string",
+           "m_label": "Label:",
+           "m_value": "FrameProcessor"
+          }, {
+           "type": "string",
+           "m_label": "Shortcut:",
+           "m_value": ""
+          }, {
+           "type": "string",
+           "m_label": "Help String:",
+           "m_value": ""
+          }, {
+           "type": "bitmapPicker",
+           "m_label": "Bitmap File:",
+           "m_path": ""
+          }, {
+           "type": "choice",
+           "m_label": "Kind:",
+           "m_selection": 0,
+           "m_options": ["normal", "checkable", "radio", "separator"]
+          }, {
+           "type": "bool",
+           "m_label": "Checked",
+           "m_value": false
+          }],
+         "m_events": [{
+           "m_eventName": "wxEVT_COMMAND_MENU_SELECTED",
+           "m_eventClass": "wxCommandEvent",
+           "m_eventHandler": "wxCommandEventHandler",
+           "m_functionNameAndSignature": "OnVideoFrameProcessor(wxCommandEvent& event)",
+           "m_description": "Menu item has been clicked",
+           "m_noBody": false
+          }],
+         "m_children": []
         }]
       }, {
        "m_type": 4458,
@@ -815,6 +866,116 @@
            "m_eventClass": "wxCommandEvent",
            "m_eventHandler": "wxCommandEventHandler",
            "m_functionNameAndSignature": "OnVideoBGSProcess(wxCommandEvent& event)",
+           "m_description": "Process a wxEVT_COMMAND_TOOL_CLICKED event (a synonym for wxEVT_COMMAND_MENU_SELECTED). Pass the id of the tool",
+           "m_noBody": false
+          }],
+         "m_children": []
+        }, {
+         "m_type": 4462,
+         "proportion": 0,
+         "border": 5,
+         "gbSpan": "1,1",
+         "gbPosition": "0,0",
+         "m_styles": [],
+         "m_sizerFlags": [],
+         "m_properties": [{
+           "type": "winid",
+           "m_label": "ID:",
+           "m_winid": "wxID_FRAME_PROCESSOR"
+          }, {
+           "type": "string",
+           "m_label": "Name:",
+           "m_value": "m_toolbarItemFrameProcessor"
+          }, {
+           "type": "string",
+           "m_label": "Label:",
+           "m_value": "FrameProcessor"
+          }, {
+           "type": "multi-string",
+           "m_label": "Tooltip:",
+           "m_value": "FrameProcessor"
+          }, {
+           "type": "string",
+           "m_label": "Help String:",
+           "m_value": ""
+          }, {
+           "type": "bitmapPicker",
+           "m_label": "Bitmap File:",
+           "m_path": "wxART_GO_DIR_UP,wxART_TOOLBAR,wxDefaultSize"
+          }, {
+           "type": "filePicker",
+           "m_label": "Disabled-Bitmap File",
+           "m_path": ""
+          }, {
+           "type": "choice",
+           "m_label": "Kind:",
+           "m_selection": 0,
+           "m_options": ["normal", "checkable", "radio", "separator", "dropdown"]
+          }, {
+           "type": "bool",
+           "m_label": "Construct the Dropdown Menu:",
+           "m_value": true
+          }],
+         "m_events": [{
+           "m_eventName": "wxEVT_COMMAND_TOOL_CLICKED",
+           "m_eventClass": "wxCommandEvent",
+           "m_eventHandler": "wxCommandEventHandler",
+           "m_functionNameAndSignature": "OnVideoFrameProcessor(wxCommandEvent& event)",
+           "m_description": "Process a wxEVT_COMMAND_TOOL_CLICKED event (a synonym for wxEVT_COMMAND_MENU_SELECTED). Pass the id of the tool",
+           "m_noBody": false
+          }],
+         "m_children": []
+        }, {
+         "m_type": 4462,
+         "proportion": 0,
+         "border": 5,
+         "gbSpan": "1,1",
+         "gbPosition": "0,0",
+         "m_styles": [],
+         "m_sizerFlags": [],
+         "m_properties": [{
+           "type": "winid",
+           "m_label": "ID:",
+           "m_winid": "wxID_STOP"
+          }, {
+           "type": "string",
+           "m_label": "Name:",
+           "m_value": "m_toolbarItemStop"
+          }, {
+           "type": "string",
+           "m_label": "Label:",
+           "m_value": "Stop"
+          }, {
+           "type": "multi-string",
+           "m_label": "Tooltip:",
+           "m_value": "Stop"
+          }, {
+           "type": "string",
+           "m_label": "Help String:",
+           "m_value": ""
+          }, {
+           "type": "bitmapPicker",
+           "m_label": "Bitmap File:",
+           "m_path": "wxART_ERROR,wxART_TOOLBAR,wxDefaultSize"
+          }, {
+           "type": "filePicker",
+           "m_label": "Disabled-Bitmap File",
+           "m_path": ""
+          }, {
+           "type": "choice",
+           "m_label": "Kind:",
+           "m_selection": 0,
+           "m_options": ["normal", "checkable", "radio", "separator", "dropdown"]
+          }, {
+           "type": "bool",
+           "m_label": "Construct the Dropdown Menu:",
+           "m_value": true
+          }],
+         "m_events": [{
+           "m_eventName": "wxEVT_COMMAND_TOOL_CLICKED",
+           "m_eventClass": "wxCommandEvent",
+           "m_eventHandler": "wxCommandEventHandler",
+           "m_functionNameAndSignature": "OnVideoStop(wxCommandEvent& event)",
            "m_description": "Process a wxEVT_COMMAND_TOOL_CLICKED event (a synonym for wxEVT_COMMAND_MENU_SELECTED). Pass the id of the tool",
            "m_noBody": false
           }],
@@ -2292,7 +2453,7 @@
         }, {
          "type": "font",
          "m_label": "Font:",
-         "m_value": "wxSYS_DEFAULT_GUI_FONT,italic,normal,normal"
+         "m_value": "wxSYS_DEFAULT_GUI_FONT,normal,normal,normal"
         }, {
          "type": "bool",
          "m_label": "Hidden",
@@ -2346,7 +2507,82 @@
            "m_options": ["wxVERTICAL", "wxHORIZONTAL"]
           }],
          "m_events": [],
-         "m_children": []
+         "m_children": [{
+           "m_type": 4412,
+           "proportion": 0,
+           "border": 5,
+           "gbSpan": "1,1",
+           "gbPosition": "0,0",
+           "m_styles": ["wxLB_SINGLE"],
+           "m_sizerFlags": ["wxALL", "wxLEFT", "wxRIGHT", "wxTOP", "wxBOTTOM", "wxEXPAND"],
+           "m_properties": [{
+             "type": "winid",
+             "m_label": "ID:",
+             "m_winid": "wxID_ANY"
+            }, {
+             "type": "string",
+             "m_label": "Size:",
+             "m_value": "-1,220"
+            }, {
+             "type": "string",
+             "m_label": "Minimum Size:",
+             "m_value": "-1,-1"
+            }, {
+             "type": "string",
+             "m_label": "Name:",
+             "m_value": "m_listBoxBGS"
+            }, {
+             "type": "multi-string",
+             "m_label": "Tooltip:",
+             "m_value": ""
+            }, {
+             "type": "colour",
+             "m_label": "Bg Colour:",
+             "colour": "<Default>"
+            }, {
+             "type": "colour",
+             "m_label": "Fg Colour:",
+             "colour": "<Default>"
+            }, {
+             "type": "font",
+             "m_label": "Font:",
+             "m_value": ""
+            }, {
+             "type": "bool",
+             "m_label": "Hidden",
+             "m_value": false
+            }, {
+             "type": "bool",
+             "m_label": "Disabled",
+             "m_value": false
+            }, {
+             "type": "bool",
+             "m_label": "Focused",
+             "m_value": false
+            }, {
+             "type": "string",
+             "m_label": "Class Name:",
+             "m_value": ""
+            }, {
+             "type": "string",
+             "m_label": "Include File:",
+             "m_value": ""
+            }, {
+             "type": "string",
+             "m_label": "Style:",
+             "m_value": ""
+            }, {
+             "type": "multi-string",
+             "m_label": "Choices:",
+             "m_value": "FrameDifferenceBGS;StaticFrameDifferenceBGS;WeightedMovingMeanBGS;WeightedMovingVarianceBGS;MixtureOfGaussianV2BGS;AdaptiveBackgroundLearning;DPAdaptiveMedianBGS;DPGrimsonGMMBGS;DPZivkovicAGMMBGS;DPMeanBGS;DPWrenGABGS;DPPratiMediodBGS;DPEigenbackgroundBGS;DPTextureBGS;T2FGMM_UM;T2FGMM_UV;T2FMRF_UM;T2FMRF_UV;FuzzySugenoIntegral;FuzzyChoquetIntegral;LBSimpleGaussian;LBFuzzyGaussian;LBMixtureOfGaussians;LBAdaptiveSOM;LBFuzzyAdaptiveSOM;LbpMrf;VuMeter;KDE;IMBS;MultiCueBGS;SigmaDeltaBGS;SuBSENSEBGS;LOBSTERBGS"
+            }, {
+             "type": "string",
+             "m_label": "Selection:",
+             "m_value": "-1"
+            }],
+           "m_events": [],
+           "m_children": []
+          }]
         }]
       }, {
        "m_type": 4408,

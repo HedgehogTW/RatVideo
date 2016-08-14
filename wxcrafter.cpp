@@ -48,6 +48,9 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_menuItemVideoBGSProcess = new wxMenuItem(m_menuVideo, wxID_BGS_PROCESS, _("BGS Process"), wxT(""), wxITEM_NORMAL);
     m_menuVideo->Append(m_menuItemVideoBGSProcess);
     
+    m_menuItemVideoFrameProcessor = new wxMenuItem(m_menuVideo, wxID_FRAME_PROCESSOR, _("FrameProcessor"), wxT(""), wxITEM_NORMAL);
+    m_menuVideo->Append(m_menuItemVideoFrameProcessor);
+    
     m_nameHelp = new wxMenu();
     m_menuBar->Append(m_nameHelp, _("Help"));
     
@@ -71,6 +74,10 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_auibar23->AddTool(wxID_OPEN, _("Open"), wxArtProvider::GetBitmap(wxART_FILE_OPEN, wxART_TOOLBAR, wxDefaultSize), wxNullBitmap, wxITEM_NORMAL, wxT(""), wxT(""), NULL);
     
     m_auibar23->AddTool(wxID_BGS_PROCESS, _("BGS Process"), wxArtProvider::GetBitmap(wxART_GO_FORWARD, wxART_TOOLBAR, wxDefaultSize), wxNullBitmap, wxITEM_NORMAL, _("BGS Process"), wxT(""), NULL);
+    
+    m_auibar23->AddTool(wxID_FRAME_PROCESSOR, _("FrameProcessor"), wxArtProvider::GetBitmap(wxART_GO_DIR_UP, wxART_TOOLBAR, wxDefaultSize), wxNullBitmap, wxITEM_NORMAL, _("FrameProcessor"), wxT(""), NULL);
+    
+    m_auibar23->AddTool(wxID_STOP, _("Stop"), wxArtProvider::GetBitmap(wxART_ERROR, wxART_TOOLBAR, wxDefaultSize), wxNullBitmap, wxITEM_NORMAL, _("Stop"), wxT(""), NULL);
     m_auibar23->Realize();
     
     m_auiBook = new wxAuiNotebook(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(250,250)), wxAUI_NB_TAB_FIXED_WIDTH|wxBK_DEFAULT);
@@ -164,13 +171,50 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     m_panel51 = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), wxTAB_TRAVERSAL);
     wxFont m_panel51Font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
-    m_panel51Font.SetStyle(wxFONTSTYLE_ITALIC);
     m_panel51->SetFont(m_panel51Font);
     
     m_auimgr21->AddPane(m_panel51, wxAuiPaneInfo().Caption(_("Global Setting")).Direction(wxAUI_DOCK_RIGHT).Layer(0).Row(0).Position(0).BestSize(200,100).MinSize(200,100).MaxSize(200,100).CaptionVisible(true).MaximizeButton(false).CloseButton(false).MinimizeButton(false).PinButton(false));
     
     wxBoxSizer* boxSizer53 = new wxBoxSizer(wxVERTICAL);
     m_panel51->SetSizer(boxSizer53);
+    
+    wxArrayString m_listBoxBGSArr;
+    m_listBoxBGSArr.Add(_("FrameDifferenceBGS"));
+    m_listBoxBGSArr.Add(_("StaticFrameDifferenceBGS"));
+    m_listBoxBGSArr.Add(_("WeightedMovingMeanBGS"));
+    m_listBoxBGSArr.Add(_("WeightedMovingVarianceBGS"));
+    m_listBoxBGSArr.Add(_("MixtureOfGaussianV2BGS"));
+    m_listBoxBGSArr.Add(_("AdaptiveBackgroundLearning"));
+    m_listBoxBGSArr.Add(_("DPAdaptiveMedianBGS"));
+    m_listBoxBGSArr.Add(_("DPGrimsonGMMBGS"));
+    m_listBoxBGSArr.Add(_("DPZivkovicAGMMBGS"));
+    m_listBoxBGSArr.Add(_("DPMeanBGS"));
+    m_listBoxBGSArr.Add(_("DPWrenGABGS"));
+    m_listBoxBGSArr.Add(_("DPPratiMediodBGS"));
+    m_listBoxBGSArr.Add(_("DPEigenbackgroundBGS"));
+    m_listBoxBGSArr.Add(_("DPTextureBGS"));
+    m_listBoxBGSArr.Add(_("T2FGMM_UM"));
+    m_listBoxBGSArr.Add(_("T2FGMM_UV"));
+    m_listBoxBGSArr.Add(_("T2FMRF_UM"));
+    m_listBoxBGSArr.Add(_("T2FMRF_UV"));
+    m_listBoxBGSArr.Add(_("FuzzySugenoIntegral"));
+    m_listBoxBGSArr.Add(_("FuzzyChoquetIntegral"));
+    m_listBoxBGSArr.Add(_("LBSimpleGaussian"));
+    m_listBoxBGSArr.Add(_("LBFuzzyGaussian"));
+    m_listBoxBGSArr.Add(_("LBMixtureOfGaussians"));
+    m_listBoxBGSArr.Add(_("LBAdaptiveSOM"));
+    m_listBoxBGSArr.Add(_("LBFuzzyAdaptiveSOM"));
+    m_listBoxBGSArr.Add(_("LbpMrf"));
+    m_listBoxBGSArr.Add(_("VuMeter"));
+    m_listBoxBGSArr.Add(_("KDE"));
+    m_listBoxBGSArr.Add(_("IMBS"));
+    m_listBoxBGSArr.Add(_("MultiCueBGS"));
+    m_listBoxBGSArr.Add(_("SigmaDeltaBGS"));
+    m_listBoxBGSArr.Add(_("SuBSENSEBGS"));
+    m_listBoxBGSArr.Add(_("LOBSTERBGS"));
+    m_listBoxBGS = new wxListBox(m_panel51, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_panel51, wxSize(-1,220)), m_listBoxBGSArr, wxLB_SINGLE);
+    
+    boxSizer53->Add(m_listBoxBGS, 0, wxALL|wxEXPAND, WXC_FROM_DIP(5));
     
     m_panel25 = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), wxTAB_TRAVERSAL);
     wxFont m_panel25Font(10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Calibri"));
@@ -217,9 +261,12 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     this->Connect(m_menuItemExit->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnExit), NULL, this);
     this->Connect(m_menuItemViewMsgPane->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewMsgPane), NULL, this);
     this->Connect(m_menuItemVideoBGSProcess->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnVideoBGSProcess), NULL, this);
+    this->Connect(m_menuItemVideoFrameProcessor->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnVideoFrameProcessor), NULL, this);
     this->Connect(m_menuItem9->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
     this->Connect(wxID_OPEN, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnFileOpen), NULL, this);
     this->Connect(wxID_BGS_PROCESS, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoBGSProcess), NULL, this);
+    this->Connect(wxID_FRAME_PROCESSOR, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoFrameProcessor), NULL, this);
+    this->Connect(wxID_STOP, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoStop), NULL, this);
     m_auiBook->Connect(wxEVT_COMMAND_AUINOTEBOOK_PAGE_CHANGED, wxAuiNotebookEventHandler(MainFrameBaseClass::OnBookPageChanged), NULL, this);
     
 }
@@ -230,9 +277,12 @@ MainFrameBaseClass::~MainFrameBaseClass()
     this->Disconnect(m_menuItemExit->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnExit), NULL, this);
     this->Disconnect(m_menuItemViewMsgPane->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewMsgPane), NULL, this);
     this->Disconnect(m_menuItemVideoBGSProcess->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnVideoBGSProcess), NULL, this);
+    this->Disconnect(m_menuItemVideoFrameProcessor->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnVideoFrameProcessor), NULL, this);
     this->Disconnect(m_menuItem9->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
     this->Disconnect(wxID_OPEN, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnFileOpen), NULL, this);
     this->Disconnect(wxID_BGS_PROCESS, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoBGSProcess), NULL, this);
+    this->Disconnect(wxID_FRAME_PROCESSOR, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoFrameProcessor), NULL, this);
+    this->Disconnect(wxID_STOP, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoStop), NULL, this);
     m_auiBook->Disconnect(wxEVT_COMMAND_AUINOTEBOOK_PAGE_CHANGED, wxAuiNotebookEventHandler(MainFrameBaseClass::OnBookPageChanged), NULL, this);
     
     m_auimgr21->UnInit();

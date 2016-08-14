@@ -28,6 +28,7 @@
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 #include <wx/checkbox.h>
+#include <wx/listbox.h>
 #include <wx/richtext/richtextctrl.h>
 #if wxVERSION_NUMBER >= 2900
 #include <wx/persist.h>
@@ -51,6 +52,7 @@ class MainFrameBaseClass : public wxFrame
 public:
     enum {
         wxID_BGS_PROCESS = 10001,
+        wxID_FRAME_PROCESSOR = 10002,
     };
 protected:
     wxMenuBar* m_menuBar;
@@ -61,6 +63,7 @@ protected:
     wxMenuItem* m_menuItemViewMsgPane;
     wxMenu* m_menuVideo;
     wxMenuItem* m_menuItemVideoBGSProcess;
+    wxMenuItem* m_menuItemVideoFrameProcessor;
     wxMenu* m_nameHelp;
     wxMenuItem* m_menuItem9;
     wxStatusBar* m_statusBar;
@@ -84,6 +87,7 @@ protected:
     wxTextCtrl* m_textCtrlAlpha;
     wxPanel* m_panelMoGv2;
     wxPanel* m_panel51;
+    wxListBox* m_listBoxBGS;
     wxPanel* m_panel25;
     wxRichTextCtrl* m_richTextMsg;
 
@@ -92,7 +96,9 @@ protected:
     virtual void OnExit(wxCommandEvent& event) { event.Skip(); }
     virtual void OnViewMsgPane(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoBGSProcess(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnVideoFrameProcessor(wxCommandEvent& event) { event.Skip(); }
     virtual void OnAbout(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnVideoStop(wxCommandEvent& event) { event.Skip(); }
     virtual void OnBookPageChanged(wxAuiNotebookEvent& event) { event.Skip(); }
 
 public:
@@ -116,6 +122,7 @@ public:
     wxPanel* GetPanelKDE() { return m_panelKDE; }
     wxPanel* GetPanelMoGv2() { return m_panelMoGv2; }
     wxAuiNotebook* GetAuiBook() { return m_auiBook; }
+    wxListBox* GetListBoxBGS() { return m_listBoxBGS; }
     wxPanel* GetPanel51() { return m_panel51; }
     wxRichTextCtrl* GetRichTextMsg() { return m_richTextMsg; }
     wxPanel* GetPanel25() { return m_panel25; }

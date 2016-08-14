@@ -10,7 +10,7 @@
 
 #include "package_bgs/IBGS.h"
 #include "PreProcessor.h"
-
+//#include "FrameProcessor.h"
 //using namespace std;
 //using namespace bgslibrary;
 
@@ -62,6 +62,8 @@ public:
 	cv::Mat m_mMask;
     cv::Mat m_mbkgmodel;
     bgslibrary::PreProcessor* m_pPreProcessor;
+//	bgslibrary::FrameProcessor* frameProcessor;
+	bool m_bStopProcess;
 	
 ///////////////////// KDE
 	int framesToLearn;	
@@ -75,6 +77,8 @@ public:
 	
 
 protected:
+    virtual void OnVideoStop(wxCommandEvent& event);
+    virtual void OnVideoFrameProcessor(wxCommandEvent& event);
     virtual void OnVideoBGSProcess(wxCommandEvent& event);
     virtual void OnBookPageChanged(wxAuiNotebookEvent& event);
     virtual void OnViewMsgPane(wxCommandEvent& event);
