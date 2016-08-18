@@ -113,8 +113,25 @@ MainFrame::MainFrame(wxWindow* parent)
 //	m_bgs = new KDE;
 
 //	DeleteContents();
+	wxString outpath, str; 
+#if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) 
+	outpath = "./config";// + subpath;
+#else
+	outpath = ".\\config";
+#endif	
 
+	if(wxDirExists(outpath)==false) {
+		if(wxMkdir(outpath)==false) {
+			str.Printf("Create config directory error, %s", outpath);
+			wxLogMessage(str);
+			return;
+		}
+	}
+	
+	wxFont font(wxFontInfo(10).FaceName("Helvetica").Italic());
+	m_auimgr21->GetArtProvider()->SetFont(wxAUI_DOCKART_CAPTION_FONT, font);
 	SetPageKDE();
+	SetGlobalPara();
 }
 
 MainFrame::~MainFrame()
@@ -169,7 +186,30 @@ void MainFrame::OnAbout(wxCommandEvent& event)
     info.SetDescription(_("Short description goes here"));
     ::wxAboutBox(info);
 }
+void MainFrame::SetGlobalPara()
+{
+    CvFileStorage* fs = cvOpenFileStorage("./config/PreProcessor.xml", 0, CV_STORAGE_READ);
 
+    equalizeHist = cvReadIntByName(fs, 0, "equalizeHist", false);
+    gaussianBlur = cvReadIntByName(fs, 0, "gaussianBlur", false);
+    bShowPreprocess = cvReadIntByName(fs, 0, "enableShow", true);
+
+    cvReleaseFileStorage(&fs);	
+	
+	m_checkBoxShowPreprocess->SetValue(bShowPreprocess);
+}
+void MainFrame::SaveGlobalPara()
+{
+	bShowPreprocess = m_checkBoxShowPreprocess->GetValue();	
+	
+    CvFileStorage* fs = cvOpenFileStorage("./config/PreProcessor.xml", 0, CV_STORAGE_WRITE);
+
+    cvWriteInt(fs, "equalizeHist", equalizeHist);
+    cvWriteInt(fs, "gaussianBlur", gaussianBlur);
+    cvWriteInt(fs, "enableShow", bShowPreprocess);
+
+    cvReleaseFileStorage(&fs);	
+}
 void MainFrame::SetPageKDE()
 {
 
@@ -323,7 +363,15 @@ void MainFrame::OnVideoBGSProcess(wxCommandEvent& event)
 		myMsgOutput( "Load ... " + m_Filename + " ERROR\n");
 		return;
 	}
+
+	wxString str = m_textCtrlFrameWait->GetValue();
+	str.ToLong(&m_waitTime);
+	
+	str = m_textCtrlStartFrame->GetValue();
+	str.ToLong(&m_startFrame);	
+
 	myMsgOutput( "\nLoad ... " + m_Filename + " OK\n");
+	myMsgOutput( "Wait time: " + str + " ms\n");
 	
 	m_pPreProcessor = new bgslibrary::PreProcessor;		
 	int tab = m_auiBook->GetSelection();
@@ -352,6 +400,8 @@ void MainFrame::BGS_KDE()
 	myMsgOutput("framesToLearn %d, SequenceLength %d, TimeWindowSize %d\n", framesToLearn, SequenceLength, TimeWindowSize);
 	myMsgOutput("SDEstimationFlag %d, lUseColorRatiosFlag %d\n", SDEstimationFlag, lUseColorRatiosFlag);
 	myMsgOutput("threshold %.5f, alpha %.2f\n", th, alpha);
+
+
 	
 	IBGS *bgs = new KDE;
 	
@@ -364,6 +414,12 @@ void MainFrame::BGS_KDE()
 	cv::Mat img_input;
 	cv::Mat img_prep;
 	m_bStopProcess = false;
+	do{
+		frameNumber++;	
+		m_vidCap >> img_input;
+		if (img_input.empty()) break;
+	}while(frameNumber <= m_startFrame);
+	
    do
     {
 		frameNumber++;
@@ -385,7 +441,7 @@ void MainFrame::BGS_KDE()
 		//std::cout << "FPS: " << fps << std::endl;
 		
 		if(m_bStopProcess)  break;
-		if(cv::waitKey(20) >= 0) break;
+		if(cv::waitKey(m_waitTime) >= 0) break;
 		
 	}while(1);
 
@@ -410,7 +466,20 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 		myMsgOutput( "Load ... " + m_Filename + " ERROR\n");
 		return;
 	}
-	myMsgOutput( "\nLoad ... " + m_Filename + " OK, " + strBGS );
+	double fps = m_vidCap.get(CV_CAP_PROP_FPS);
+	
+	wxString str = m_textCtrlFrameWait->GetValue();
+	str.ToLong(&m_waitTime);	
+	
+	str = m_textCtrlStartFrame->GetValue();
+	str.ToLong(&m_startFrame);
+	
+	SaveGlobalPara();
+	
+	wxString msg;
+	msg << "\nLoad ... " << m_Filename << " OK\nDo " << strBGS << ", wait " << m_waitTime << " ms\n";
+	msg << fps << " fps, start frame: " << m_startFrame << "\n";
+	myMsgOutput(msg );
 	
 	IBGS *bgs = NULL;
 	if(strBGS.IsSameAs("FrameDifferenceBGS", false))
@@ -469,7 +538,7 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 		bgs = new VuMeter;		
 	else if(strBGS.IsSameAs("KDE", false))
 		bgs = new KDE;
-	else if(strBGS.IsSameAs("IMBS", false))
+	else if(strBGS.IsSameAs("IndependentMultimodalBGS", false))
 		bgs = new IndependentMultimodalBGS;
 	else if(strBGS.IsSameAs("MultiCueBGS", false))
 		bgs = new SJN_MultiCueBGS;
@@ -489,15 +558,23 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 	
 //	frameProcessor = new FrameProcessor;
 //	frameProcessor->init();
+/*
 	int64 start_time;
     int64 delta_time;
     double freq;
     double fps;	
+	 */ 
 	int frameNumber = 0;
 	
 	cv::Mat img_input;
 	cv::Mat img_prep;
 	m_bStopProcess = false;
+	do{
+		frameNumber++;	
+		m_vidCap >> img_input;
+		if (img_input.empty()) break;
+	}while(frameNumber <= m_startFrame);
+	
     do
     {
 		frameNumber++;
@@ -508,16 +585,24 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 		cv::imshow("Input", img_input);
 		m_pPreProcessor->process(img_input, img_prep);
 
-		start_time = cv::getTickCount();
+//		start_time = cv::getTickCount();
 
 		bgs->process(img_prep, m_mMask, m_mbkgmodel);
-
+/*
 		delta_time = cv::getTickCount() - start_time;
 		freq = cv::getTickFrequency();
 		fps = freq / delta_time;
+		 */ 
 		//std::cout << "FPS: " << fps << std::endl;
+		float sec = frameNumber /fps;
+		int mm = sec / 60;
+		int ss = sec - mm*60;
+		wxString str;
+		str.Printf("Frame No. %d, %02d:%02d", frameNumber, mm, ss);
+		m_statusBar->SetStatusText(str, 3);
+		
 		if(m_bStopProcess)  break;
-		if(cv::waitKey(60) >= 0) break;
+		if(cv::waitKey(m_waitTime) >= 0) break;
 		
 	}while(1);	
 //	delete frameProcessor;

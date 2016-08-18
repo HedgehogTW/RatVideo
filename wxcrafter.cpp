@@ -75,9 +75,9 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     m_auibar23->AddTool(wxID_BGS_PROCESS, _("BGS Process"), wxArtProvider::GetBitmap(wxART_GO_FORWARD, wxART_TOOLBAR, wxDefaultSize), wxNullBitmap, wxITEM_NORMAL, _("BGS Process"), wxT(""), NULL);
     
-    m_auibar23->AddTool(wxID_FRAME_PROCESSOR, _("FrameProcessor"), wxArtProvider::GetBitmap(wxART_GO_DIR_UP, wxART_TOOLBAR, wxDefaultSize), wxNullBitmap, wxITEM_NORMAL, _("FrameProcessor"), wxT(""), NULL);
+    m_auibar23->AddTool(wxID_FRAME_PROCESSOR, _("FrameProcessor"), wxXmlResource::Get()->LoadBitmap(wxT("pokeball")), wxNullBitmap, wxITEM_NORMAL, _("FrameProcessor"), wxT(""), NULL);
     
-    m_auibar23->AddTool(wxID_STOP, _("Stop"), wxArtProvider::GetBitmap(wxART_ERROR, wxART_TOOLBAR, wxDefaultSize), wxNullBitmap, wxITEM_NORMAL, _("Stop"), wxT(""), NULL);
+    m_auibar23->AddTool(wxID_STOP, _("Stop"), wxXmlResource::Get()->LoadBitmap(wxT("error")), wxNullBitmap, wxITEM_NORMAL, _("Stop"), wxT(""), NULL);
     m_auibar23->Realize();
     
     m_auiBook = new wxAuiNotebook(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(250,250)), wxAUI_NB_TAB_FIXED_WIDTH|wxBK_DEFAULT);
@@ -169,14 +169,14 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_panelMoGv2 = new wxPanel(m_auiBook, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_auiBook, wxSize(-1,-1)), wxTAB_TRAVERSAL);
     m_auiBook->AddPage(m_panelMoGv2, _("MoG_v2"), false);
     
-    m_panel51 = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), wxTAB_TRAVERSAL);
-    wxFont m_panel51Font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
-    m_panel51->SetFont(m_panel51Font);
+    m_panelAlgo = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), wxTAB_TRAVERSAL);
+    wxFont m_panelAlgoFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
+    m_panelAlgo->SetFont(m_panelAlgoFont);
     
-    m_auimgr21->AddPane(m_panel51, wxAuiPaneInfo().Caption(_("Global Setting")).Direction(wxAUI_DOCK_RIGHT).Layer(0).Row(0).Position(0).BestSize(200,100).MinSize(200,100).MaxSize(200,100).CaptionVisible(true).MaximizeButton(false).CloseButton(false).MinimizeButton(false).PinButton(false));
+    m_auimgr21->AddPane(m_panelAlgo, wxAuiPaneInfo().Caption(_("Algorithm")).Direction(wxAUI_DOCK_RIGHT).Layer(0).Row(0).Position(0).BestSize(220,100).MinSize(200,100).MaxSize(200,100).CaptionVisible(true).MaximizeButton(false).CloseButton(false).MinimizeButton(false).PinButton(false));
     
     wxBoxSizer* boxSizer53 = new wxBoxSizer(wxVERTICAL);
-    m_panel51->SetSizer(boxSizer53);
+    m_panelAlgo->SetSizer(boxSizer53);
     
     wxArrayString m_listBoxBGSArr;
     m_listBoxBGSArr.Add(_("FrameDifferenceBGS"));
@@ -207,26 +207,66 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_listBoxBGSArr.Add(_("LbpMrf"));
     m_listBoxBGSArr.Add(_("VuMeter"));
     m_listBoxBGSArr.Add(_("KDE"));
-    m_listBoxBGSArr.Add(_("IMBS"));
+    m_listBoxBGSArr.Add(_("IndependentMultimodalBGS"));
     m_listBoxBGSArr.Add(_("MultiCueBGS"));
     m_listBoxBGSArr.Add(_("SigmaDeltaBGS"));
     m_listBoxBGSArr.Add(_("SuBSENSEBGS"));
     m_listBoxBGSArr.Add(_("LOBSTERBGS"));
-    m_listBoxBGS = new wxListBox(m_panel51, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_panel51, wxSize(-1,220)), m_listBoxBGSArr, wxLB_SINGLE);
+    m_listBoxBGS = new wxListBox(m_panelAlgo, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_panelAlgo, wxSize(-1,220)), m_listBoxBGSArr, wxLB_SINGLE);
     
     boxSizer53->Add(m_listBoxBGS, 0, wxALL|wxEXPAND, WXC_FROM_DIP(5));
     
-    m_panel25 = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), wxTAB_TRAVERSAL);
-    wxFont m_panel25Font(10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Calibri"));
-    m_panel25->SetFont(m_panel25Font);
+    m_panelGlobalSet = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(50,-1)), wxTAB_TRAVERSAL);
     
-    m_auimgr21->AddPane(m_panel25, wxAuiPaneInfo().Name(wxT("MsgPane")).Caption(_("Message Pane")).Direction(wxAUI_DOCK_BOTTOM).Layer(0).Row(0).Position(0).BestSize(100,150).MinSize(100,150).MaxSize(100,300).CaptionVisible(true).MaximizeButton(false).CloseButton(true).MinimizeButton(false).PinButton(false));
+    m_auimgr21->AddPane(m_panelGlobalSet, wxAuiPaneInfo().Caption(_("Global Setting")).Direction(wxAUI_DOCK_BOTTOM).Layer(0).Row(0).Position(0).BestSize(50,100).MinSize(50,100).MaxSize(50,100).CaptionVisible(true).MaximizeButton(false).CloseButton(false).MinimizeButton(false).PinButton(false));
+    
+    wxGridSizer* gridSizer108 = new wxGridSizer(4, 2, 0, 0);
+    m_panelGlobalSet->SetSizer(gridSizer108);
+    
+    m_staticText110 = new wxStaticText(m_panelGlobalSet, wxID_ANY, _("Frame wait (ms)"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(-1,-1)), 0);
+    
+    gridSizer108->Add(m_staticText110, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_textCtrlFrameWait = new wxTextCtrl(m_panelGlobalSet, wxID_ANY, wxT("60"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(50,-1)), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrlFrameWait->SetHint(wxT(""));
+    #endif
+    
+    gridSizer108->Add(m_textCtrlFrameWait, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_staticText114 = new wxStaticText(m_panelGlobalSet, wxID_ANY, _("Start frame"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(-1,-1)), 0);
+    
+    gridSizer108->Add(m_staticText114, 0, wxALL|wxALIGN_TOP, WXC_FROM_DIP(5));
+    
+    m_textCtrlStartFrame = new wxTextCtrl(m_panelGlobalSet, wxID_ANY, wxT("0"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(50,-1)), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrlStartFrame->SetHint(wxT(""));
+    #endif
+    
+    gridSizer108->Add(m_textCtrlStartFrame, 0, wxALL|wxALIGN_TOP, WXC_FROM_DIP(5));
+    
+    m_staticText118 = new wxStaticText(m_panelGlobalSet, wxID_ANY, _("Show preprocess"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(-1,-1)), 0);
+    
+    gridSizer108->Add(m_staticText118, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_checkBoxShowPreprocess = new wxCheckBox(m_panelGlobalSet, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(-1,-1)), 0);
+    m_checkBoxShowPreprocess->SetValue(false);
+    
+    gridSizer108->Add(m_checkBoxShowPreprocess, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_panelMsg = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), wxTAB_TRAVERSAL);
+    wxFont m_panelMsgFont(10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Calibri"));
+    m_panelMsg->SetFont(m_panelMsgFont);
+    
+    m_auimgr21->AddPane(m_panelMsg, wxAuiPaneInfo().Name(wxT("MsgPane")).Caption(_("Message Pane")).Direction(wxAUI_DOCK_BOTTOM).Layer(0).Row(0).Position(0).BestSize(450,150).MinSize(450,150).MaxSize(450,300).CaptionVisible(true).MaximizeButton(false).CloseButton(true).MinimizeButton(false).PinButton(false));
     m_auimgr21->Update();
     
     wxBoxSizer* boxSizer27 = new wxBoxSizer(wxVERTICAL);
-    m_panel25->SetSizer(boxSizer27);
+    m_panelMsg->SetSizer(boxSizer27);
     
-    m_richTextMsg = new wxRichTextCtrl(m_panel25, wxID_ANY, wxT("Hello.... Cute Rat ..."), wxDefaultPosition, wxDLG_UNIT(m_panel25, wxSize(-1,-1)), wxTE_MULTILINE|wxTE_PROCESS_TAB|wxTE_PROCESS_ENTER|wxWANTS_CHARS);
+    m_richTextMsg = new wxRichTextCtrl(m_panelMsg, wxID_ANY, wxT("Hello.... Cute Rat ..."), wxDefaultPosition, wxDLG_UNIT(m_panelMsg, wxSize(-1,-1)), wxTE_MULTILINE|wxTE_PROCESS_TAB|wxTE_PROCESS_ENTER|wxWANTS_CHARS);
+    wxFont m_richTextMsgFont(10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Arial"));
+    m_richTextMsg->SetFont(m_richTextMsgFont);
     
     boxSizer27->Add(m_richTextMsg, 1, wxALL|wxEXPAND, WXC_FROM_DIP(5));
     

@@ -86,9 +86,16 @@ protected:
     wxStaticText* m_staticText85;
     wxTextCtrl* m_textCtrlAlpha;
     wxPanel* m_panelMoGv2;
-    wxPanel* m_panel51;
+    wxPanel* m_panelAlgo;
     wxListBox* m_listBoxBGS;
-    wxPanel* m_panel25;
+    wxPanel* m_panelGlobalSet;
+    wxStaticText* m_staticText110;
+    wxTextCtrl* m_textCtrlFrameWait;
+    wxStaticText* m_staticText114;
+    wxTextCtrl* m_textCtrlStartFrame;
+    wxStaticText* m_staticText118;
+    wxCheckBox* m_checkBoxShowPreprocess;
+    wxPanel* m_panelMsg;
     wxRichTextCtrl* m_richTextMsg;
 
 protected:
@@ -123,11 +130,18 @@ public:
     wxPanel* GetPanelMoGv2() { return m_panelMoGv2; }
     wxAuiNotebook* GetAuiBook() { return m_auiBook; }
     wxListBox* GetListBoxBGS() { return m_listBoxBGS; }
-    wxPanel* GetPanel51() { return m_panel51; }
+    wxPanel* GetPanelAlgo() { return m_panelAlgo; }
+    wxStaticText* GetStaticText110() { return m_staticText110; }
+    wxTextCtrl* GetTextCtrlFrameWait() { return m_textCtrlFrameWait; }
+    wxStaticText* GetStaticText114() { return m_staticText114; }
+    wxTextCtrl* GetTextCtrlStartFrame() { return m_textCtrlStartFrame; }
+    wxStaticText* GetStaticText118() { return m_staticText118; }
+    wxCheckBox* GetCheckBoxShowPreprocess() { return m_checkBoxShowPreprocess; }
+    wxPanel* GetPanelGlobalSet() { return m_panelGlobalSet; }
     wxRichTextCtrl* GetRichTextMsg() { return m_richTextMsg; }
-    wxPanel* GetPanel25() { return m_panel25; }
+    wxPanel* GetPanelMsg() { return m_panelMsg; }
     wxAuiManager* GetAuimgr21() { return m_auimgr21; }
-    MainFrameBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("My Frame"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(700,550), long style = wxCAPTION|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCLOSE_BOX);
+    MainFrameBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("RatVideo"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(700,550), long style = wxCAPTION|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCLOSE_BOX);
     virtual ~MainFrameBaseClass();
 };
 

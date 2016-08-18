@@ -47,7 +47,8 @@ public:
 	void openFile(wxString &dirName);
 	void SetPageKDE();
 	void SavePageKDE();
-
+	void SetGlobalPara();
+	void SaveGlobalPara();
 	static MainFrame *	m_pThis;
 	wxFileHistory* 		m_FileHistory;
 	wxString			m_Filename;
@@ -64,6 +65,8 @@ public:
     bgslibrary::PreProcessor* m_pPreProcessor;
 //	bgslibrary::FrameProcessor* frameProcessor;
 	bool m_bStopProcess;
+	long m_waitTime;
+	long m_startFrame;
 	
 ///////////////////// KDE
 	int framesToLearn;	
@@ -74,7 +77,10 @@ public:
 	double th;
 	double alpha;
 
-	
+///////////////////// Preprocessor
+    bool equalizeHist;
+    bool gaussianBlur;
+    bool bShowPreprocess;	
 
 protected:
     virtual void OnVideoStop(wxCommandEvent& event);

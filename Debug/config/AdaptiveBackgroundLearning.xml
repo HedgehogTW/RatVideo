@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <opencv_storage>
-<enableWeight>1</enableWeight>
+<alpha>5.0000000000000003e-002</alpha>
+<limit>-1</limit>
 <enableThreshold>1</enableThreshold>
 <threshold>15</threshold>
-<showOutput>1</showOutput>
+<showForeground>1</showForeground>
 <showBackground>1</showBackground>
 </opencv_storage>
