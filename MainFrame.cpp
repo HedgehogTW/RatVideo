@@ -373,6 +373,7 @@ void MainFrame::OnVideoBGSProcess(wxCommandEvent& event)
 	myMsgOutput( "\nLoad ... " + m_Filename + " OK\n");
 	myMsgOutput( "Wait time: " + str + " ms\n");
 	
+//	destroyAllWindows();
 	m_pPreProcessor = new bgslibrary::PreProcessor;		
 	int tab = m_auiBook->GetSelection();
 	myMsgOutput("OnBookPageChanged %d\n", tab);
@@ -475,6 +476,7 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 	str.ToLong(&m_startFrame);
 	
 	SaveGlobalPara();
+//	destroyAllWindows();
 	
 	wxString msg;
 	msg << "\nLoad ... " << m_Filename << " OK\nDo " << strBGS << ", wait " << m_waitTime << " ms\n";

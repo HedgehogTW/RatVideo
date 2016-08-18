@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <opencv_storage>
-<threshold>9.</threshold>
+<threshold>13.</threshold>
 <alpha>1.0000000000000000e-002</alpha>
 <gaussians>3</gaussians>
 <showOutput>1</showOutput>

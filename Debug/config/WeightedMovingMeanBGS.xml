@@ -2,7 +2,7 @@
 <opencv_storage>
 <enableWeight>1</enableWeight>
 <enableThreshold>1</enableThreshold>
-<threshold>15</threshold>
+<threshold>10</threshold>
 <showOutput>1</showOutput>
 <showBackground>1</showBackground>
 </opencv_storage>

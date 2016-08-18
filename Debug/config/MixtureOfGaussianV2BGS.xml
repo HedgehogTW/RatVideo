@@ -2,6 +2,6 @@
 <opencv_storage>
 <alpha>5.0000000000000000e-001</alpha>
 <enableThreshold>1</enableThreshold>
-<threshold>15</threshold>
+<threshold>20</threshold>
 <showOutput>1</showOutput>
 </opencv_storage>
