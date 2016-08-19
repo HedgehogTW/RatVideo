@@ -51,6 +51,15 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_menuItemVideoFrameProcessor = new wxMenuItem(m_menuVideo, wxID_FRAME_PROCESSOR, _("FrameProcessor"), wxT(""), wxITEM_NORMAL);
     m_menuVideo->Append(m_menuItemVideoFrameProcessor);
     
+    m_menuItemVideoExtractFrame = new wxMenuItem(m_menuVideo, wxID_EXTRACT_FRAME, _("Extract Frames"), wxT(""), wxITEM_NORMAL);
+    m_menuVideo->Append(m_menuItemVideoExtractFrame);
+    
+    m_menuBackground = new wxMenu();
+    m_menuBar->Append(m_menuBackground, _("Background"));
+    
+    m_menuItemBgKDE = new wxMenuItem(m_menuBackground, wxID_ANY, _("KDE"), wxT(""), wxITEM_NORMAL);
+    m_menuBackground->Append(m_menuItemBgKDE);
+    
     m_nameHelp = new wxMenu();
     m_menuBar->Append(m_nameHelp, _("Help"));
     
@@ -78,6 +87,8 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_auibar23->AddTool(wxID_FRAME_PROCESSOR, _("FrameProcessor"), wxXmlResource::Get()->LoadBitmap(wxT("pokeball")), wxNullBitmap, wxITEM_NORMAL, _("FrameProcessor"), wxT(""), NULL);
     
     m_auibar23->AddTool(wxID_STOP, _("Stop"), wxXmlResource::Get()->LoadBitmap(wxT("error")), wxNullBitmap, wxITEM_NORMAL, _("Stop"), wxT(""), NULL);
+    
+    m_auibar23->AddTool(wxID_EXTRACT_FRAME, _("Extract Frames"), wxXmlResource::Get()->LoadBitmap(wxT("download")), wxNullBitmap, wxITEM_NORMAL, _("Extract Frames"), wxT(""), NULL);
     m_auibar23->Realize();
     
     m_auiBook = new wxAuiNotebook(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(250,250)), wxAUI_NB_TAB_FIXED_WIDTH|wxBK_DEFAULT);
@@ -249,7 +260,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     gridSizer108->Add(m_staticText122, 0, wxALL, WXC_FROM_DIP(5));
     
-    m_textCtrlSampling = new wxTextCtrl(m_panelGlobalSet, wxID_ANY, wxT("3"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(50,-1)), 0);
+    m_textCtrlSampling = new wxTextCtrl(m_panelGlobalSet, wxID_ANY, wxT("1"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(50,-1)), 0);
     #if wxVERSION_NUMBER >= 3000
     m_textCtrlSampling->SetHint(wxT(""));
     #endif
@@ -276,7 +287,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_panelMsg->SetSizer(boxSizer27);
     
     m_richTextMsg = new wxRichTextCtrl(m_panelMsg, wxID_ANY, wxT("Hello.... Cute Rat ..."), wxDefaultPosition, wxDLG_UNIT(m_panelMsg, wxSize(-1,-1)), wxTE_MULTILINE|wxTE_PROCESS_TAB|wxTE_PROCESS_ENTER|wxWANTS_CHARS);
-    wxFont m_richTextMsgFont(10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Arial"));
+    wxFont m_richTextMsgFont(10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Calibri"));
     m_richTextMsg->SetFont(m_richTextMsgFont);
     
     boxSizer27->Add(m_richTextMsg, 1, wxALL|wxEXPAND, WXC_FROM_DIP(5));
@@ -313,11 +324,14 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     this->Connect(m_menuItemViewMsgPane->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewMsgPane), NULL, this);
     this->Connect(m_menuItemVideoBGSProcess->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnVideoBGSProcess), NULL, this);
     this->Connect(m_menuItemVideoFrameProcessor->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnVideoFrameProcessor), NULL, this);
+    this->Connect(m_menuItemVideoExtractFrame->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnVideoExtractFrames), NULL, this);
+    this->Connect(m_menuItemBgKDE->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnBackgroundKDE), NULL, this);
     this->Connect(m_menuItem9->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
     this->Connect(wxID_OPEN, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnFileOpen), NULL, this);
     this->Connect(wxID_BGS_PROCESS, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoBGSProcess), NULL, this);
     this->Connect(wxID_FRAME_PROCESSOR, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoFrameProcessor), NULL, this);
     this->Connect(wxID_STOP, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoStop), NULL, this);
+    this->Connect(wxID_EXTRACT_FRAME, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoExtractFrames), NULL, this);
     m_auiBook->Connect(wxEVT_COMMAND_AUINOTEBOOK_PAGE_CHANGED, wxAuiNotebookEventHandler(MainFrameBaseClass::OnBookPageChanged), NULL, this);
     
 }
@@ -329,11 +343,14 @@ MainFrameBaseClass::~MainFrameBaseClass()
     this->Disconnect(m_menuItemViewMsgPane->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewMsgPane), NULL, this);
     this->Disconnect(m_menuItemVideoBGSProcess->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnVideoBGSProcess), NULL, this);
     this->Disconnect(m_menuItemVideoFrameProcessor->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnVideoFrameProcessor), NULL, this);
+    this->Disconnect(m_menuItemVideoExtractFrame->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnVideoExtractFrames), NULL, this);
+    this->Disconnect(m_menuItemBgKDE->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnBackgroundKDE), NULL, this);
     this->Disconnect(m_menuItem9->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
     this->Disconnect(wxID_OPEN, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnFileOpen), NULL, this);
     this->Disconnect(wxID_BGS_PROCESS, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoBGSProcess), NULL, this);
     this->Disconnect(wxID_FRAME_PROCESSOR, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoFrameProcessor), NULL, this);
     this->Disconnect(wxID_STOP, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoStop), NULL, this);
+    this->Disconnect(wxID_EXTRACT_FRAME, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoExtractFrames), NULL, this);
     m_auiBook->Disconnect(wxEVT_COMMAND_AUINOTEBOOK_PAGE_CHANGED, wxAuiNotebookEventHandler(MainFrameBaseClass::OnBookPageChanged), NULL, this);
     
     m_auimgr21->UnInit();

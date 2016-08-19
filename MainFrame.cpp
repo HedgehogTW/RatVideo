@@ -72,9 +72,15 @@
 
 #include "package_analysis/ForegroundMaskAnalysis.h"
 
+
+#include "DlgExtractFrame.h"
+#include "KDEBg.h"
+
 //using namespace std;
 using namespace cv;
 using namespace bgslibrary;
+
+
 
 MainFrame *	MainFrame::m_pThis=NULL;
 
@@ -93,7 +99,7 @@ MainFrame::MainFrame(wxWindow* parent)
 #endif
 
 	m_pThis = this;
-	int statusWidth[4] = {250, 110, 40, 140};
+	int statusWidth[4] = {110, 110, 110, 140};
 	m_statusBar->SetFieldsCount(4, statusWidth);	
 	
 	wxConfigBase *pConfig = wxConfigBase::Get();
@@ -116,8 +122,10 @@ MainFrame::MainFrame(wxWindow* parent)
 	wxString outpath, str; 
 #if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) 
 	outpath = "./config";// + subpath;
+	m_Filename = "~/tmp/1218(4).AVI";
 #else
 	outpath = ".\\config";
+	m_Filename = "d:\\tmp\\1218(4).AVI";
 #endif	
 
 	if(wxDirExists(outpath)==false) {
@@ -160,7 +168,7 @@ void MainFrame::DeleteContents()
 		m_pPreProcessor = NULL;
 	}
 	
-	if(m_vidCap.isOpened()) m_vidCap.release();
+
 		
 }
 void MainFrame::OnMRUFile(wxCommandEvent& event)
@@ -357,9 +365,10 @@ void MainFrame::OnVideoBGSProcess(wxCommandEvent& event)
 {
 	DeleteContents();
 		
-	m_Filename = "d:\\tmp\\1218(4).AVI";
-	m_vidCap.open(m_Filename.ToStdString());
-	if(m_vidCap.isOpened()==false) {
+	
+	cv::VideoCapture vidCap;
+	vidCap.open(m_Filename.ToStdString());
+	if(vidCap.isOpened()==false) {
 		myMsgOutput( "Load ... " + m_Filename + " ERROR\n");
 		return;
 	}
@@ -386,7 +395,7 @@ void MainFrame::OnVideoBGSProcess(wxCommandEvent& event)
 	switch(tab) {
 		case 0:
 			SavePageKDE();
-			BGS_KDE();
+			BGS_KDE(vidCap);
 			break;
 		case 1:
 			break;
@@ -401,7 +410,7 @@ void MainFrame::OnBookPageChanged(wxAuiNotebookEvent& event)
 	myMsgOutput("OnBookPageChanged %d\n", tab);
 }
 
-void MainFrame::BGS_KDE()
+void MainFrame::BGS_KDE(cv::VideoCapture& vidCap)
 {	
 	myMsgOutput("----------------------------KDE\n");
 	myMsgOutput("framesToLearn %d, SequenceLength %d, TimeWindowSize %d\n", framesToLearn, SequenceLength, TimeWindowSize);
@@ -423,7 +432,7 @@ void MainFrame::BGS_KDE()
 	m_bStopProcess = false;
 	do{
 		frameNumber++;	
-		m_vidCap >> img_input;
+		vidCap >> img_input;
 		if (img_input.empty()) break;
 	}while(frameNumber <= m_startFrame);
 	
@@ -431,7 +440,7 @@ void MainFrame::BGS_KDE()
     {
 		frameNumber++;
 
-		m_vidCap >> img_input;
+		vidCap >> img_input;
 		if (img_input.empty()) break;
 
 		cv::imshow("Input", img_input);
@@ -455,6 +464,7 @@ void MainFrame::BGS_KDE()
 	delete bgs;
 //	m_bgs = NULL;
 
+
 }
 void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 {
@@ -468,16 +478,21 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 		return;		
 	}
 
-	
-	m_Filename = "d:\\tmp\\1218(4).AVI";
-	m_vidCap.open(m_Filename.ToStdString());
-	if(m_vidCap.isOpened()==false) {
+	cv::VideoCapture vidCap;
+	vidCap.open(m_Filename.ToStdString());
+	if(vidCap.isOpened()==false) {
 		myMsgOutput( "Load ... " + m_Filename + " ERROR\n");
 		return;
 	}
-	double fps = m_vidCap.get(CV_CAP_PROP_FPS);
+	double fps = vidCap.get(CV_CAP_PROP_FPS);
+	int width = vidCap.get(CV_CAP_PROP_FRAME_WIDTH );
+	int height = vidCap.get(CV_CAP_PROP_FRAME_HEIGHT );
 	
-	wxString str = m_textCtrlFrameWait->GetValue();
+	wxString str;
+	str.Printf("W %d, H %d", width, height);
+	m_statusBar->SetStatusText(str, 2);
+	
+	str = m_textCtrlFrameWait->GetValue();
 	str.ToLong(&m_waitTime);	
 	
 	str = m_textCtrlStartFrame->GetValue();
@@ -518,7 +533,7 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 	m_bStopProcess = false;
 	do{
 		frameNumber++;	
-		m_vidCap >> img_input;
+		vidCap >> img_input;
 		if (img_input.empty()) break;
 	}while(frameNumber <= m_startFrame);
 	
@@ -526,7 +541,7 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
     {
 		frameNumber++;
 
-		m_vidCap >> img_input;
+		vidCap >> img_input;
 		if (img_input.empty()) break;
 		if(frameNumber % m_Sampling) continue;
 		
@@ -555,6 +570,7 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 	}while(1);	
 //	delete frameProcessor;
 	delete bgs;
+	
 }
 void MainFrame::OnVideoStop(wxCommandEvent& event)
 {
@@ -635,3 +651,140 @@ IBGS * MainFrame::createBGSObj(wxString& strBGS)
 
 }
 
+void MainFrame::OnVideoExtractFrames(wxCommandEvent& event)
+{
+	DlgExtractFrame dlg(this);
+	if(dlg.ShowModal()== wxID_CANCEL ) return;
+		
+	cv::VideoCapture vidCap;
+	vidCap.open(m_Filename.ToStdString());
+	if(vidCap.isOpened()==false) {
+		myMsgOutput( "Load ... " + m_Filename + " ERROR\n");
+		return;
+	}
+	double fps = vidCap.get(CV_CAP_PROP_FPS);
+	
+	long fromMM, fromSS, toMM, toSS, fromFrame, toFrame;
+	
+	dlg.getParam(fromMM, fromSS, toMM, toSS);
+	
+	fromFrame = (fromMM*60+fromSS)*fps;
+	toFrame = (toMM*60+toSS)*fps;
+	
+	int frameNumber = 0;
+	cv::Mat img_input;
+	while(frameNumber < fromFrame){
+		vidCap >> img_input;
+		if (img_input.empty()) break;
+		frameNumber++;	
+	}
+	
+	wxString outpath, strFramename, outName, str; 
+#if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) 
+	outpath.Printf("~/tmp/frame_%02d%02d_%02d%02d/", fromMM, fromSS, toMM, toSS);
+#else
+	outpath.Printf("d:\\tmp\\frame_%02d%02d_%02d%02d\\", fromMM, fromSS, toMM, toSS);
+#endif	
+
+	if(wxDirExists(outpath)==false) {
+		if(wxMkdir(outpath)==false) {
+			str.Printf("Create frame directory error, %s", outpath);
+			wxLogMessage(str);
+			return;
+		}
+	}
+
+	while(frameNumber < toFrame){
+		vidCap >> img_input;
+		if (img_input.empty()) break;
+		strFramename.Printf("f%02d%02d_%02d%02d_%06d.png", fromMM, fromSS, toMM, toSS, frameNumber);
+		outName  = outpath + strFramename;
+		imwrite(outName.ToStdString(), img_input);
+		frameNumber++;	
+	}	
+	
+	wxString msg;
+	msg.Printf("Extract frame from %02d:%02d (%d) to  %02d:%02d (%d)\n",fromMM, fromSS, fromFrame, toMM, toSS, toFrame );
+	myMsgOutput(msg);
+}
+void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
+{
+	cv::VideoCapture vidCap;
+	vidCap.open(m_Filename.ToStdString());
+	if(vidCap.isOpened()==false) {
+		myMsgOutput( "Load ... " + m_Filename + " ERROR\n");
+		return;
+	}
+	double fps = vidCap.get(CV_CAP_PROP_FPS);
+	int width = vidCap.get(CV_CAP_PROP_FRAME_WIDTH );
+	int height = vidCap.get(CV_CAP_PROP_FRAME_HEIGHT );
+	
+	wxString str;
+	str = m_textCtrlFrameWait->GetValue();
+	str.ToLong(&m_waitTime);	
+	
+	str = m_textCtrlStartFrame->GetValue();
+	str.ToLong(&m_startFrame);
+	
+	str = m_textCtrlSampling->GetValue();
+	str.ToLong(&m_Sampling);
+	if(m_Sampling<=0) m_Sampling = 1;
+	
+	wxString msg;
+	msg.Printf("\nLoad %s, w%d x h%d, do KDE background ...\n", m_Filename, width, height);
+	myMsgOutput(msg );
+	
+
+	cv::Mat img_input;
+	KDEBg kdeModel;	
+	int frameNumber = 0;
+	int counter = 0;
+	int nTrainingFrames = 100;
+	int sampling = 30;
+	int	nKernelBW = 10;
+	float fgProb = 0.04;
+	kdeModel.init(width, height, nKernelBW, nTrainingFrames, fgProb);
+	do {
+		vidCap >> img_input;
+		if (img_input.empty()) break;
+		if(frameNumber % sampling ==0) {
+			kdeModel.BuildBackgroundModel(img_input);
+			counter++;
+		}
+		float sec = frameNumber /fps;
+		int mm = sec / 60;
+		int ss = sec - mm*60;
+		wxString str;
+		str.Printf("BG Frame No. %d, %02d:%02d", frameNumber, mm, ss);
+		m_statusBar->SetStatusText(str, 3);
+		
+		frameNumber ++;
+	}while(counter < nTrainingFrames);
+	kdeModel.CreateBackgroundImage();
+	
+	
+	m_bStopProcess = false;
+	cv::Mat matOut(height, width, CV_8UC1);
+	
+	do {
+		vidCap >> img_input;
+		if (img_input.empty()) break;
+		kdeModel.DetectMovingObject(img_input, matOut);
+		
+		cv::imshow("Input", img_input);
+		cv::imshow( "MovingObject", matOut );
+		
+		float sec = frameNumber /fps;
+		int mm = sec / 60;
+		int ss = sec - mm*60;
+		wxString str;
+		str.Printf("Frame No. %d, %02d:%02d", frameNumber, mm, ss);
+		m_statusBar->SetStatusText(str, 3);
+		
+		frameNumber ++;
+		
+		if(m_bStopProcess)  break;
+		if(cv::waitKey(m_waitTime) >= 0) break;
+		
+	}while(1);
+}

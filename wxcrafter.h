@@ -52,7 +52,8 @@ class MainFrameBaseClass : public wxFrame
 public:
     enum {
         wxID_BGS_PROCESS = 10001,
-        wxID_FRAME_PROCESSOR = 10002,
+        wxID_EXTRACT_FRAME = 10002,
+        wxID_FRAME_PROCESSOR = 10003,
     };
 protected:
     wxMenuBar* m_menuBar;
@@ -64,6 +65,9 @@ protected:
     wxMenu* m_menuVideo;
     wxMenuItem* m_menuItemVideoBGSProcess;
     wxMenuItem* m_menuItemVideoFrameProcessor;
+    wxMenuItem* m_menuItemVideoExtractFrame;
+    wxMenu* m_menuBackground;
+    wxMenuItem* m_menuItemBgKDE;
     wxMenu* m_nameHelp;
     wxMenuItem* m_menuItem9;
     wxStatusBar* m_statusBar;
@@ -106,6 +110,8 @@ protected:
     virtual void OnViewMsgPane(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoBGSProcess(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoFrameProcessor(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnVideoExtractFrames(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnBackgroundKDE(wxCommandEvent& event) { event.Skip(); }
     virtual void OnAbout(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoStop(wxCommandEvent& event) { event.Skip(); }
     virtual void OnBookPageChanged(wxAuiNotebookEvent& event) { event.Skip(); }

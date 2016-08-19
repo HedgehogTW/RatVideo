@@ -26,7 +26,7 @@ public:
     MainFrame(wxWindow* parent);
     virtual ~MainFrame();
 
-	void BGS_KDE();
+	void BGS_KDE(cv::VideoCapture& vidCap);
 	IBGS * createBGSObj(wxString& strBGS);
 	
     void OnExit(wxCommandEvent& event);
@@ -59,7 +59,7 @@ public:
 	wxString 		m_strSourcePath;
 
 ///////////////////// bgs	
-	cv::VideoCapture m_vidCap;
+
 //	IBGS *m_bgs;
 	cv::Mat m_mMask;
     cv::Mat m_mbkgmodel;
@@ -85,6 +85,8 @@ public:
     bool bShowPreprocess;	
 
 protected:
+    virtual void OnBackgroundKDE(wxCommandEvent& event);
+    virtual void OnVideoExtractFrames(wxCommandEvent& event);
     virtual void OnVideoStop(wxCommandEvent& event);
     virtual void OnVideoFrameProcessor(wxCommandEvent& event);
     virtual void OnVideoBGSProcess(wxCommandEvent& event);

@@ -194,6 +194,8 @@
     <File Name="wxcrafter_bitmaps.cpp"/>
     <File Name="PreProcessor.cpp"/>
     <File Name="PreProcessor.h"/>
+    <File Name="KDEBg.h"/>
+    <File Name="KDEBg.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="MainFrame.h"/>
@@ -202,6 +204,8 @@
   <VirtualDirectory Name="resources">
     <File Name="wxcrafter.wxcp"/>
     <File Name="win_resources.rc"/>
+    <File Name="DlgExtractFrame.h"/>
+    <File Name="DlgExtractFrame.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="package_analysis">
     <File Name="package_analysis/ForegroundMaskAnalysis.cpp"/>
@@ -311,4 +315,14 @@
       </Completion>
     </Configuration>
   </Settings>
+  <VirtualDirectory Name="wxcrafter">
+    <File Name="extract_frame.wxcp"/>
+    <VirtualDirectory Name="resources">
+      <File Name="extract_frame_ratvideo_bitmaps.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="base">
+      <File Name="extract_frame.h"/>
+      <File Name="extract_frame.cpp"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
 </CodeLite_Project>
