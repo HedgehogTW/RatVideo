@@ -154,7 +154,7 @@ void MainFrame::DeleteContents()
 		m_bgs = NULL;
 	}
  */
-	m_bStopProcess = false;
+	m_bStopProcess = true;
 	if(m_pPreProcessor)  {
 		delete m_pPreProcessor;
 		m_pPreProcessor = NULL;
@@ -363,15 +363,21 @@ void MainFrame::OnVideoBGSProcess(wxCommandEvent& event)
 		myMsgOutput( "Load ... " + m_Filename + " ERROR\n");
 		return;
 	}
-
+	myMsgOutput( "\nLoad ... " + m_Filename + " OK\n");
+	
+	wxString msg;
 	wxString str = m_textCtrlFrameWait->GetValue();
 	str.ToLong(&m_waitTime);
 	
 	str = m_textCtrlStartFrame->GetValue();
 	str.ToLong(&m_startFrame);	
-
-	myMsgOutput( "\nLoad ... " + m_Filename + " OK\n");
-	myMsgOutput( "Wait time: " + str + " ms\n");
+	
+	str = m_textCtrlSampling->GetValue();
+	str.ToLong(&m_Sampling);
+	if(m_Sampling<=0) m_Sampling = 1;
+	
+	msg.Printf("Wait time: %d ms,  startFrame: %d, sampling: %d\n", m_waitTime, m_startFrame, m_Sampling);
+	myMsgOutput( msg);
 	
 //	destroyAllWindows();
 	m_pPreProcessor = new bgslibrary::PreProcessor;		
@@ -456,10 +462,12 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 	
 	int selBGS = m_listBoxBGS->GetSelection();
 	if(selBGS == wxNOT_FOUND) {
-		myMsgOutput( "No BGS algorithm selection\n");
+		myMsgOutput( "No BGS algorithm selection\n");		
+		wxMessageBox( "No BGS algorithm selection","Error", wxICON_ERROR);
+
 		return;		
 	}
-	wxString strBGS = m_listBoxBGS->GetString(selBGS);
+
 	
 	m_Filename = "d:\\tmp\\1218(4).AVI";
 	m_vidCap.open(m_Filename.ToStdString());
@@ -475,14 +483,86 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 	str = m_textCtrlStartFrame->GetValue();
 	str.ToLong(&m_startFrame);
 	
+	str = m_textCtrlSampling->GetValue();
+	str.ToLong(&m_Sampling);
+	if(m_Sampling<=0) m_Sampling = 1;
+	
 	SaveGlobalPara();
 //	destroyAllWindows();
-	
+	wxString strBGS = m_listBoxBGS->GetString(selBGS);	
 	wxString msg;
 	msg << "\nLoad ... " << m_Filename << " OK\nDo " << strBGS << ", wait " << m_waitTime << " ms\n";
-	msg << fps << " fps, start frame: " << m_startFrame << "\n";
+	msg << fps << " fps, start frame: " << m_startFrame << ", sampling " << m_Sampling << "\n";
 	myMsgOutput(msg );
 	
+	IBGS *bgs = createBGSObj(strBGS);
+	if(bgs==NULL) {
+		myMsgOutput( "No BGS algorithm create\n");
+		return;	
+	} 
+	
+	m_pPreProcessor = new bgslibrary::PreProcessor;	
+	
+//	frameProcessor = new FrameProcessor;
+//	frameProcessor->init();
+/*
+	int64 start_time;
+    int64 delta_time;
+    double freq;
+    double fps;	
+	 */ 
+	int frameNumber = 0;
+	
+	cv::Mat img_input;
+	cv::Mat img_prep;
+	m_bStopProcess = false;
+	do{
+		frameNumber++;	
+		m_vidCap >> img_input;
+		if (img_input.empty()) break;
+	}while(frameNumber <= m_startFrame);
+	
+    do
+    {
+		frameNumber++;
+
+		m_vidCap >> img_input;
+		if (img_input.empty()) break;
+		if(frameNumber % m_Sampling) continue;
+		
+		cv::imshow("Input", img_input);
+		m_pPreProcessor->process(img_input, img_prep);
+
+//		start_time = cv::getTickCount();
+
+		bgs->process(img_prep, m_mMask, m_mbkgmodel);
+/*
+		delta_time = cv::getTickCount() - start_time;
+		freq = cv::getTickFrequency();
+		fps = freq / delta_time;
+		 */ 
+		//std::cout << "FPS: " << fps << std::endl;
+		float sec = frameNumber /fps;
+		int mm = sec / 60;
+		int ss = sec - mm*60;
+		wxString str;
+		str.Printf("Frame No. %d, %02d:%02d", frameNumber, mm, ss);
+		m_statusBar->SetStatusText(str, 3);
+		
+		if(m_bStopProcess)  break;
+		if(cv::waitKey(m_waitTime) >= 0) break;
+		
+	}while(1);	
+//	delete frameProcessor;
+	delete bgs;
+}
+void MainFrame::OnVideoStop(wxCommandEvent& event)
+{
+	m_bStopProcess = true;
+	myMsgOutput( "OnVideoStop\n");
+}
+IBGS * MainFrame::createBGSObj(wxString& strBGS)
+{
 	IBGS *bgs = NULL;
 	if(strBGS.IsSameAs("FrameDifferenceBGS", false))
 		bgs = new FrameDifferenceBGS;
@@ -551,67 +631,7 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 	else if(strBGS.IsSameAs("LOBSTERBGS", false))
 		bgs = new LOBSTERBGS;
 	
-	if(bgs==NULL) {
-		myMsgOutput( "No BGS algorithm create\n");
-		return;	
-	}
-	
-	m_pPreProcessor = new bgslibrary::PreProcessor;	
-	
-//	frameProcessor = new FrameProcessor;
-//	frameProcessor->init();
-/*
-	int64 start_time;
-    int64 delta_time;
-    double freq;
-    double fps;	
-	 */ 
-	int frameNumber = 0;
-	
-	cv::Mat img_input;
-	cv::Mat img_prep;
-	m_bStopProcess = false;
-	do{
-		frameNumber++;	
-		m_vidCap >> img_input;
-		if (img_input.empty()) break;
-	}while(frameNumber <= m_startFrame);
-	
-    do
-    {
-		frameNumber++;
+	return bgs;
 
-		m_vidCap >> img_input;
-		if (img_input.empty()) break;
-
-		cv::imshow("Input", img_input);
-		m_pPreProcessor->process(img_input, img_prep);
-
-//		start_time = cv::getTickCount();
-
-		bgs->process(img_prep, m_mMask, m_mbkgmodel);
-/*
-		delta_time = cv::getTickCount() - start_time;
-		freq = cv::getTickFrequency();
-		fps = freq / delta_time;
-		 */ 
-		//std::cout << "FPS: " << fps << std::endl;
-		float sec = frameNumber /fps;
-		int mm = sec / 60;
-		int ss = sec - mm*60;
-		wxString str;
-		str.Printf("Frame No. %d, %02d:%02d", frameNumber, mm, ss);
-		m_statusBar->SetStatusText(str, 3);
-		
-		if(m_bStopProcess)  break;
-		if(cv::waitKey(m_waitTime) >= 0) break;
-		
-	}while(1);	
-//	delete frameProcessor;
-	delete bgs;
 }
-void MainFrame::OnVideoStop(wxCommandEvent& event)
-{
-	m_bStopProcess = true;
-	myMsgOutput( "OnVideoStop\n");
-}
+

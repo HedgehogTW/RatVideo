@@ -5,7 +5,7 @@
 <TimeWindowSize>100</TimeWindowSize>
 <SDEstimationFlag>1</SDEstimationFlag>
 <lUseColorRatiosFlag>1</lUseColorRatiosFlag>
-<th>1.0000000000000000e-002</th>
+<th>5.0000000000000003e-002</th>
 <alpha>2.9999999999999999e-001</alpha>
 <showOutput>1</showOutput>
 </opencv_storage>

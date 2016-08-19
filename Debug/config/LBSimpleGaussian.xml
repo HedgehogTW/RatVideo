@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <opencv_storage>
-<sensitivity>66</sensitivity>
+<sensitivity>20</sensitivity>
 <noiseVariance>162</noiseVariance>
 <learningRate>18</learningRate>
 <showOutput>1</showOutput>

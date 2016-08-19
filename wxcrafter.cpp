@@ -227,7 +227,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     gridSizer108->Add(m_staticText110, 0, wxALL, WXC_FROM_DIP(5));
     
-    m_textCtrlFrameWait = new wxTextCtrl(m_panelGlobalSet, wxID_ANY, wxT("60"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(50,-1)), 0);
+    m_textCtrlFrameWait = new wxTextCtrl(m_panelGlobalSet, wxID_ANY, wxT("100"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(50,-1)), 0);
     #if wxVERSION_NUMBER >= 3000
     m_textCtrlFrameWait->SetHint(wxT(""));
     #endif
@@ -244,6 +244,17 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     #endif
     
     gridSizer108->Add(m_textCtrlStartFrame, 0, wxALL|wxALIGN_TOP, WXC_FROM_DIP(5));
+    
+    m_staticText122 = new wxStaticText(m_panelGlobalSet, wxID_ANY, _("Sampling rate"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(-1,-1)), 0);
+    
+    gridSizer108->Add(m_staticText122, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_textCtrlSampling = new wxTextCtrl(m_panelGlobalSet, wxID_ANY, wxT("3"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(50,-1)), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrlSampling->SetHint(wxT(""));
+    #endif
+    
+    gridSizer108->Add(m_textCtrlSampling, 0, wxALL, WXC_FROM_DIP(5));
     
     m_staticText118 = new wxStaticText(m_panelGlobalSet, wxID_ANY, _("Show preprocess"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(-1,-1)), 0);
     

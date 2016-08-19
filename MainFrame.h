@@ -27,6 +27,7 @@ public:
     virtual ~MainFrame();
 
 	void BGS_KDE();
+	IBGS * createBGSObj(wxString& strBGS);
 	
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
@@ -67,6 +68,7 @@ public:
 	bool m_bStopProcess;
 	long m_waitTime;
 	long m_startFrame;
+	long m_Sampling;
 	
 ///////////////////// KDE
 	int framesToLearn;	

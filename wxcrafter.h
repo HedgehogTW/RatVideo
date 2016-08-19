@@ -93,6 +93,8 @@ protected:
     wxTextCtrl* m_textCtrlFrameWait;
     wxStaticText* m_staticText114;
     wxTextCtrl* m_textCtrlStartFrame;
+    wxStaticText* m_staticText122;
+    wxTextCtrl* m_textCtrlSampling;
     wxStaticText* m_staticText118;
     wxCheckBox* m_checkBoxShowPreprocess;
     wxPanel* m_panelMsg;
@@ -135,6 +137,8 @@ public:
     wxTextCtrl* GetTextCtrlFrameWait() { return m_textCtrlFrameWait; }
     wxStaticText* GetStaticText114() { return m_staticText114; }
     wxTextCtrl* GetTextCtrlStartFrame() { return m_textCtrlStartFrame; }
+    wxStaticText* GetStaticText122() { return m_staticText122; }
+    wxTextCtrl* GetTextCtrlSampling() { return m_textCtrlSampling; }
     wxStaticText* GetStaticText118() { return m_staticText118; }
     wxCheckBox* GetCheckBoxShowPreprocess() { return m_checkBoxShowPreprocess; }
     wxPanel* GetPanelGlobalSet() { return m_panelGlobalSet; }
