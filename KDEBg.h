@@ -11,7 +11,7 @@
 struct _BackGround {
 //	float h[KDE_BIN_H];	// h
 //	float s[KDE_BIN_S];	// s
-	float v[KDE_BIN_V];	// v
+	double v[KDE_BIN_V];	// v
 
 //	char fgbg_h[KDE_BIN_H];
 //	char fgbg_s[KDE_BIN_S];
@@ -25,7 +25,7 @@ public:
 	KDEBg();
 	~KDEBg();
 
-	void	init(int w, int h, int nBandWidth, int nBGframes, float fgProb);
+	void	init(int w, int h, int nBandWidth, int nBGframes, double fgProb);
 	void 	BuildBackgroundModel(cv::Mat mIn);
 	void	CreateBackgroundImage();
 	void	DetectMovingObject(cv::Mat& matIn, cv::Mat& matOut);
@@ -35,8 +35,8 @@ public:
 	int		m_szImage;
 	int		m_nKnlBW;
 	int		m_nBGframes;
-	float	m_fg_prob;
-	std::vector<float> m_kernel;
+	double	m_fg_prob;
+	std::vector<double> m_kernel;
 	_BackGround * m_bgModel;
 };
 

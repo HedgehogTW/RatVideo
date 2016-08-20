@@ -364,8 +364,7 @@ void MainFrame::OnViewMsgPane(wxCommandEvent& event)
 void MainFrame::OnVideoBGSProcess(wxCommandEvent& event)
 {
 	DeleteContents();
-		
-	
+			
 	cv::VideoCapture vidCap;
 	vidCap.open(m_Filename.ToStdString());
 	if(vidCap.isOpened()==false) {
@@ -374,17 +373,8 @@ void MainFrame::OnVideoBGSProcess(wxCommandEvent& event)
 	}
 	myMsgOutput( "\nLoad ... " + m_Filename + " OK\n");
 	
+	readProperties(vidCap);	
 	wxString msg;
-	wxString str = m_textCtrlFrameWait->GetValue();
-	str.ToLong(&m_waitTime);
-	
-	str = m_textCtrlStartFrame->GetValue();
-	str.ToLong(&m_startFrame);	
-	
-	str = m_textCtrlSampling->GetValue();
-	str.ToLong(&m_Sampling);
-	if(m_Sampling<=0) m_Sampling = 1;
-	
 	msg.Printf("Wait time: %d ms,  startFrame: %d, sampling: %d\n", m_waitTime, m_startFrame, m_Sampling);
 	myMsgOutput( msg);
 	
@@ -402,7 +392,6 @@ void MainFrame::OnVideoBGSProcess(wxCommandEvent& event)
 		case 2:
 			break;
 	}
-
 }
 void MainFrame::OnBookPageChanged(wxAuiNotebookEvent& event)
 {
@@ -484,30 +473,14 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 		myMsgOutput( "Load ... " + m_Filename + " ERROR\n");
 		return;
 	}
-	double fps = vidCap.get(CV_CAP_PROP_FPS);
-	int width = vidCap.get(CV_CAP_PROP_FRAME_WIDTH );
-	int height = vidCap.get(CV_CAP_PROP_FRAME_HEIGHT );
-	
-	wxString str;
-	str.Printf("W %d, H %d", width, height);
-	m_statusBar->SetStatusText(str, 2);
-	
-	str = m_textCtrlFrameWait->GetValue();
-	str.ToLong(&m_waitTime);	
-	
-	str = m_textCtrlStartFrame->GetValue();
-	str.ToLong(&m_startFrame);
-	
-	str = m_textCtrlSampling->GetValue();
-	str.ToLong(&m_Sampling);
-	if(m_Sampling<=0) m_Sampling = 1;
+	readProperties(vidCap);
 	
 	SaveGlobalPara();
 //	destroyAllWindows();
 	wxString strBGS = m_listBoxBGS->GetString(selBGS);	
 	wxString msg;
 	msg << "\nLoad ... " << m_Filename << " OK\nDo " << strBGS << ", wait " << m_waitTime << " ms\n";
-	msg << fps << " fps, start frame: " << m_startFrame << ", sampling " << m_Sampling << "\n";
+	msg << m_fps << " fps, start frame: " << m_startFrame << ", sampling " << m_Sampling << "\n";
 	myMsgOutput(msg );
 	
 	IBGS *bgs = createBGSObj(strBGS);
@@ -518,8 +491,6 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 	
 	m_pPreProcessor = new bgslibrary::PreProcessor;	
 	
-//	frameProcessor = new FrameProcessor;
-//	frameProcessor->init();
 /*
 	int64 start_time;
     int64 delta_time;
@@ -531,6 +502,7 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 	cv::Mat img_input;
 	cv::Mat img_prep;
 	m_bStopProcess = false;
+
 	do{
 		frameNumber++;	
 		vidCap >> img_input;
@@ -557,7 +529,7 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 		fps = freq / delta_time;
 		 */ 
 		//std::cout << "FPS: " << fps << std::endl;
-		float sec = frameNumber /fps;
+		float sec = frameNumber /m_fps;
 		int mm = sec / 60;
 		int ss = sec - mm*60;
 		wxString str;
@@ -568,7 +540,7 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 		if(cv::waitKey(m_waitTime) >= 0) break;
 		
 	}while(1);	
-//	delete frameProcessor;
+
 	delete bgs;
 	
 }
@@ -650,6 +622,23 @@ IBGS * MainFrame::createBGSObj(wxString& strBGS)
 	return bgs;
 
 }
+void MainFrame::readProperties(cv::VideoCapture& vidCap)
+{
+	m_fps = vidCap.get(CV_CAP_PROP_FPS);
+	m_width = vidCap.get(CV_CAP_PROP_FRAME_WIDTH );
+	m_height = vidCap.get(CV_CAP_PROP_FRAME_HEIGHT );
+	
+	wxString str;
+	str = m_textCtrlFrameWait->GetValue();
+	str.ToLong(&m_waitTime);	
+	
+	str = m_textCtrlStartFrame->GetValue();
+	str.ToLong(&m_startFrame);
+	
+	str = m_textCtrlSampling->GetValue();
+	str.ToLong(&m_Sampling);
+	if(m_Sampling<=0) m_Sampling = 1;	
+}
 
 void MainFrame::OnVideoExtractFrames(wxCommandEvent& event)
 {
@@ -662,6 +651,7 @@ void MainFrame::OnVideoExtractFrames(wxCommandEvent& event)
 		myMsgOutput( "Load ... " + m_Filename + " ERROR\n");
 		return;
 	}
+	
 	double fps = vidCap.get(CV_CAP_PROP_FPS);
 	
 	long fromMM, fromSS, toMM, toSS, fromFrame, toFrame;
@@ -707,6 +697,7 @@ void MainFrame::OnVideoExtractFrames(wxCommandEvent& event)
 	msg.Printf("Extract frame from %02d:%02d (%d) to  %02d:%02d (%d)\n",fromMM, fromSS, fromFrame, toMM, toSS, toFrame );
 	myMsgOutput(msg);
 }
+
 void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 {
 	cv::VideoCapture vidCap;
@@ -715,23 +706,11 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 		myMsgOutput( "Load ... " + m_Filename + " ERROR\n");
 		return;
 	}
-	double fps = vidCap.get(CV_CAP_PROP_FPS);
-	int width = vidCap.get(CV_CAP_PROP_FRAME_WIDTH );
-	int height = vidCap.get(CV_CAP_PROP_FRAME_HEIGHT );
-	
-	wxString str;
-	str = m_textCtrlFrameWait->GetValue();
-	str.ToLong(&m_waitTime);	
-	
-	str = m_textCtrlStartFrame->GetValue();
-	str.ToLong(&m_startFrame);
-	
-	str = m_textCtrlSampling->GetValue();
-	str.ToLong(&m_Sampling);
-	if(m_Sampling<=0) m_Sampling = 1;
+
+	readProperties(vidCap);
 	
 	wxString msg;
-	msg.Printf("\nLoad %s, w%d x h%d, do KDE background ...\n", m_Filename, width, height);
+	msg.Printf("\nLoad %s, w%d x h%d, do KDE background ...\n", m_Filename, m_width, m_height);
 	myMsgOutput(msg );
 	
 
@@ -739,11 +718,19 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	KDEBg kdeModel;	
 	int frameNumber = 0;
 	int counter = 0;
-	int nTrainingFrames = 100;
-	int sampling = 30;
+	int nTrainMin = 10;
+	int sampling = 200;
 	int	nKernelBW = 10;
-	float fgProb = 0.04;
-	kdeModel.init(width, height, nKernelBW, nTrainingFrames, fgProb);
+	double fgProb = 0.001;
+	int nTrainingFrames = nTrainMin*60*m_fps/sampling;	
+	
+	myMsgOutput("training %d min, %d frames, sampling %d\n", nTrainMin, nTrainingFrames, sampling);
+	kdeModel.init(m_width, m_height, nKernelBW, nTrainingFrames, fgProb);
+	for(int i=0; i<30; i++) {
+		vidCap >> img_input;
+		if (img_input.empty()) break;
+		frameNumber ++;		
+	}
 	do {
 		vidCap >> img_input;
 		if (img_input.empty()) break;
@@ -751,7 +738,7 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 			kdeModel.BuildBackgroundModel(img_input);
 			counter++;
 		}
-		float sec = frameNumber /fps;
+		float sec = frameNumber /m_fps;
 		int mm = sec / 60;
 		int ss = sec - mm*60;
 		wxString str;
@@ -762,9 +749,15 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	}while(counter < nTrainingFrames);
 	kdeModel.CreateBackgroundImage();
 	
+	vidCap.release();
+	vidCap.open(m_Filename.ToStdString());
+	if(vidCap.isOpened()==false) {
+		myMsgOutput( "Load ... " + m_Filename + " ERROR\n");
+		return;
+	}
 	
 	m_bStopProcess = false;
-	cv::Mat matOut(height, width, CV_8UC1);
+	cv::Mat matOut(m_height, m_width, CV_8UC1);
 	
 	do {
 		vidCap >> img_input;
@@ -774,7 +767,7 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 		cv::imshow("Input", img_input);
 		cv::imshow( "MovingObject", matOut );
 		
-		float sec = frameNumber /fps;
+		float sec = frameNumber /m_fps;
 		int mm = sec / 60;
 		int ss = sec - mm*60;
 		wxString str;

@@ -50,6 +50,8 @@ public:
 	void SavePageKDE();
 	void SetGlobalPara();
 	void SaveGlobalPara();
+	void readProperties(cv::VideoCapture& vidCap);
+	
 	static MainFrame *	m_pThis;
 	wxFileHistory* 		m_FileHistory;
 	wxString			m_Filename;
@@ -59,16 +61,17 @@ public:
 	wxString 		m_strSourcePath;
 
 ///////////////////// bgs	
-
-//	IBGS *m_bgs;
 	cv::Mat m_mMask;
     cv::Mat m_mbkgmodel;
     bgslibrary::PreProcessor* m_pPreProcessor;
-//	bgslibrary::FrameProcessor* frameProcessor;
+
 	bool m_bStopProcess;
 	long m_waitTime;
 	long m_startFrame;
 	long m_Sampling;
+	int  m_width;
+	int  m_height;
+	double m_fps;
 	
 ///////////////////// KDE
 	int framesToLearn;	
