@@ -99,7 +99,7 @@ MainFrame::MainFrame(wxWindow* parent)
 #endif
 
 	m_pThis = this;
-	int statusWidth[4] = {110, 110, 110, 140};
+	int statusWidth[4] = {110, 140, 140, 140};
 	m_statusBar->SetFieldsCount(4, statusWidth);	
 	
 	wxConfigBase *pConfig = wxConfigBase::Get();
@@ -140,6 +140,9 @@ MainFrame::MainFrame(wxWindow* parent)
 	m_auimgr21->GetArtProvider()->SetFont(wxAUI_DOCKART_CAPTION_FONT, font);
 	SetPageKDE();
 	SetGlobalPara();
+	
+	
+	myMsgOutput("Hello.... Cute Rat ...\n");
 }
 
 MainFrame::~MainFrame()
@@ -419,14 +422,15 @@ void MainFrame::BGS_KDE(cv::VideoCapture& vidCap)
 	cv::Mat img_input;
 	cv::Mat img_prep;
 	m_bStopProcess = false;
-	do{
+	while(frameNumber < m_startFrame){
 		frameNumber++;	
 		vidCap >> img_input;
 		if (img_input.empty()) break;
-	}while(frameNumber <= m_startFrame);
+	}
 	
    do
     {
+		if(m_bStopProcess)  break;		
 		frameNumber++;
 
 		vidCap >> img_input;
@@ -445,7 +449,7 @@ void MainFrame::BGS_KDE(cv::VideoCapture& vidCap)
 		fps = freq / delta_time;
 		//std::cout << "FPS: " << fps << std::endl;
 		
-		if(m_bStopProcess)  break;
+
 		if(cv::waitKey(m_waitTime) >= 0) break;
 		
 	}while(1);
@@ -479,8 +483,7 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 //	destroyAllWindows();
 	wxString strBGS = m_listBoxBGS->GetString(selBGS);	
 	wxString msg;
-	msg << "\nLoad ... " << m_Filename << " OK\nDo " << strBGS << ", wait " << m_waitTime << " ms\n";
-	msg << m_fps << " fps, start frame: " << m_startFrame << ", sampling " << m_Sampling << "\n";
+	msg << "\nLoad ... " << m_Filename << " OK\nDo " << strBGS << "\n";
 	myMsgOutput(msg );
 	
 	IBGS *bgs = createBGSObj(strBGS);
@@ -503,15 +506,16 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 	cv::Mat img_prep;
 	m_bStopProcess = false;
 
-	do{
+	while(frameNumber < m_startFrame){
 		frameNumber++;	
 		vidCap >> img_input;
 		if (img_input.empty()) break;
-	}while(frameNumber <= m_startFrame);
+	}
 	
     do
     {
-		frameNumber++;
+		if(m_bStopProcess)  break;
+
 
 		vidCap >> img_input;
 		if (img_input.empty()) break;
@@ -536,7 +540,7 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 		str.Printf("Frame No. %d, %02d:%02d", frameNumber, mm, ss);
 		m_statusBar->SetStatusText(str, 3);
 		
-		if(m_bStopProcess)  break;
+		frameNumber++;
 		if(cv::waitKey(m_waitTime) >= 0) break;
 		
 	}while(1);	
@@ -638,6 +642,15 @@ void MainFrame::readProperties(cv::VideoCapture& vidCap)
 	str = m_textCtrlSampling->GetValue();
 	str.ToLong(&m_Sampling);
 	if(m_Sampling<=0) m_Sampling = 1;	
+	
+	str.Printf("W%d x H%d, fps %.2f", m_width, m_height, m_fps);
+	m_statusBar->SetStatusText(str, 2);	
+	
+	wxString msg;
+	msg << "readProperties ... \n";
+	msg << "\t wait time: " << m_waitTime << " ms\n";
+	msg << "\t fps: " << m_fps << ", start frame: " << m_startFrame << ", sampling: " << m_Sampling << "\n";
+	myMsgOutput(msg );	
 }
 
 void MainFrame::OnVideoExtractFrames(wxCommandEvent& event)
@@ -723,15 +736,21 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	int	nKernelBW = 10;
 	double fgProb = 0.001;
 	int nTrainingFrames = nTrainMin*60*m_fps/sampling;	
+
 	
 	myMsgOutput("training %d min, %d frames, sampling %d\n", nTrainMin, nTrainingFrames, sampling);
 	kdeModel.init(m_width, m_height, nKernelBW, nTrainingFrames, fgProb);
-	for(int i=0; i<30; i++) {
+	while(frameNumber < m_startFrame){
+		frameNumber++;	
 		vidCap >> img_input;
 		if (img_input.empty()) break;
-		frameNumber ++;		
 	}
+	bool bAbort = false;	
 	do {
+		if(m_bStopProcess)  {
+			bAbort = true;
+			break;			
+		}
 		vidCap >> img_input;
 		if (img_input.empty()) break;
 		if(frameNumber % sampling ==0) {
@@ -749,6 +768,8 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	}while(counter < nTrainingFrames);
 	kdeModel.CreateBackgroundImage();
 	
+	if(bAbort) return;
+	
 	vidCap.release();
 	vidCap.open(m_Filename.ToStdString());
 	if(vidCap.isOpened()==false) {
@@ -760,6 +781,8 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	cv::Mat matOut(m_height, m_width, CV_8UC1);
 	
 	do {
+		if(m_bStopProcess)  break;	
+		
 		vidCap >> img_input;
 		if (img_input.empty()) break;
 		kdeModel.DetectMovingObject(img_input, matOut);
@@ -775,8 +798,6 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 		m_statusBar->SetStatusText(str, 3);
 		
 		frameNumber ++;
-		
-		if(m_bStopProcess)  break;
 		if(cv::waitKey(m_waitTime) >= 0) break;
 		
 	}while(1);

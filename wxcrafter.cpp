@@ -249,7 +249,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     gridSizer108->Add(m_staticText114, 0, wxALL|wxALIGN_TOP, WXC_FROM_DIP(5));
     
-    m_textCtrlStartFrame = new wxTextCtrl(m_panelGlobalSet, wxID_ANY, wxT("0"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(50,-1)), 0);
+    m_textCtrlStartFrame = new wxTextCtrl(m_panelGlobalSet, wxID_ANY, wxT("2"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(50,-1)), 0);
     #if wxVERSION_NUMBER >= 3000
     m_textCtrlStartFrame->SetHint(wxT(""));
     #endif
@@ -286,7 +286,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     wxBoxSizer* boxSizer27 = new wxBoxSizer(wxVERTICAL);
     m_panelMsg->SetSizer(boxSizer27);
     
-    m_richTextMsg = new wxRichTextCtrl(m_panelMsg, wxID_ANY, wxT("Hello.... Cute Rat ..."), wxDefaultPosition, wxDLG_UNIT(m_panelMsg, wxSize(-1,-1)), wxTE_MULTILINE|wxTE_PROCESS_TAB|wxTE_PROCESS_ENTER|wxWANTS_CHARS);
+    m_richTextMsg = new wxRichTextCtrl(m_panelMsg, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panelMsg, wxSize(-1,-1)), wxTE_MULTILINE|wxTE_PROCESS_TAB|wxTE_PROCESS_ENTER|wxWANTS_CHARS);
     wxFont m_richTextMsgFont(10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Calibri"));
     m_richTextMsg->SetFont(m_richTextMsgFont);
     

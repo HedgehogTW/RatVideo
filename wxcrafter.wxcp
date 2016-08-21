@@ -3186,7 +3186,7 @@
             }, {
              "type": "string",
              "m_label": "Value:",
-             "m_value": "0"
+             "m_value": "2"
             }, {
              "type": "string",
              "m_label": "Text Hint",
@@ -3698,7 +3698,7 @@
             }, {
              "type": "string",
              "m_label": "Value:",
-             "m_value": "Hello.... Cute Rat ..."
+             "m_value": ""
             }],
            "m_events": [],
            "m_children": []
