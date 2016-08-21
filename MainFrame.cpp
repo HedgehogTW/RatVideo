@@ -746,6 +746,7 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 		if (img_input.empty()) break;
 	}
 	bool bAbort = false;	
+	m_bStopProcess = false;
 	do {
 		if(m_bStopProcess)  {
 			bAbort = true;
