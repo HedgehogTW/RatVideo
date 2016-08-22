@@ -911,5 +911,63 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 	
 	delete bgsABL;	
 	delete bgsFD;	
-	delete bgsWMM;		
+	delete bgsWMM;	
+
+	myMsgOutput( "generate nonzeroPixels.csv ok\n");
+}
+void MainFrame::OnProfileClassification(wxCommandEvent& event)
+{
+	int  silenceLen = 30;
+	float silenceTh = 3;
+	
+	FILE *fp = fopen("d:\\tmp\\nonzeroPixels.csv", "r");
+	if(fp == NULL) {
+		myMsgOutput( "cannot open nonzeroPixels.csv\n");		
+		wxMessageBox( "cannot open nonzeroPixels.csv","Error", wxICON_ERROR);
+		return;		
+	}	
+	
+	vector<Profile>  vProfile;
+	char title [200];
+	fgets(title, 200, fp );
+	while(!feof(fp)) {
+		int nonZeroWMM, frameNumber;
+		int n = fscanf(fp, "%*d,%d,%*d,%d,%*d", &frameNumber, &nonZeroWMM);
+		if(n!=2)  break;
+		
+		Profile p;
+		p.frameno = frameNumber;
+		p.value = nonZeroWMM;
+		vProfile.push_back(p);
+	}
+	fclose(fp);
+	
+	vector<FrameType>  vFrameType;		
+	int start, end;
+	start = end = -1;
+	for(int i=0; i<vProfile.size()-silenceLen; i++) {
+		float mean = 0;
+		for(int k=0; k< silenceLen; k++) {
+			mean += vProfile[i+k].value;
+		}
+		mean /= silenceLen;
+		if(mean <silenceTh) {
+			if(start < 0)
+				start = i;
+		}else if(start >=0) {
+			end = i+silenceLen-1;
+			FrameType ft;
+			ft.start = vProfile[start].frameno;
+			ft.end = vProfile[end].frameno;
+			ft.frameType = 0;
+			vFrameType.push_back(ft);
+			start = -1;
+		}
+	}
+
+	for(int i=0; i<vFrameType.size(); i++) {
+		myMsgOutput("%d--%d\n", vFrameType[i].start, vFrameType[i].end);
+	}
+	
+	myMsgOutput( "OnProfileClassification ok, size %d\n", vProfile.size());
 }

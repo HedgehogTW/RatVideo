@@ -22,6 +22,25 @@ public:
 	
 };
 
+class Profile{
+public:	
+	Profile() { 
+		motionType = 0; 
+	}
+	int frameno;
+	int value;
+	int motionType;
+};
+
+class FrameType{
+public:	
+	FrameType() { 
+		frameType = -1; 
+	}	
+	int start;
+	int end;
+	int frameType;
+};
 class MainFrame : public MainFrameBaseClass
 {
 public:
@@ -90,6 +109,7 @@ public:
     bool bShowPreprocess;	
 
 protected:
+    virtual void OnProfileClassification(wxCommandEvent& event);
     virtual void OnVideoFGPixels(wxCommandEvent& event);
     virtual void OnBackgroundKDE(wxCommandEvent& event);
     virtual void OnVideoExtractFrames(wxCommandEvent& event);
