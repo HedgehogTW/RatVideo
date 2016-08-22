@@ -43,7 +43,7 @@ namespace bgslibrary
     return img_gray.clone();
   }
 
-  void PreProcessor::process(const cv::Mat &img_input, cv::Mat &img_output)
+  void PreProcessor::process(const cv::Mat &img_input, cv::Mat &img_output, bool bLeftSide)
   {
     if (img_input.empty())
       return;
@@ -53,11 +53,18 @@ namespace bgslibrary
     if (firstTime)
       saveConfig();
 
-    img_input.copyTo(img_output);
+ //   img_input.copyTo(img_output);
 
     // Converts image from one color space to another
     // http://opencv.willowgarage.com/documentation/cpp/miscellaneous_image_transformations.html#cv-cvtcolor
-    cv::cvtColor(img_input, img_gray, CV_BGR2GRAY);
+	cv::Mat mROI;
+	
+	if(bLeftSide) {
+		mROI = img_input(cv::Range(0, V_HEIGHT), cv::Range(0, V_WIDTH));		
+	}else 
+		mROI = img_input(cv::Range(0, V_HEIGHT), cv::Range(V_WIDTH, img_input.cols));
+		
+    cv::cvtColor(mROI, img_output, CV_BGR2GRAY);
     //img_gray.copyTo(img_output);
 
     // Equalizes the histogram of a grayscale image
@@ -68,7 +75,7 @@ namespace bgslibrary
     // Smoothes image using a Gaussian filter
     // http://opencv.willowgarage.com/documentation/cpp/imgproc_image_filtering.html#GaussianBlur
     if (gaussianBlur)
-      cv::GaussianBlur(img_output, img_output, cv::Size(7, 7), 1.5);
+      cv::GaussianBlur(img_output, img_output, cv::Size(3, 3), 1.5);
 
     if (enableShow)
       cv::imshow("Pre Processor", img_output);

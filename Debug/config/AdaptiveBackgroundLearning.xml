@@ -3,7 +3,7 @@
 <alpha>1.0000000000000001e-001</alpha>
 <limit>-1</limit>
 <enableThreshold>1</enableThreshold>
-<threshold>35</threshold>
+<threshold>15</threshold>
 <showForeground>1</showForeground>
 <showBackground>1</showBackground>
 </opencv_storage>

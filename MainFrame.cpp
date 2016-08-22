@@ -115,6 +115,7 @@ MainFrame::MainFrame(wxWindow* parent)
 	Center();	
 	
 	m_bStopProcess = false;
+	m_pPreProcessor = NULL;
 //	m_bgs = NULL;
 //	m_bgs = new KDE;
 
@@ -421,6 +422,9 @@ void MainFrame::BGS_KDE(cv::VideoCapture& vidCap)
 	
 	cv::Mat img_input;
 	cv::Mat img_prep;
+	cv::Mat mMovingObj;
+    cv::Mat mbkgmodel;
+	
 	m_bStopProcess = false;
 	while(frameNumber < m_startFrame){
 		frameNumber++;	
@@ -438,11 +442,11 @@ void MainFrame::BGS_KDE(cv::VideoCapture& vidCap)
 
 		cv::imshow("Input", img_input);
 
-		m_pPreProcessor->process(img_input, img_prep);
+		m_pPreProcessor->process(img_input, img_prep, m_bLeftSide);
 
 		start_time = cv::getTickCount();
 
-		bgs->process(img_prep, m_mMask, m_mbkgmodel); // by default, it shows automatically the foreground mask image
+		bgs->process(img_prep, mMovingObj, mbkgmodel); // by default, it shows automatically the foreground mask image
 
 		delta_time = cv::getTickCount() - start_time;
 		freq = cv::getTickFrequency();
@@ -504,6 +508,8 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 	
 	cv::Mat img_input;
 	cv::Mat img_prep;
+	cv::Mat mMovingObj;
+    cv::Mat mbkgmodel;
 	m_bStopProcess = false;
 
 	while(frameNumber < m_startFrame){
@@ -522,17 +528,20 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 		if(frameNumber % m_Sampling) continue;
 		
 		cv::imshow("Input", img_input);
-		m_pPreProcessor->process(img_input, img_prep);
+		m_pPreProcessor->process(img_input, img_prep, m_bLeftSide);
 
-//		start_time = cv::getTickCount();
+		bgs->process(img_prep, mMovingObj, mbkgmodel);
 
-		bgs->process(img_prep, m_mMask, m_mbkgmodel);
-/*
-		delta_time = cv::getTickCount() - start_time;
-		freq = cv::getTickFrequency();
-		fps = freq / delta_time;
-		 */ 
-		//std::cout << "FPS: " << fps << std::endl;
+/*		
+		double msec = vidCap.get(CV_CAP_PROP_POS_MSEC );
+		int fmm = msec / (1000*60);
+		int fss = (msec - fmm*60*1000 )/1000;
+		int fms =  msec - fmm*60*1000 - fss*1000 ;
+		wxString str;
+		str.Printf("%02d:%02d.%03d", fmm, fss, fms);
+		m_statusBar->SetStatusText(str, 1);
+*/
+		
 		float sec = frameNumber /m_fps;
 		int mm = sec / 60;
 		int ss = sec - mm*60;
@@ -646,10 +655,13 @@ void MainFrame::readProperties(cv::VideoCapture& vidCap)
 	str.Printf("W%d x H%d, fps %.2f", m_width, m_height, m_fps);
 	m_statusBar->SetStatusText(str, 2);	
 	
+	m_bLeftSide = m_radioButtonLeftSide->GetValue();
+	
 	wxString msg;
 	msg << "readProperties ... \n";
 	msg << "\t wait time: " << m_waitTime << " ms\n";
 	msg << "\t fps: " << m_fps << ", start frame: " << m_startFrame << ", sampling: " << m_Sampling << "\n";
+	msg << "\t LeftSide " << m_bLeftSide << "\n";
 	myMsgOutput(msg );	
 }
 
@@ -802,4 +814,102 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 		if(cv::waitKey(m_waitTime) >= 0) break;
 		
 	}while(1);
+}
+void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
+{
+	DeleteContents();
+	
+	cv::VideoCapture vidCap;
+	vidCap.open(m_Filename.ToStdString());
+	if(vidCap.isOpened()==false) {
+		myMsgOutput( "Load ... " + m_Filename + " ERROR\n");
+		return;
+	}
+	readProperties(vidCap);
+	
+	SaveGlobalPara();
+
+	wxString msg;
+	msg << "\nLoad ... " << m_Filename << " OK\n";
+	myMsgOutput(msg );
+	
+	wxString strAlgo = "FrameDifferenceBGS";
+	IBGS *bgsFD = createBGSObj(strAlgo);
+	if(bgsFD==NULL) {
+		myMsgOutput( "No FrameDifferenceBGS algorithm create\n");
+		return;	
+	} 
+	
+	strAlgo = "WeightedMovingMeanBGS";
+	IBGS *bgsWMM = createBGSObj(strAlgo);
+	if(bgsWMM==NULL) {
+		myMsgOutput( "No WeightedMovingMeanBGS algorithm create\n");
+		return;	
+	} 	
+
+	strAlgo = "AdaptiveBackgroundLearning";
+	IBGS *bgsABL = createBGSObj(strAlgo);
+	if(bgsWMM==NULL) {
+		myMsgOutput( "No AdaptiveBackgroundLearning algorithm create\n");
+		return;	
+	} 
+	
+	m_pPreProcessor = new bgslibrary::PreProcessor;	
+	
+
+	int frameNumber = 0;
+	
+	cv::Mat img_input;
+	cv::Mat img_prep;
+	cv::Mat mMovingObjFD;
+	cv::Mat mMovingObjWMM;
+	cv::Mat mMovingObjABL;
+    cv::Mat mbkgmodel;
+	m_bStopProcess = false;
+
+	while(frameNumber < m_startFrame){
+		frameNumber++;	
+		vidCap >> img_input;
+		if (img_input.empty()) break;
+	}
+	FILE *fp = fopen("d:\\tmp\\nonzeroPixels.csv", "w");
+	fprintf(fp, "imgSize, frameNumber, FD, WMM, ABL\n");
+    do
+    {
+		if(m_bStopProcess)  break;
+
+
+		vidCap >> img_input;
+		if (img_input.empty()) break;
+		if(frameNumber % m_Sampling) continue;
+		
+		cv::imshow("Input", img_input);
+		m_pPreProcessor->process(img_input, img_prep, m_bLeftSide);
+
+		bgsFD->process(img_prep, mMovingObjFD, mbkgmodel);
+		bgsWMM->process(img_prep, mMovingObjWMM, mbkgmodel);
+		bgsABL->process(img_prep, mMovingObjABL, mbkgmodel);
+		
+		int imgSize = img_prep.rows * img_prep.cols;
+		int nonZeroFD = countNonZero(mMovingObjFD);
+		int nonZeroWMM = countNonZero(mMovingObjWMM);
+		int nonZeroABL = countNonZero(mMovingObjABL);
+		fprintf(fp, "%d, %d, %d, %d, %d\n", imgSize, frameNumber, nonZeroFD, nonZeroWMM, nonZeroABL);
+		
+		float sec = frameNumber /m_fps;
+		int mm = sec / 60;
+		int ss = sec - mm*60;
+		wxString str;
+		str.Printf("Frame No. %d, %02d:%02d", frameNumber, mm, ss);
+		m_statusBar->SetStatusText(str, 3);
+		
+		frameNumber++;
+		if(cv::waitKey(m_waitTime) >= 0) break;
+		
+	}while(1);	
+	fclose(fp);
+	
+	delete bgsABL;	
+	delete bgsFD;	
+	delete bgsWMM;		
 }

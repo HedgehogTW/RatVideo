@@ -29,6 +29,7 @@
 #include <wx/textctrl.h>
 #include <wx/checkbox.h>
 #include <wx/listbox.h>
+#include <wx/radiobut.h>
 #include <wx/richtext/richtextctrl.h>
 #if wxVERSION_NUMBER >= 2900
 #include <wx/persist.h>
@@ -66,6 +67,8 @@ protected:
     wxMenuItem* m_menuItemVideoBGSProcess;
     wxMenuItem* m_menuItemVideoFrameProcessor;
     wxMenuItem* m_menuItemVideoExtractFrame;
+    wxMenuItem* m_menuItem138;
+    wxMenuItem* m_menuItemVideoFGPixels;
     wxMenu* m_menuBackground;
     wxMenuItem* m_menuItemBgKDE;
     wxMenu* m_nameHelp;
@@ -101,6 +104,8 @@ protected:
     wxTextCtrl* m_textCtrlSampling;
     wxStaticText* m_staticText118;
     wxCheckBox* m_checkBoxShowPreprocess;
+    wxRadioButton* m_radioButtonLeftSide;
+    wxRadioButton* m_radioButtonRightSide;
     wxPanel* m_panelMsg;
     wxRichTextCtrl* m_richTextMsg;
 
@@ -111,6 +116,7 @@ protected:
     virtual void OnVideoBGSProcess(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoFrameProcessor(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoExtractFrames(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnVideoFGPixels(wxCommandEvent& event) { event.Skip(); }
     virtual void OnBackgroundKDE(wxCommandEvent& event) { event.Skip(); }
     virtual void OnAbout(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoStop(wxCommandEvent& event) { event.Skip(); }
@@ -147,6 +153,8 @@ public:
     wxTextCtrl* GetTextCtrlSampling() { return m_textCtrlSampling; }
     wxStaticText* GetStaticText118() { return m_staticText118; }
     wxCheckBox* GetCheckBoxShowPreprocess() { return m_checkBoxShowPreprocess; }
+    wxRadioButton* GetRadioButtonLeftSide() { return m_radioButtonLeftSide; }
+    wxRadioButton* GetRadioButtonRightSide() { return m_radioButtonRightSide; }
     wxPanel* GetPanelGlobalSet() { return m_panelGlobalSet; }
     wxRichTextCtrl* GetRichTextMsg() { return m_richTextMsg; }
     wxPanel* GetPanelMsg() { return m_panelMsg; }

@@ -10,6 +10,8 @@
 
 #include "package_bgs/IBGS.h"
 #include "PreProcessor.h"
+
+
 //#include "FrameProcessor.h"
 //using namespace std;
 //using namespace bgslibrary;
@@ -61,8 +63,7 @@ public:
 	wxString 		m_strSourcePath;
 
 ///////////////////// bgs	
-	cv::Mat m_mMask;
-    cv::Mat m_mbkgmodel;
+
     bgslibrary::PreProcessor* m_pPreProcessor;
 
 	bool m_bStopProcess;
@@ -72,6 +73,7 @@ public:
 	int  m_width;
 	int  m_height;
 	double m_fps;
+	bool m_bLeftSide;
 	
 ///////////////////// KDE
 	int framesToLearn;	
@@ -88,6 +90,7 @@ public:
     bool bShowPreprocess;	
 
 protected:
+    virtual void OnVideoFGPixels(wxCommandEvent& event);
     virtual void OnBackgroundKDE(wxCommandEvent& event);
     virtual void OnVideoExtractFrames(wxCommandEvent& event);
     virtual void OnVideoStop(wxCommandEvent& event);
