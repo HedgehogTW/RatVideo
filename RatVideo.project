@@ -211,6 +211,16 @@
     <File Name="package_analysis/ForegroundMaskAnalysis.cpp"/>
     <File Name="package_analysis/ForegroundMaskAnalysis.h"/>
   </VirtualDirectory>
+  <VirtualDirectory Name="wxcrafter">
+    <File Name="extract_frame.wxcp"/>
+    <VirtualDirectory Name="resources">
+      <File Name="extract_frame_ratvideo_bitmaps.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="base">
+      <File Name="extract_frame.h"/>
+      <File Name="extract_frame.cpp"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="" C_Options="" Assembler="">
@@ -315,14 +325,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <VirtualDirectory Name="wxcrafter">
-    <File Name="extract_frame.wxcp"/>
-    <VirtualDirectory Name="resources">
-      <File Name="extract_frame_ratvideo_bitmaps.cpp"/>
-    </VirtualDirectory>
-    <VirtualDirectory Name="base">
-      <File Name="extract_frame.h"/>
-      <File Name="extract_frame.cpp"/>
-    </VirtualDirectory>
-  </VirtualDirectory>
 </CodeLite_Project>

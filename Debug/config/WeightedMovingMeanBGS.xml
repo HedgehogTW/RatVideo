@@ -3,6 +3,6 @@
 <enableWeight>1</enableWeight>
 <enableThreshold>1</enableThreshold>
 <threshold>10</threshold>
-<showOutput>1</showOutput>
-<showBackground>1</showBackground>
+<showOutput>0</showOutput>
+<showBackground>0</showBackground>
 </opencv_storage>

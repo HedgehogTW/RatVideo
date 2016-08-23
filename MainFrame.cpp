@@ -116,9 +116,8 @@ MainFrame::MainFrame(wxWindow* parent)
 	
 	m_bStopProcess = false;
 	m_pPreProcessor = NULL;
-//	m_bgs = NULL;
-//	m_bgs = new KDE;
-
+	m_fps = 29.97;
+	
 //	DeleteContents();
 	wxString outpath, str; 
 #if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) 
@@ -873,7 +872,7 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 		if (img_input.empty()) break;
 	}
 	FILE *fp = fopen("d:\\tmp\\nonzeroPixels.csv", "w");
-	fprintf(fp, "imgSize, frameNumber, FD, WMM, ABL\n");
+	fprintf(fp, "imgSize, frameNumber, FD, WMM, ABL, rFD, rWMM, rABL\n");
     do
     {
 		if(m_bStopProcess)  break;
@@ -883,7 +882,7 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 		if (img_input.empty()) break;
 		if(frameNumber % m_Sampling) continue;
 		
-		cv::imshow("Input", img_input);
+//		cv::imshow("Input", img_input);
 		m_pPreProcessor->process(img_input, img_prep, m_bLeftSide);
 
 		bgsFD->process(img_prep, mMovingObjFD, mbkgmodel);
@@ -894,7 +893,6 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 		int nonZeroFD = countNonZero(mMovingObjFD);
 		int nonZeroWMM = countNonZero(mMovingObjWMM);
 		int nonZeroABL = countNonZero(mMovingObjABL);
-		fprintf(fp, "%d, %d, %d, %d, %d\n", imgSize, frameNumber, nonZeroFD, nonZeroWMM, nonZeroABL);
 		
 		float sec = frameNumber /m_fps;
 		int mm = sec / 60;
@@ -903,6 +901,14 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 		str.Printf("Frame No. %d, %02d:%02d", frameNumber, mm, ss);
 		m_statusBar->SetStatusText(str, 3);
 		
+		float ratio = (float)nonZeroWMM/imgSize;
+		if( ratio > 0.22) {
+			myMsgOutput( "too many nonZero in frame %d,  %02d:%02d, ratio %f\n", frameNumber, mm, ss, ratio);
+			break;
+		}
+		fprintf(fp, "%d, %d, %d, %d, %d, %f, %f, %f\n", imgSize, frameNumber, nonZeroFD, nonZeroWMM, nonZeroABL,
+			(float)nonZeroFD/imgSize, (float)nonZeroWMM/imgSize, (float)nonZeroABL/imgSize);	
+	
 		frameNumber++;
 		if(cv::waitKey(m_waitTime) >= 0) break;
 		
@@ -918,7 +924,7 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 void MainFrame::OnProfileClassification(wxCommandEvent& event)
 {
 	int  silenceLen = 30;
-	float silenceTh = 3;
+	float silenceTh = 0.00015;
 	
 	FILE *fp = fopen("d:\\tmp\\nonzeroPixels.csv", "r");
 	if(fp == NULL) {
@@ -932,12 +938,14 @@ void MainFrame::OnProfileClassification(wxCommandEvent& event)
 	fgets(title, 200, fp );
 	while(!feof(fp)) {
 		int nonZeroWMM, frameNumber;
-		int n = fscanf(fp, "%*d,%d,%*d,%d,%*d", &frameNumber, &nonZeroWMM);
-		if(n!=2)  break;
+		float ratioWMM;
+		int n = fscanf(fp, "%*d,%d,%*d,%d,%*d,%*f,%f,%*f", &frameNumber, &nonZeroWMM, &ratioWMM);
+		if(n!=3)  break;
 		
 		Profile p;
 		p.frameno = frameNumber;
 		p.value = nonZeroWMM;
+		p.ratio = ratioWMM;
 		vProfile.push_back(p);
 	}
 	fclose(fp);
@@ -948,7 +956,7 @@ void MainFrame::OnProfileClassification(wxCommandEvent& event)
 	for(int i=0; i<vProfile.size()-silenceLen; i++) {
 		float mean = 0;
 		for(int k=0; k< silenceLen; k++) {
-			mean += vProfile[i+k].value;
+			mean += vProfile[i+k].ratio;
 		}
 		mean /= silenceLen;
 		if(mean <silenceTh) {
@@ -957,17 +965,58 @@ void MainFrame::OnProfileClassification(wxCommandEvent& event)
 		}else if(start >=0) {
 			end = i+silenceLen-1;
 			FrameType ft;
-			ft.start = vProfile[start].frameno;
-			ft.end = vProfile[end].frameno;
+			ft.start = start; //vProfile[start].frameno;
+			ft.end = end; //vProfile[end].frameno;
 			ft.frameType = 0;
 			vFrameType.push_back(ft);
 			start = -1;
 		}
 	}
-
+/*	
 	for(int i=0; i<vFrameType.size(); i++) {
-		myMsgOutput("%d--%d\n", vFrameType[i].start, vFrameType[i].end);
+		myMsgOutput("%d--%d\n", vProfile[vFrameType[i].start].frameno, vProfile[vFrameType[i].end].frameno);
+	}
+	myMsgOutput("before merge %d\n", vFrameType.size());
+*/	
+	// merge
+	for(int i=1; i<vFrameType.size(); i++) {
+		if(vFrameType[i].start<=vFrameType[i-1].end+1){
+			vFrameType[i-1].end = vFrameType[i].end;
+			vFrameType.erase(vFrameType.begin() +i);
+			i--;
+		}
 	}
 	
+	// find lower point
+	for(int i=0; i<vFrameType.size(); i++) {
+		while(vProfile[vFrameType[i].start+1].value <  vProfile[vFrameType[i].start].value)
+			vFrameType[i].start++;
+			
+		while(vProfile[vFrameType[i].end-1].value <  vProfile[vFrameType[i].end].value)
+			vFrameType[i].end--;	
+	}
+	myMsgOutput ("after merge, and find lower ...\n");
+	FILE* fpw = fopen("d:\\tmp\\frameType.csv", "w");
+	
+	for(int i=0; i<vFrameType.size(); i++) {
+		float ssec = vProfile[vFrameType[i].start].frameno /m_fps;
+		int smm = ssec / 60;
+		int sss = ssec - smm*60;
+
+		float esec = vProfile[vFrameType[i].end].frameno /m_fps;
+		int emm = esec / 60;
+		int ess = esec - emm*60;		
+		
+		float diffsec = esec - ssec;
+		fprintf(fpw, "%d, %d, %d, %d, %d, %d, %f\n", 
+			vProfile[vFrameType[i].start].frameno, vProfile[vFrameType[i].end].frameno,
+			smm, sss, emm, ess, diffsec);
+			
+		myMsgOutput("%d--%d\t", vProfile[vFrameType[i].start].frameno, vProfile[vFrameType[i].end].frameno);
+		myMsgOutput("%02d:%02d -- %02d:%02d, diff sec %.2f\n", smm, sss, emm, ess, diffsec);
+	}			
+	fclose(fpw);
+	myMsgOutput("after merge %d\n", vFrameType.size());	
 	myMsgOutput( "OnProfileClassification ok, size %d\n", vProfile.size());
+	
 }

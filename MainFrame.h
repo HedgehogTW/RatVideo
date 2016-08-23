@@ -29,6 +29,7 @@ public:
 	}
 	int frameno;
 	int value;
+	float ratio;
 	int motionType;
 };
 
