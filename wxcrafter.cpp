@@ -116,8 +116,27 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     m_auimgr21->AddPane(m_auiBook, wxAuiPaneInfo().Direction(wxAUI_DOCK_CENTER).Layer(0).Row(0).Position(0).BestSize(100,100).MinSize(100,100).MaxSize(100,100).CaptionVisible(false).MaximizeButton(false).CloseButton(false).MinimizeButton(false).PinButton(false));
     
+    m_panelProfile = new wxPanel(m_auiBook, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_auiBook, wxSize(-1,-1)), wxTAB_TRAVERSAL);
+    m_auiBook->AddPage(m_panelProfile, _("Profile"), true);
+    
+    wxFlexGridSizer* flexGridSizer152 = new wxFlexGridSizer(0, 2, 0, 0);
+    flexGridSizer152->SetFlexibleDirection( wxBOTH );
+    flexGridSizer152->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+    m_panelProfile->SetSizer(flexGridSizer152);
+    
+    m_staticText154 = new wxStaticText(m_panelProfile, wxID_ANY, _("Gaussian kSize"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
+    
+    flexGridSizer152->Add(m_staticText154, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_textCtrlGausKSize = new wxTextCtrl(m_panelProfile, wxID_ANY, wxT("15"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrlGausKSize->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer152->Add(m_textCtrlGausKSize, 0, wxALL, WXC_FROM_DIP(5));
+    
     m_panelKDE = new wxPanel(m_auiBook, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_auiBook, wxSize(-1,-1)), wxTAB_TRAVERSAL);
-    m_auiBook->AddPage(m_panelKDE, _("KDE"), true);
+    m_auiBook->AddPage(m_panelKDE, _("KDE"), false);
     
     wxFlexGridSizer* flexGridSizer92 = new wxFlexGridSizer(0, 2, 0, 10);
     flexGridSizer92->SetFlexibleDirection( wxBOTH );
@@ -196,9 +215,6 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     #endif
     
     flexGridSizer92->Add(m_textCtrlAlpha, 0, wxALL, WXC_FROM_DIP(5));
-    
-    m_panelMoGv2 = new wxPanel(m_auiBook, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_auiBook, wxSize(-1,-1)), wxTAB_TRAVERSAL);
-    m_auiBook->AddPage(m_panelMoGv2, _("MoG_v2"), false);
     
     m_panelAlgo = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), wxTAB_TRAVERSAL);
     wxFont m_panelAlgoFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);

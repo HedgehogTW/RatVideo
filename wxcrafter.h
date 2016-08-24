@@ -82,6 +82,9 @@ protected:
     wxAuiManager* m_auimgr21;
     wxAuiToolBar* m_auibar23;
     wxAuiNotebook* m_auiBook;
+    wxPanel* m_panelProfile;
+    wxStaticText* m_staticText154;
+    wxTextCtrl* m_textCtrlGausKSize;
     wxPanel* m_panelKDE;
     wxStaticText* m_staticText59;
     wxTextCtrl* m_textCtrlframesToLearn;
@@ -97,7 +100,6 @@ protected:
     wxTextCtrl* m_textCtrlThreshold;
     wxStaticText* m_staticText85;
     wxTextCtrl* m_textCtrlAlpha;
-    wxPanel* m_panelMoGv2;
     wxPanel* m_panelAlgo;
     wxListBox* m_listBoxBGS;
     wxPanel* m_panelGlobalSet;
@@ -135,6 +137,9 @@ public:
     wxMenuBar* GetMenuBar() { return m_menuBar; }
     wxStatusBar* GetStatusBar() { return m_statusBar; }
     wxAuiToolBar* GetAuibar23() { return m_auibar23; }
+    wxStaticText* GetStaticText154() { return m_staticText154; }
+    wxTextCtrl* GetTextCtrlGausKSize() { return m_textCtrlGausKSize; }
+    wxPanel* GetPanelProfile() { return m_panelProfile; }
     wxStaticText* GetStaticText59() { return m_staticText59; }
     wxTextCtrl* GetTextCtrlframesToLearn() { return m_textCtrlframesToLearn; }
     wxStaticText* GetStaticText63() { return m_staticText63; }
@@ -150,7 +155,6 @@ public:
     wxStaticText* GetStaticText85() { return m_staticText85; }
     wxTextCtrl* GetTextCtrlAlpha() { return m_textCtrlAlpha; }
     wxPanel* GetPanelKDE() { return m_panelKDE; }
-    wxPanel* GetPanelMoGv2() { return m_panelMoGv2; }
     wxAuiNotebook* GetAuiBook() { return m_auiBook; }
     wxListBox* GetListBoxBGS() { return m_listBoxBGS; }
     wxPanel* GetPanelAlgo() { return m_panelAlgo; }

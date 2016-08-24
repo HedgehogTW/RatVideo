@@ -118,7 +118,7 @@ MainFrame::MainFrame(wxWindow* parent)
 	Center();	
 	
 	m_bStopProcess = false;
-	m_pPreProcessor = NULL;
+//	m_pPreProcessor = NULL;
 	m_fps = 29.97;
 	
 //	DeleteContents();
@@ -169,11 +169,12 @@ void MainFrame::DeleteContents()
 	}
  */
 	m_bStopProcess = true;
+/*	
 	if(m_pPreProcessor)  {
 		delete m_pPreProcessor;
 		m_pPreProcessor = NULL;
 	}
-	
+*/	
 
 		
 }
@@ -379,13 +380,14 @@ void MainFrame::OnVideoBGSProcess(wxCommandEvent& event)
 	}
 	myMsgOutput( "\nLoad ... " + m_Filename + " OK\n");
 	
-	readProperties(vidCap);	
+	readVideoProperties(vidCap);	
+	readControlValues();
 	wxString msg;
 	msg.Printf("Wait time: %d ms,  startFrame: %d, sampling: %d\n", m_waitTime, m_startFrame, m_Sampling);
 	myMsgOutput( msg);
 	
 //	destroyAllWindows();
-	m_pPreProcessor = new bgslibrary::PreProcessor;		
+		
 	int tab = m_auiBook->GetSelection();
 	myMsgOutput("OnBookPageChanged %d\n", tab);
 	switch(tab) {
@@ -413,7 +415,7 @@ void MainFrame::BGS_KDE(cv::VideoCapture& vidCap)
 	myMsgOutput("threshold %.5f, alpha %.2f\n", th, alpha);
 
 
-	
+	bgslibrary::PreProcessor* pPreProcessor = new bgslibrary::PreProcessor;	
 	IBGS *bgs = new KDE;
 	
 	int64 start_time;
@@ -444,7 +446,7 @@ void MainFrame::BGS_KDE(cv::VideoCapture& vidCap)
 
 		cv::imshow("Input", img_input);
 
-		m_pPreProcessor->process(img_input, img_prep, m_bLeftSide);
+		pPreProcessor->process(img_input, img_prep, m_bLeftSide);
 
 		start_time = cv::getTickCount();
 
@@ -461,6 +463,7 @@ void MainFrame::BGS_KDE(cv::VideoCapture& vidCap)
 	}while(1);
 
 	delete bgs;
+	delete pPreProcessor;
 //	m_bgs = NULL;
 
 
@@ -483,7 +486,8 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 		myMsgOutput( "Load ... " + m_Filename + " ERROR\n");
 		return;
 	}
-	readProperties(vidCap);
+	readVideoProperties(vidCap);
+	readControlValues();
 	
 	SaveGlobalPara();
 //	destroyAllWindows();
@@ -491,14 +495,14 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 	wxString msg;
 	msg << "\nLoad ... " << m_Filename << " OK\nDo " << strBGS << "\n";
 	myMsgOutput(msg );
-	
+		
 	IBGS *bgs = createBGSObj(strBGS);
 	if(bgs==NULL) {
 		myMsgOutput( "No BGS algorithm create\n");
 		return;	
 	} 
 	
-	m_pPreProcessor = new bgslibrary::PreProcessor;	
+	bgslibrary::PreProcessor* pPreProcessor = new bgslibrary::PreProcessor;	
 	
 /*
 	int64 start_time;
@@ -530,7 +534,7 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 		if(frameNumber % m_Sampling) continue;
 		
 		cv::imshow("Input", img_input);
-		m_pPreProcessor->process(img_input, img_prep, m_bLeftSide);
+		pPreProcessor->process(img_input, img_prep, m_bLeftSide);
 
 		bgs->process(img_prep, mMovingObj, mbkgmodel);
 
@@ -557,6 +561,7 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 	}while(1);	
 
 	delete bgs;
+	delete pPreProcessor;
 	
 }
 void MainFrame::OnVideoStop(wxCommandEvent& event)
@@ -637,13 +642,22 @@ IBGS * MainFrame::createBGSObj(wxString& strBGS)
 	return bgs;
 
 }
-void MainFrame::readProperties(cv::VideoCapture& vidCap)
+void MainFrame::readVideoProperties(cv::VideoCapture& vidCap)
 {
 	m_fps = vidCap.get(CV_CAP_PROP_FPS);
 	m_width = vidCap.get(CV_CAP_PROP_FRAME_WIDTH );
 	m_height = vidCap.get(CV_CAP_PROP_FRAME_HEIGHT );
 	
+	wxString str;	
+	str.Printf("W%d x H%d, fps %.2f", m_width, m_height, m_fps);
+	m_statusBar->SetStatusText(str, 2);	
+}
+void MainFrame::readControlValues()
+{	
 	wxString str;
+	str = m_textCtrlGausKSize->GetValue();
+	str.ToLong(&m_nGauKSize);
+	
 	str = m_textCtrlFrameWait->GetValue();
 	str.ToLong(&m_waitTime);	
 	
@@ -654,19 +668,16 @@ void MainFrame::readProperties(cv::VideoCapture& vidCap)
 	str.ToLong(&m_Sampling);
 	if(m_Sampling<=0) m_Sampling = 1;	
 	
-	str.Printf("W%d x H%d, fps %.2f", m_width, m_height, m_fps);
-	m_statusBar->SetStatusText(str, 2);	
-	
 	m_bLeftSide = m_radioButtonLeftSide->GetValue();
 	
 	wxString msg;
-	msg << "readProperties ... \n";
+	msg << "readControlValues ... \n";
 	msg << "\t wait time: " << m_waitTime << " ms\n";
-	msg << "\t fps: " << m_fps << ", start frame: " << m_startFrame << ", sampling: " << m_Sampling << "\n";
+	msg << "\t start frame: " << m_startFrame << ", sampling: " << m_Sampling << "\n";
 	msg << "\t LeftSide " << m_bLeftSide << "\n";
+	msg << "\t GauKSize " << m_nGauKSize << "\n";
 	myMsgOutput(msg );	
 }
-
 void MainFrame::OnVideoExtractFrames(wxCommandEvent& event)
 {
 	DlgExtractFrame dlg(this);
@@ -734,7 +745,8 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 		return;
 	}
 
-	readProperties(vidCap);
+	readVideoProperties(vidCap);
+	readControlValues();
 	
 	wxString msg;
 	msg.Printf("\nLoad %s, w%d x h%d, do KDE background ...\n", m_Filename, m_width, m_height);
@@ -827,7 +839,8 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 		myMsgOutput( "Load ... " + m_Filename + " ERROR\n");
 		return;
 	}
-	readProperties(vidCap);
+	readVideoProperties(vidCap);
+	readControlValues();
 	
 	SaveGlobalPara();
 
@@ -856,8 +869,7 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 		return;	
 	} 
 	
-	m_pPreProcessor = new bgslibrary::PreProcessor;	
-	
+	bgslibrary::PreProcessor* pPreProcessor = new bgslibrary::PreProcessor;
 
 	int frameNumber = 0;
 	
@@ -886,7 +898,7 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 		if(frameNumber % m_Sampling) continue;
 		
 //		cv::imshow("Input", img_input);
-		m_pPreProcessor->process(img_input, img_prep, m_bLeftSide);
+		pPreProcessor->process(img_input, img_prep, m_bLeftSide);
 
 		bgsFD->process(img_prep, mMovingObjFD, mbkgmodel);
 		bgsWMM->process(img_prep, mMovingObjWMM, mbkgmodel);
@@ -921,6 +933,7 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 	delete bgsABL;	
 	delete bgsFD;	
 	delete bgsWMM;	
+	delete pPreProcessor;
 
 	myMsgOutput( "generate nonzeroPixels.csv ok\n");
 }
@@ -1099,7 +1112,9 @@ void MainFrame::OnProfileGaussianSmooth(wxCommandEvent& event)
 	fclose(fp);	
 	myMsgOutput( "read nonzeroPixels.csv  Profile size %d\n",vProWMM.size() );	
 	
-	int ksize = 15;  // should be odd
+	readControlValues();
+	
+	int ksize = m_nGauKSize;  // should be odd
 	GaussianSmooth(vProWMM, vSmoothWMM, ksize);
 	GaussianSmooth(vProABL, vSmoothABL, ksize);
 	
@@ -1109,9 +1124,10 @@ void MainFrame::OnProfileGaussianSmooth(wxCommandEvent& event)
 	fclose(fp);
 	
 	myMsgOutput( "read nonzeroPixels.csv  Profile size %d, smooth ok\n",vProWMM.size() );	
-//	_gnuplotInit(gPlotProfile, "ProfileSmooth", -500, 4500); // y min max
-//	gPlotProfile.set_xrange(0, 3000);
-//	_gnuplotLine(gPlotProfile, "ProfileSmooth", vSmooth, "#000000ff");
+	_gnuplotInit(gPlotProfile, "ProfileSmooth", -500, 4500); // y min max
+	gPlotProfile.set_xrange(0, 3000);
+	_gnuplotLine(gPlotProfile, "Profile", vProWMM, "#00ff0000");
+	_gnuplotLine(gPlotProfile, "Smooth", vSmoothWMM, "#000000ff");
 }
 
 

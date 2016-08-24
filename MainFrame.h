@@ -9,7 +9,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "package_bgs/IBGS.h"
-#include "PreProcessor.h"
+
 
 
 //#include "FrameProcessor.h"
@@ -72,7 +72,8 @@ public:
 	void SavePageKDE();
 	void SetGlobalPara();
 	void SaveGlobalPara();
-	void readProperties(cv::VideoCapture& vidCap);
+	void readVideoProperties(cv::VideoCapture& vidCap);
+	void readControlValues();
 	void GaussianSmooth(std::vector<float>& vecIn, std::vector<float>&venOut, int ksize);
 	
 	static MainFrame *	m_pThis;
@@ -83,10 +84,10 @@ public:
 	MyConfigData	m_configData;
 	wxString 		m_strSourcePath;
 
+///////////////////// profile
+	long	m_nGauKSize;
+	
 ///////////////////// bgs	
-
-    bgslibrary::PreProcessor* m_pPreProcessor;
-
 	bool m_bStopProcess;
 	long m_waitTime;
 	long m_startFrame;
