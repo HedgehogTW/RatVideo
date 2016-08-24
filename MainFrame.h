@@ -73,6 +73,7 @@ public:
 	void SetGlobalPara();
 	void SaveGlobalPara();
 	void readProperties(cv::VideoCapture& vidCap);
+	void GaussianSmooth(std::vector<float>& vecIn, std::vector<float>&venOut, int ksize);
 	
 	static MainFrame *	m_pThis;
 	wxFileHistory* 		m_FileHistory;
@@ -110,6 +111,9 @@ public:
     bool bShowPreprocess;	
 
 protected:
+    virtual void OnProfileGaussianSmooth(wxCommandEvent& event);
+    virtual void OnViewShowFrameType(wxCommandEvent& event);
+    virtual void OnViewShowProfile(wxCommandEvent& event);
     virtual void OnProfileClassification(wxCommandEvent& event);
     virtual void OnVideoFGPixels(wxCommandEvent& event);
     virtual void OnBackgroundKDE(wxCommandEvent& event);

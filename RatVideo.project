@@ -196,10 +196,14 @@
     <File Name="PreProcessor.h"/>
     <File Name="KDEBg.h"/>
     <File Name="KDEBg.cpp"/>
+    <File Name="gnuplot_i.cpp"/>
+    <File Name="MyUtil.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="MainFrame.h"/>
     <File Name="wxcrafter.h"/>
+    <File Name="gnuplot_i.h"/>
+    <File Name="MyUtil.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="resources">
     <File Name="wxcrafter.wxcp"/>
@@ -238,7 +242,7 @@
         <IncludePath Value="C:/opencv/build/x64/mingw/include"/>
       </Compiler>
       <Linker Options="$(shell wx-config --libs);-mwindows" Required="yes">
-        <LibraryPath Value="C:/GSL/x64/lib"/>
+        <LibraryPath Value="C:/GSL/lib"/>
         <LibraryPath Value="C:/opencv/build/x64/mingw/lib"/>
         <Library Value="libgsl.a"/>
         <Library Value="libgslcblas.a"/>

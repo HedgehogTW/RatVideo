@@ -76,12 +76,15 @@
 #include "DlgExtractFrame.h"
 #include "KDEBg.h"
 
-//using namespace std;
+#include "MyUtil.h"
+#include "gnuplot_i.h"
+
+using namespace std;
 using namespace cv;
 using namespace bgslibrary;
 
-
-
+Gnuplot gPlotProfile("lines");
+Gnuplot gPlotFrameType("lines");
 MainFrame *	MainFrame::m_pThis=NULL;
 
 MainFrame::MainFrame(wxWindow* parent)
@@ -923,8 +926,8 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 }
 void MainFrame::OnProfileClassification(wxCommandEvent& event)
 {
-	int  silenceLen = 30;
-	float silenceTh = 0.00015;
+	int  silenceLen = 300;
+	double silenceTh = 0.00015;
 	
 	FILE *fp = fopen("d:\\tmp\\nonzeroPixels.csv", "r");
 	if(fp == NULL) {
@@ -954,7 +957,7 @@ void MainFrame::OnProfileClassification(wxCommandEvent& event)
 	int start, end;
 	start = end = -1;
 	for(int i=0; i<vProfile.size()-silenceLen; i++) {
-		float mean = 0;
+		double mean = 0;
 		for(int k=0; k< silenceLen; k++) {
 			mean += vProfile[i+k].ratio;
 		}
@@ -1019,4 +1022,115 @@ void MainFrame::OnProfileClassification(wxCommandEvent& event)
 	myMsgOutput("after merge %d\n", vFrameType.size());	
 	myMsgOutput( "OnProfileClassification ok, size %d\n", vProfile.size());
 	
+}
+void MainFrame::OnViewShowFrameType(wxCommandEvent& event)
+{
+	FILE *fp = fopen("d:\\tmp\\frameType.csv", "r");
+	if(fp == NULL) {
+		myMsgOutput( "cannot open frameType.csv\n");		
+		wxMessageBox( "cannot open frameType.csv","Error", wxICON_ERROR);
+		return;		
+	}	
+	vector<float>  vFrameDiffsec;
+	char title [200];
+	fgets(title, 200, fp );
+	while(!feof(fp)) {
+		float diffsec;
+		int n = fscanf(fp, "%*d, %*d, %*d, %*d, %*d, %*d, %f", &diffsec);
+		if(n!=1)  break;
+		vFrameDiffsec.push_back(diffsec);
+	}
+	fclose(fp);	
+	myMsgOutput( "frameType.csv.csv  frameType size %d\n",vFrameDiffsec.size() );
+	
+	_gnuplotInit(gPlotFrameType, "FrameDiffsec", -10, 150); // y min max
+	
+//	gPlotFrameType.set_xrange(0, 3000);
+	_gnuplotLine(gPlotFrameType, "FrameDiffsec", vFrameDiffsec, "#000000ff");
+}
+void MainFrame::OnViewShowProfile(wxCommandEvent& event)
+{
+	FILE *fp = fopen("d:\\tmp\\nonzeroPixels.csv", "r");
+	if(fp == NULL) {
+		myMsgOutput( "cannot open nonzeroPixels.csv\n");		
+		wxMessageBox( "cannot open nonzeroPixels.csv","Error", wxICON_ERROR);
+		return;		
+	}	
+	vector<int>  vProfile;
+	char title [200];
+	fgets(title, 200, fp );
+	while(!feof(fp)) {
+		int nonZeroWMM, frameNumber;
+		float ratioWMM;
+		int n = fscanf(fp, "%*d,%d,%*d,%d,%*d,%*f,%f,%*f", &frameNumber, &nonZeroWMM, &ratioWMM);
+		if(n!=3)  break;
+		vProfile.push_back(nonZeroWMM);
+	}
+	fclose(fp);	
+	myMsgOutput( "nonzeroPixels.csv  Profile size %d\n",vProfile.size() );
+	
+	_gnuplotInit(gPlotProfile, "Profile", -500, 4500); // y min max
+	
+	gPlotProfile.set_xrange(0, 3000);
+	_gnuplotLine(gPlotProfile, "Profile", vProfile, "#000000ff");
+}
+void MainFrame::OnProfileGaussianSmooth(wxCommandEvent& event)
+{
+	FILE *fp = fopen("d:\\tmp\\nonzeroPixels.csv", "r");
+	if(fp == NULL) {
+		myMsgOutput( "cannot open nonzeroPixels.csv\n");		
+		wxMessageBox( "cannot open nonzeroPixels.csv","Error", wxICON_ERROR);
+		return;		
+	}	
+	
+	vector<int>  vFrameNo; 
+	vector<float>  vProWMM, vSmoothWMM;
+	vector<float>  vProABL, vSmoothABL;
+	char title [200];
+	fgets(title, 200, fp );
+	while(!feof(fp)) {
+		int nonZeroWMM, frameNumber, nonZeroABL;
+		int n = fscanf(fp, "%*d,%d,%*d,%d,%d,%*f,%*f,%*f", &frameNumber, &nonZeroWMM, &nonZeroABL);
+		if(n!=3)  break;
+		vFrameNo.push_back(frameNumber);
+		vProWMM.push_back(nonZeroWMM);
+		vProABL.push_back(nonZeroABL);
+	}
+	fclose(fp);	
+	myMsgOutput( "read nonzeroPixels.csv  Profile size %d\n",vProWMM.size() );	
+	
+	int ksize = 15;  // should be odd
+	GaussianSmooth(vProWMM, vSmoothWMM, ksize);
+	GaussianSmooth(vProABL, vSmoothABL, ksize);
+	
+	fp = fopen("d:\\tmp\\smoothProfile.csv", "w");
+	for(int i=0; i<vProWMM.size(); i++)
+		fprintf(fp, "%d, %f, %f, %f, %f\n", vFrameNo[i], vProWMM[i], vSmoothWMM[i], vProABL[i], vSmoothABL[i]);
+	fclose(fp);
+	
+	myMsgOutput( "read nonzeroPixels.csv  Profile size %d, smooth ok\n",vProWMM.size() );	
+//	_gnuplotInit(gPlotProfile, "ProfileSmooth", -500, 4500); // y min max
+//	gPlotProfile.set_xrange(0, 3000);
+//	_gnuplotLine(gPlotProfile, "ProfileSmooth", vSmooth, "#000000ff");
+}
+
+
+void MainFrame::GaussianSmooth(vector<float>& vecIn, vector<float>&venOut, int ksize)
+{
+	Mat mGaus1D = getGaussianKernel(ksize, -1, CV_64F);
+	int inSize = vecIn.size();
+	
+	venOut.resize(inSize);
+	float* pOut = venOut.data();
+	memset(pOut, 0, sizeof(float)*inSize );
+	double *gau = (double*)mGaus1D.data;
+	for(int i=0; i<inSize - ksize; i++) {
+		double avg = 0;
+		for(int k=0; k<ksize; k++)
+			avg += vecIn[i+k] * gau[k];
+		//avg /= ksize;
+		venOut[i+ksize/2] = avg;
+	}
+	
+//	_OutputMat(mGaus1D, "d:\\tmp\\_gaus.csv", true);
 }

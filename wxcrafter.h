@@ -63,15 +63,19 @@ protected:
     wxMenuItem* m_menuItemExit;
     wxMenu* m_menuView;
     wxMenuItem* m_menuItemViewMsgPane;
+    wxMenuItem* m_menuItemViewShowProfile;
+    wxMenuItem* m_menuItemViewShowFrameType;
     wxMenu* m_menuVideo;
     wxMenuItem* m_menuItemVideoBGSProcess;
     wxMenuItem* m_menuItemVideoFrameProcessor;
     wxMenuItem* m_menuItemVideoExtractFrame;
     wxMenuItem* m_menuItem138;
     wxMenuItem* m_menuItemVideoFGPixels;
-    wxMenuItem* m_menuItemProfileClassification;
     wxMenu* m_menuBackground;
     wxMenuItem* m_menuItemBgKDE;
+    wxMenu* m_menuProfile;
+    wxMenuItem* m_menuItemProfileGaussianSmooth;
+    wxMenuItem* m_menuItemProfileClassification;
     wxMenu* m_nameHelp;
     wxMenuItem* m_menuItem9;
     wxStatusBar* m_statusBar;
@@ -114,12 +118,15 @@ protected:
     virtual void OnFileOpen(wxCommandEvent& event) { event.Skip(); }
     virtual void OnExit(wxCommandEvent& event) { event.Skip(); }
     virtual void OnViewMsgPane(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnViewShowProfile(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnViewShowFrameType(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoBGSProcess(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoFrameProcessor(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoExtractFrames(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoFGPixels(wxCommandEvent& event) { event.Skip(); }
-    virtual void OnProfileClassification(wxCommandEvent& event) { event.Skip(); }
     virtual void OnBackgroundKDE(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnProfileGaussianSmooth(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnProfileClassification(wxCommandEvent& event) { event.Skip(); }
     virtual void OnAbout(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoStop(wxCommandEvent& event) { event.Skip(); }
     virtual void OnBookPageChanged(wxAuiNotebookEvent& event) { event.Skip(); }
