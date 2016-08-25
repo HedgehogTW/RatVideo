@@ -681,6 +681,12 @@ void MainFrame::readControlValues()
 	str = m_textCtrlRangeYMax->GetValue();
 	str.ToLong(&m_nRangeYMax);	
 	
+	str = m_textCtrlProfileTh->GetValue();
+	str.ToDouble(&m_profileTh);
+	
+	str = m_textCtrlMinDuration->GetValue();
+	str.ToLong(&m_nMinDuration);
+	
 	m_bLeftSide = m_radioButtonLeftSide->GetValue();
 /*	
 	wxString msg;
@@ -951,105 +957,7 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 
 	myMsgOutput( "generate nonzeroPixels.csv ok\n");
 }
-void MainFrame::OnProfileClassification(wxCommandEvent& event)
-{
-	int  silenceLen = 300;
-	double silenceTh = 0.00015;
-	
-	FILE *fp = fopen("d:\\tmp\\nonzeroPixels.csv", "r");
-	if(fp == NULL) {
-		myMsgOutput( "cannot open nonzeroPixels.csv\n");		
-		wxMessageBox( "cannot open nonzeroPixels.csv","Error", wxICON_ERROR);
-		return;		
-	}	
-	
-	vector<Profile>  vProfile;
-	char title [200];
-	fgets(title, 200, fp );
-	while(!feof(fp)) {
-		int nonZeroWMM, frameNumber;
-		float ratioWMM;
-		int n = fscanf(fp, "%*d,%d,%*d,%d,%*d,%*f,%f,%*f", &frameNumber, &nonZeroWMM, &ratioWMM);
-		if(n!=3)  break;
-		
-		Profile p;
-		p.frameno = frameNumber;
-		p.value = nonZeroWMM;
-		p.ratio = ratioWMM;
-		vProfile.push_back(p);
-	}
-	fclose(fp);
-	
-	vector<FrameType>  vFrameType;		
-	int start, end;
-	start = end = -1;
-	for(int i=0; i<vProfile.size()-silenceLen; i++) {
-		double mean = 0;
-		for(int k=0; k< silenceLen; k++) {
-			mean += vProfile[i+k].ratio;
-		}
-		mean /= silenceLen;
-		if(mean <silenceTh) {
-			if(start < 0)
-				start = i;
-		}else if(start >=0) {
-			end = i+silenceLen-1;
-			FrameType ft;
-			ft.start = start; //vProfile[start].frameno;
-			ft.end = end; //vProfile[end].frameno;
-			ft.frameType = 0;
-			vFrameType.push_back(ft);
-			start = -1;
-		}
-	}
-/*	
-	for(int i=0; i<vFrameType.size(); i++) {
-		myMsgOutput("%d--%d\n", vProfile[vFrameType[i].start].frameno, vProfile[vFrameType[i].end].frameno);
-	}
-	myMsgOutput("before merge %d\n", vFrameType.size());
-*/	
-	// merge
-	for(int i=1; i<vFrameType.size(); i++) {
-		if(vFrameType[i].start<=vFrameType[i-1].end+1){
-			vFrameType[i-1].end = vFrameType[i].end;
-			vFrameType.erase(vFrameType.begin() +i);
-			i--;
-		}
-	}
-	
-	// find lower point
-	for(int i=0; i<vFrameType.size(); i++) {
-		while(vProfile[vFrameType[i].start+1].value <  vProfile[vFrameType[i].start].value)
-			vFrameType[i].start++;
-			
-		while(vProfile[vFrameType[i].end-1].value <  vProfile[vFrameType[i].end].value)
-			vFrameType[i].end--;	
-	}
-	myMsgOutput ("after merge, and find lower ...\n");
-	FILE* fpw = fopen("d:\\tmp\\frameType.csv", "w");
-	
-	for(int i=0; i<vFrameType.size(); i++) {
-		float ssec = vProfile[vFrameType[i].start].frameno /m_fps;
-		int smm = ssec / 60;
-		int sss = ssec - smm*60;
 
-		float esec = vProfile[vFrameType[i].end].frameno /m_fps;
-		int emm = esec / 60;
-		int ess = esec - emm*60;		
-		
-		float diffsec = esec - ssec;
-		fprintf(fpw, "%d, %d, %d, %d, %d, %d, %f\n", 
-			vProfile[vFrameType[i].start].frameno, vProfile[vFrameType[i].end].frameno,
-			smm, sss, emm, ess, diffsec);
-			
-		myMsgOutput("%d--%d\t", vProfile[vFrameType[i].start].frameno, vProfile[vFrameType[i].end].frameno);
-		myMsgOutput("%02d:%02d -- %02d:%02d, diff sec %.2f\n", smm, sss, emm, ess, diffsec);
-	}			
-	fclose(fpw);
-	myMsgOutput("after merge %d\n", vFrameType.size());	
-	myMsgOutput( "OnProfileClassification ok, size %d\n", vProfile.size());
-	
-}
 void MainFrame::OnViewShowFrameType(wxCommandEvent& event)
 {
 	FILE *fp = fopen("d:\\tmp\\frameType.csv", "r");
@@ -1110,8 +1018,9 @@ void MainFrame::OnProfileGaussianSmooth(wxCommandEvent& event)
 		return;		
 	}	
 	
-	vector<int>  vFrameNo; 
-	vector<float>  vProWMM, vSmoothWMM;
+	m_vFrameNo.clear(); 
+	m_vProWMM.clear();
+	m_vSmoothWMM.clear();
 	vector<float>  vProABL, vSmoothABL;
 	char title [200];
 	fgets(title, 200, fp );
@@ -1119,22 +1028,22 @@ void MainFrame::OnProfileGaussianSmooth(wxCommandEvent& event)
 		int nonZeroWMM, frameNumber, nonZeroABL;
 		int n = fscanf(fp, "%*d,%d,%*d,%d,%d,%*f,%*f,%*f", &frameNumber, &nonZeroWMM, &nonZeroABL);
 		if(n!=3)  break;
-		vFrameNo.push_back(frameNumber);
-		vProWMM.push_back(nonZeroWMM);
+		m_vFrameNo.push_back(frameNumber);
+		m_vProWMM.push_back(nonZeroWMM);
 		vProABL.push_back(nonZeroABL);
 	}
 	fclose(fp);	
-	myMsgOutput( "read nonzeroPixels.csv  Profile size %d\n",vProWMM.size() );	
+	myMsgOutput( "read nonzeroPixels.csv  Profile size %d\n", m_vProWMM.size() );	
 	
 	readControlValues();
 	
 	int ksize = m_nGauKSize;  // should be odd
-	GaussianSmooth(vProWMM, vSmoothWMM, ksize);
+	GaussianSmooth(m_vProWMM, m_vSmoothWMM, ksize);
 	GaussianSmooth(vProABL, vSmoothABL, ksize);
 	
 	fp = fopen("d:\\tmp\\smoothProfile.csv", "w");
-	for(int i=0; i<vProWMM.size(); i++)
-		fprintf(fp, "%d, %f, %f, %f, %f\n", vFrameNo[i], vProWMM[i], vSmoothWMM[i], vProABL[i], vSmoothABL[i]);
+	for(int i=0; i<m_vProWMM.size(); i++)
+		fprintf(fp, "%d, %f, %f, %f, %f\n", m_vFrameNo[i], m_vProWMM[i], m_vSmoothWMM[i], vProABL[i], vSmoothABL[i]);
 	fclose(fp);
 	
 	myMsgOutput("X range: %d..%d, Y range: %d..%d\n", m_nRangeXMin, m_nRangeXMax, m_nRangeYMin, m_nRangeYMax);	
@@ -1145,8 +1054,8 @@ void MainFrame::OnProfileGaussianSmooth(wxCommandEvent& event)
 	sprintf(str, "Gaussian smooth with ksize %d", ksize);
 	_gnuplotInit(gPlotProfile, str, 1200, 300, m_nRangeYMin, m_nRangeYMax); // y min max
 	gPlotProfile.set_xrange(m_nRangeXMin, m_nRangeXMax);
-	_gnuplotLine(gPlotProfile, "Profile", vProWMM, "#00ff0000");
-	_gnuplotLine(gPlotProfile, "Smooth", vSmoothWMM, "#000000ff");
+	_gnuplotLine(gPlotProfile, "Profile", m_vProWMM, "#00ff0000");
+	_gnuplotLine(gPlotProfile, "Smooth", m_vSmoothWMM, "#000000ff");
 }
 
 
@@ -1171,4 +1080,61 @@ void MainFrame::GaussianSmooth(vector<float>& vecIn, vector<float>&venOut, int k
 	for(int i=inSize - ksize; i<inSize; i++)
 		venOut[i] = venOut[inSize - ksize + ksize/2-1];
 //	_OutputMat(mGaus1D, "d:\\tmp\\_gaus.csv", true);
+}
+
+void MainFrame::OnProfileClassification(wxCommandEvent& event)
+{
+	readControlValues();
+	int  silenceLen = m_nMinDuration;
+	double silenceTh = m_profileTh;
+
+	vector<FrameType>  vFrameType;		
+	int start, end;
+	start = end = -1;
+	for(int i=0; i<m_vSmoothWMM.size(); i++) {
+		if(m_vSmoothWMM[i] <silenceTh) {
+			if(start < 0)
+				start = i;
+		}else if(start >=0) {
+			end = i;
+			if(end - start > silenceLen) {
+				FrameType ft;
+				ft.start = start; //vProfile[start].frameno;
+				ft.end = end; //vProfile[end].frameno;
+				ft.frameType = 0;
+				vFrameType.push_back(ft);				
+			}
+			start = end = -1;
+		}
+	}
+/*	
+	for(int i=0; i<vFrameType.size(); i++) {
+		myMsgOutput("%d--%d\n", vProfile[vFrameType[i].start].frameno, vProfile[vFrameType[i].end].frameno);
+	}
+	myMsgOutput("before merge %d\n", vFrameType.size());
+*/	
+
+	FILE* fpw = fopen("d:\\tmp\\frameType.csv", "w");
+	
+	for(int i=0; i<vFrameType.size(); i++) {
+		float ssec = m_vFrameNo[vFrameType[i].start] /m_fps;
+		int smm = ssec / 60;
+		int sss = ssec - smm*60;
+
+		float esec = m_vFrameNo[vFrameType[i].end] /m_fps;
+		int emm = esec / 60;
+		int ess = esec - emm*60;		
+		
+		float diffsec = esec - ssec;
+		fprintf(fpw, "%d, %d, %d, %d, %d, %d, %f\n", 
+			m_vFrameNo[vFrameType[i].start], m_vFrameNo[vFrameType[i].end],
+			smm, sss, emm, ess, diffsec);
+			
+		myMsgOutput("%d--%d\t", m_vFrameNo[vFrameType[i].start], m_vFrameNo[vFrameType[i].end]);
+		myMsgOutput("%02d:%02d -- %02d:%02d, diff sec %.2f\n", smm, sss, emm, ess, diffsec);
+	}			
+	fclose(fpw);
+	myMsgOutput("after merge %d\n", vFrameType.size());	
+	myMsgOutput( "OnProfileClassification ok\n");
+	
 }

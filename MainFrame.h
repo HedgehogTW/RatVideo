@@ -89,7 +89,12 @@ public:
 	long	m_nRangeXMin;
 	long	m_nRangeXMax;	
 	long	m_nRangeYMin;
-	long	m_nRangeYMax;		
+	long	m_nRangeYMax;
+	double	m_profileTh;
+	long	m_nMinDuration;
+	std::vector<int>  m_vFrameNo; 
+	std::vector<float>  m_vProWMM;
+	std::vector<float>  m_vSmoothWMM;		
 	
 ///////////////////// bgs	
 	bool m_bStopProcess;

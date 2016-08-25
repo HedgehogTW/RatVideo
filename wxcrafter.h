@@ -86,6 +86,10 @@ protected:
     wxPanel* m_panelProfile;
     wxStaticText* m_staticText154;
     wxTextCtrl* m_textCtrlGausKSize;
+    wxStaticText* m_staticText179;
+    wxTextCtrl* m_textCtrlProfileTh;
+    wxStaticText* m_staticText183;
+    wxTextCtrl* m_textCtrlMinDuration;
     wxStaticText* m_staticText167;
     wxTextCtrl* m_textCtrlRangeXMin;
     wxTextCtrl* m_textCtrlRangeXMax;
@@ -146,6 +150,10 @@ public:
     wxAuiToolBar* GetAuibar23() { return m_auibar23; }
     wxStaticText* GetStaticText154() { return m_staticText154; }
     wxTextCtrl* GetTextCtrlGausKSize() { return m_textCtrlGausKSize; }
+    wxStaticText* GetStaticText179() { return m_staticText179; }
+    wxTextCtrl* GetTextCtrlProfileTh() { return m_textCtrlProfileTh; }
+    wxStaticText* GetStaticText183() { return m_staticText183; }
+    wxTextCtrl* GetTextCtrlMinDuration() { return m_textCtrlMinDuration; }
     wxStaticText* GetStaticText167() { return m_staticText167; }
     wxTextCtrl* GetTextCtrlRangeXMin() { return m_textCtrlRangeXMin; }
     wxTextCtrl* GetTextCtrlRangeXMax() { return m_textCtrlRangeXMax; }
