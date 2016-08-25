@@ -55,6 +55,7 @@ public:
         wxID_BGS_PROCESS = 10001,
         wxID_EXTRACT_FRAME = 10002,
         wxID_FRAME_PROCESSOR = 10003,
+        wxID_PROFILE_SMOOTH = 10004,
     };
 protected:
     wxMenuBar* m_menuBar;
@@ -85,6 +86,12 @@ protected:
     wxPanel* m_panelProfile;
     wxStaticText* m_staticText154;
     wxTextCtrl* m_textCtrlGausKSize;
+    wxStaticText* m_staticText167;
+    wxTextCtrl* m_textCtrlRangeXMin;
+    wxTextCtrl* m_textCtrlRangeXMax;
+    wxStaticText* m_staticText173;
+    wxTextCtrl* m_textCtrlRangeYMin;
+    wxTextCtrl* m_textCtrlRangeYMax;
     wxPanel* m_panelKDE;
     wxStaticText* m_staticText59;
     wxTextCtrl* m_textCtrlframesToLearn;
@@ -139,6 +146,12 @@ public:
     wxAuiToolBar* GetAuibar23() { return m_auibar23; }
     wxStaticText* GetStaticText154() { return m_staticText154; }
     wxTextCtrl* GetTextCtrlGausKSize() { return m_textCtrlGausKSize; }
+    wxStaticText* GetStaticText167() { return m_staticText167; }
+    wxTextCtrl* GetTextCtrlRangeXMin() { return m_textCtrlRangeXMin; }
+    wxTextCtrl* GetTextCtrlRangeXMax() { return m_textCtrlRangeXMax; }
+    wxStaticText* GetStaticText173() { return m_staticText173; }
+    wxTextCtrl* GetTextCtrlRangeYMin() { return m_textCtrlRangeYMin; }
+    wxTextCtrl* GetTextCtrlRangeYMax() { return m_textCtrlRangeYMax; }
     wxPanel* GetPanelProfile() { return m_panelProfile; }
     wxStaticText* GetStaticText59() { return m_staticText59; }
     wxTextCtrl* GetTextCtrlframesToLearn() { return m_textCtrlframesToLearn; }

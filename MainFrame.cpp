@@ -668,8 +668,21 @@ void MainFrame::readControlValues()
 	str.ToLong(&m_Sampling);
 	if(m_Sampling<=0) m_Sampling = 1;	
 	
-	m_bLeftSide = m_radioButtonLeftSide->GetValue();
 	
+	str = m_textCtrlRangeXMin->GetValue();
+	str.ToLong(&m_nRangeXMin);
+
+	str = m_textCtrlRangeXMax->GetValue();
+	str.ToLong(&m_nRangeXMax);	
+	
+	str = m_textCtrlRangeYMin->GetValue();
+	str.ToLong(&m_nRangeYMin);
+
+	str = m_textCtrlRangeYMax->GetValue();
+	str.ToLong(&m_nRangeYMax);	
+	
+	m_bLeftSide = m_radioButtonLeftSide->GetValue();
+/*	
 	wxString msg;
 	msg << "readControlValues ... \n";
 	msg << "\t wait time: " << m_waitTime << " ms\n";
@@ -677,6 +690,7 @@ void MainFrame::readControlValues()
 	msg << "\t LeftSide " << m_bLeftSide << "\n";
 	msg << "\t GauKSize " << m_nGauKSize << "\n";
 	myMsgOutput(msg );	
+	 */ 
 }
 void MainFrame::OnVideoExtractFrames(wxCommandEvent& event)
 {
@@ -1123,9 +1137,14 @@ void MainFrame::OnProfileGaussianSmooth(wxCommandEvent& event)
 		fprintf(fp, "%d, %f, %f, %f, %f\n", vFrameNo[i], vProWMM[i], vSmoothWMM[i], vProABL[i], vSmoothABL[i]);
 	fclose(fp);
 	
-	myMsgOutput( "read nonzeroPixels.csv  Profile size %d, smooth ok\n",vProWMM.size() );	
-	_gnuplotInit(gPlotProfile, "ProfileSmooth", -500, 4500); // y min max
-	gPlotProfile.set_xrange(0, 3000);
+	myMsgOutput("X range: %d..%d, Y range: %d..%d\n", m_nRangeXMin, m_nRangeXMax, m_nRangeYMin, m_nRangeYMax);	
+	myMsgOutput( "Gaussian smooth with ksize %d\n",ksize );	
+
+	
+	char str[100];
+	sprintf(str, "Gaussian smooth with ksize %d", ksize);
+	_gnuplotInit(gPlotProfile, str, 1200, 300, m_nRangeYMin, m_nRangeYMax); // y min max
+	gPlotProfile.set_xrange(m_nRangeXMin, m_nRangeXMax);
 	_gnuplotLine(gPlotProfile, "Profile", vProWMM, "#00ff0000");
 	_gnuplotLine(gPlotProfile, "Smooth", vSmoothWMM, "#000000ff");
 }
@@ -1147,6 +1166,9 @@ void MainFrame::GaussianSmooth(vector<float>& vecIn, vector<float>&venOut, int k
 		//avg /= ksize;
 		venOut[i+ksize/2] = avg;
 	}
-	
+	for(int i=0; i<ksize/2; i++)
+		venOut[i] = venOut[ksize/2];
+	for(int i=inSize - ksize; i<inSize; i++)
+		venOut[i] = venOut[inSize - ksize + ksize/2-1];
 //	_OutputMat(mGaus1D, "d:\\tmp\\_gaus.csv", true);
 }

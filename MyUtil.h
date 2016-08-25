@@ -26,7 +26,7 @@ using namespace std;
                      : \
                          ((x) >= (z) ? (x) : (z)))
 						 
-void _gnuplotInit(Gnuplot& gnuPlot, const char* title, double ymin=0, double ymax=0);
+void _gnuplotInit(Gnuplot& gnuPlot, const char* title, int width=800, int height = 600, double ymin=0, double ymax=0);
 void _gnuplotVerticalLine(Gnuplot& gnuPlot, float x, const char* color="", const char* dataName="");
 void _gnuplotHoriLine(Gnuplot& gnuPlot, float x1, float x2, float y, const char* color="", const char* dashtype="", const char* dataName="");
 void _gnuplotLED(Gnuplot& gnuPlot, int LED1, int LED2);

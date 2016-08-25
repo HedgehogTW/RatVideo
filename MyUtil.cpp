@@ -8,16 +8,18 @@
 
  
 //Gnuplot gnuPlot("lines");
-void _gnuplotInit(Gnuplot& gnuPlot, const char* title, double ymin, double ymax)
+void _gnuplotInit(Gnuplot& gnuPlot, const char* title, int width, int height, double ymin, double ymax)
 {
 	gnuPlot.reset_all();
-
+	std::ostringstream cmdstr;
+ 
 #if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__)
-	gnuPlot.cmd("set terminal aqua size 600, 300");  // x11, wxt, aqua
+	cmdstr << "set terminal aqua size " << width << ", " << height;
+	 // x11, wxt, aqua
 #else
-//	gnuPlot.cmd("set terminal wxt size 1600, 300");  	
+	cmdstr << "set terminal wxt size " << width << ", " << height;
 #endif	
-	
+	gnuPlot.cmd(cmdstr.str());
 //	gnuPlot.cmd("set termoption noenhanced");
 	gnuPlot.set_title(title);
 	gnuPlot.set_grid();	

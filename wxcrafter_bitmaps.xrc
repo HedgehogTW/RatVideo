@@ -4,4 +4,5 @@
   <object class="wxBitmap" name="download">download.png</object>
   <object class="wxBitmap" name="error">error.png</object>
   <object class="wxBitmap" name="pokeball">pokeball.png</object>
+  <object class="wxBitmap" name="smooth">smooth.png</object>
 </resource>

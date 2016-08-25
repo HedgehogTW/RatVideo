@@ -86,6 +86,10 @@ public:
 
 ///////////////////// profile
 	long	m_nGauKSize;
+	long	m_nRangeXMin;
+	long	m_nRangeXMax;	
+	long	m_nRangeYMin;
+	long	m_nRangeYMax;		
 	
 ///////////////////// bgs	
 	bool m_bStopProcess;

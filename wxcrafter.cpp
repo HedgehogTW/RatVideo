@@ -74,7 +74,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_menuProfile = new wxMenu();
     m_menuBar->Append(m_menuProfile, _("Profile"));
     
-    m_menuItemProfileGaussianSmooth = new wxMenuItem(m_menuProfile, wxID_ANY, _("Gaussian Smooth"), wxT(""), wxITEM_NORMAL);
+    m_menuItemProfileGaussianSmooth = new wxMenuItem(m_menuProfile, wxID_PROFILE_SMOOTH, _("Gaussian Smooth"), wxT(""), wxITEM_NORMAL);
     m_menuProfile->Append(m_menuItemProfileGaussianSmooth);
     
     m_menuItemProfileClassification = new wxMenuItem(m_menuProfile, wxID_ANY, _("Profile classification"), wxT(""), wxITEM_NORMAL);
@@ -109,6 +109,8 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_auibar23->AddTool(wxID_STOP, _("Stop"), wxXmlResource::Get()->LoadBitmap(wxT("error")), wxNullBitmap, wxITEM_NORMAL, _("Stop"), wxT(""), NULL);
     
     m_auibar23->AddTool(wxID_EXTRACT_FRAME, _("Extract Frames"), wxXmlResource::Get()->LoadBitmap(wxT("download")), wxNullBitmap, wxITEM_NORMAL, _("Extract Frames"), wxT(""), NULL);
+    
+    m_auibar23->AddTool(wxID_PROFILE_SMOOTH, _("Profile Gaussian Smooth"), wxXmlResource::Get()->LoadBitmap(wxT("smooth")), wxNullBitmap, wxITEM_NORMAL, _("Profile Gaussian Smooth"), wxT(""), NULL);
     m_auibar23->Realize();
     
     m_auiBook = new wxAuiNotebook(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(250,250)), wxAUI_NB_TAB_FIXED_WIDTH|wxBK_DEFAULT);
@@ -119,21 +121,67 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_panelProfile = new wxPanel(m_auiBook, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_auiBook, wxSize(-1,-1)), wxTAB_TRAVERSAL);
     m_auiBook->AddPage(m_panelProfile, _("Profile"), true);
     
-    wxFlexGridSizer* flexGridSizer152 = new wxFlexGridSizer(0, 2, 0, 0);
-    flexGridSizer152->SetFlexibleDirection( wxBOTH );
-    flexGridSizer152->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-    m_panelProfile->SetSizer(flexGridSizer152);
+    wxBoxSizer* boxSizer160 = new wxBoxSizer(wxVERTICAL);
+    m_panelProfile->SetSizer(boxSizer160);
+    
+    wxFlexGridSizer* flexGridSizer163 = new wxFlexGridSizer(2, 2, 0, 0);
+    flexGridSizer163->SetFlexibleDirection( wxBOTH );
+    flexGridSizer163->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+    
+    boxSizer160->Add(flexGridSizer163, 1, wxALL|wxEXPAND, WXC_FROM_DIP(5));
     
     m_staticText154 = new wxStaticText(m_panelProfile, wxID_ANY, _("Gaussian kSize"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
     
-    flexGridSizer152->Add(m_staticText154, 0, wxALL, WXC_FROM_DIP(5));
+    flexGridSizer163->Add(m_staticText154, 0, wxALL, WXC_FROM_DIP(5));
     
-    m_textCtrlGausKSize = new wxTextCtrl(m_panelProfile, wxID_ANY, wxT("15"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
+    m_textCtrlGausKSize = new wxTextCtrl(m_panelProfile, wxID_ANY, wxT("15"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(50,-1)), 0);
     #if wxVERSION_NUMBER >= 3000
     m_textCtrlGausKSize->SetHint(wxT(""));
     #endif
     
-    flexGridSizer152->Add(m_textCtrlGausKSize, 0, wxALL, WXC_FROM_DIP(5));
+    flexGridSizer163->Add(m_textCtrlGausKSize, 0, wxALL, WXC_FROM_DIP(5));
+    
+    wxFlexGridSizer* flexGridSizer165 = new wxFlexGridSizer(2, 3, 0, 0);
+    flexGridSizer165->SetFlexibleDirection( wxBOTH );
+    flexGridSizer165->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+    
+    boxSizer160->Add(flexGridSizer165, 1, wxALL|wxEXPAND, WXC_FROM_DIP(5));
+    
+    m_staticText167 = new wxStaticText(m_panelProfile, wxID_ANY, _("x range"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
+    
+    flexGridSizer165->Add(m_staticText167, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_textCtrlRangeXMin = new wxTextCtrl(m_panelProfile, wxID_ANY, wxT("0"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(50,-1)), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrlRangeXMin->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer165->Add(m_textCtrlRangeXMin, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_textCtrlRangeXMax = new wxTextCtrl(m_panelProfile, wxID_ANY, wxT("5000"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(50,-1)), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrlRangeXMax->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer165->Add(m_textCtrlRangeXMax, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_staticText173 = new wxStaticText(m_panelProfile, wxID_ANY, _("y range"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
+    
+    flexGridSizer165->Add(m_staticText173, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_textCtrlRangeYMin = new wxTextCtrl(m_panelProfile, wxID_ANY, wxT("-200"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(50,-1)), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrlRangeYMin->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer165->Add(m_textCtrlRangeYMin, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_textCtrlRangeYMax = new wxTextCtrl(m_panelProfile, wxID_ANY, wxT("2500"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(50,-1)), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrlRangeYMax->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer165->Add(m_textCtrlRangeYMax, 0, wxALL, WXC_FROM_DIP(5));
     
     m_panelKDE = new wxPanel(m_auiBook, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_auiBook, wxSize(-1,-1)), wxTAB_TRAVERSAL);
     m_auiBook->AddPage(m_panelKDE, _("KDE"), false);
