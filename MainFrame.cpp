@@ -713,7 +713,15 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 		vidCap >> img_input;
 		if (img_input.empty()) break;
 	}
-	FILE *fp = fopen("d:\\tmp\\nonzeroPixels.csv", "w");
+	
+	string outFilename; 
+#if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) 
+	outFilename = "~/tmp/nonzeroPixels.csv";
+#else
+	outFilename = "d:\\tmp\\nonzeroPixels.csv";
+#endif
+	
+	FILE *fp = fopen(outFilename.c_str(), "w");
 	fprintf(fp, "imgSize, frameNumber, FD, WMM, ABL, rFD, rWMM, rABL\n");
     do
     {
@@ -766,7 +774,14 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 
 void MainFrame::OnViewShowFrameType(wxCommandEvent& event)
 {
-	FILE *fp = fopen("d:\\tmp\\frameType.csv", "r");
+	string filename; 
+#if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) 
+	filename = "~/tmp/frameType.csv";
+#else
+	filename = "d:\\tmp\\frameType.csv";
+#endif
+	
+	FILE *fp = fopen(filename.c_str(), "r");
 	if(fp == NULL) {
 		myMsgOutput( "cannot open frameType.csv\n");		
 		wxMessageBox( "cannot open frameType.csv","Error", wxICON_ERROR);
@@ -791,7 +806,14 @@ void MainFrame::OnViewShowFrameType(wxCommandEvent& event)
 }
 void MainFrame::OnViewShowProfile(wxCommandEvent& event)
 {
-	FILE *fp = fopen("d:\\tmp\\nonzeroPixels.csv", "r");
+	string filename; 
+#if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) 
+	filename = "~/tmp/nonzeroPixels.csv";
+#else
+	filename = "d:\\tmp\\nonzeroPixels.csv";
+#endif
+	
+	FILE *fp = fopen(filename.c_str(), "r");
 	if(fp == NULL) {
 		myMsgOutput( "cannot open nonzeroPixels.csv\n");		
 		wxMessageBox( "cannot open nonzeroPixels.csv","Error", wxICON_ERROR);
@@ -818,8 +840,13 @@ void MainFrame::OnViewShowProfile(wxCommandEvent& event)
 void MainFrame::OnProfileGaussianSmooth(wxCommandEvent& event)
 {
 	std::string filename;
+#if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) 
+	filename = "/Users/CCLee/tmp/nonzeroPixels.csv";
+#else
 	filename = "d:\\tmp\\nonzeroPixels.csv";
-	m_profile.LoadProfileData(filename);
+#endif
+
+	if(m_profile.LoadProfileData(filename)==false) return;
 	
 	readControlValues();
 	

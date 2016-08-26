@@ -23,7 +23,7 @@ public:
 	Profile();
 	~Profile();
 
-	void LoadProfileData(std::string& filename);
+	bool LoadProfileData(std::string& filename);
 	void GaussianSmoothOneVariable(std::vector<float>& vecIn, std::vector<float>&venOut, int ksize);
 	void GaussianSmooth(int ksize);
 	void Classification(int minSegment, double silenceTh, double fps);

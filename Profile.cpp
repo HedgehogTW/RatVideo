@@ -14,14 +14,14 @@ Profile::Profile()
 Profile::~Profile()
 {
 }
-void Profile::LoadProfileData(std::string& filename)
+bool Profile::LoadProfileData(std::string& filename)
 {
 	FILE *fp = fopen(filename.c_str(), "r");
 	if(fp == NULL) {
 		wxString msg = "cannot open "+filename + "\n";
 		MainFrame::myMsgOutput( msg);		
 		wxMessageBox( msg,"Error", wxICON_ERROR);
-		return;		
+		return false;		
 	}	
 	
 	m_vFrameNo.clear(); 
@@ -40,13 +40,28 @@ void Profile::LoadProfileData(std::string& filename)
 	}
 	fclose(fp);	
 	MainFrame::myMsgOutput( "read nonzeroPixels.csv  Profile size %d\n", m_vSignalWMM.size() );	
+	return true;
+	
 }
 
 void Profile::GaussianSmooth(int ksize)
 {
 	GaussianSmoothOneVariable(m_vSignalWMM, m_vSmoothWMM, ksize);
 
-	FILE *fp = fopen("d:\\tmp\\smoothProfile.csv", "w");
+	string filename; 
+#if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) 
+	filename = "~/tmp/smoothProfile.csv";
+#else
+	filename = "d:\\tmp\\smoothProfile.csv";
+#endif
+
+	FILE *fp = fopen(filename.c_str(), "w");
+	if(fp==NULL) {
+		wxString msg = "cannot write "+filename + "\n";
+		MainFrame::myMsgOutput( msg);		
+		wxMessageBox( msg,"Error", wxICON_ERROR);
+		return ;				
+	}
 	for(int i=0; i<m_vSignalWMM.size(); i++)
 		fprintf(fp, "%d, %f, %f\n", m_vFrameNo[i], m_vSignalWMM[i], m_vSmoothWMM[i]);
 	fclose(fp);	
@@ -104,9 +119,20 @@ void Profile::Classification(int  minSegment, double silenceTh, double fps)
 	}
 	myMsgOutput("before merge %d\n", vFrameType.size());
 */	
+	string filename; 
+#if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) 
+	filename = "~/tmp/frameType.csv";
+#else
+	filename = "d:\\tmp\\frameType.csv";
+#endif
 
-	FILE* fpw = fopen("d:\\tmp\\frameType.csv", "w");
-	
+	FILE *fp = fopen(filename.c_str(), "w");
+	if(fp==NULL) {
+		wxString msg = "cannot write "+filename + "\n";
+		MainFrame::myMsgOutput( msg);		
+		wxMessageBox( msg,"Error", wxICON_ERROR);
+	}
+		
 	for(int i=0; i<m_vSegment.size(); i++) {
 		float ssec = m_vFrameNo[m_vSegment[i].start] /fps;
 		int smm = ssec / 60;
@@ -117,14 +143,15 @@ void Profile::Classification(int  minSegment, double silenceTh, double fps)
 		int ess = esec - emm*60;		
 		
 		float diffsec = esec - ssec;
-		fprintf(fpw, "%d, %d, %d, %d, %d, %d, %f\n", 
-			m_vFrameNo[m_vSegment[i].start], m_vFrameNo[m_vSegment[i].end],
-			smm, sss, emm, ess, diffsec);
+		if(fp!=NULL)
+			fprintf(fp, "%d, %d, %d, %d, %d, %d, %f\n", 
+				m_vFrameNo[m_vSegment[i].start], m_vFrameNo[m_vSegment[i].end],
+				smm, sss, emm, ess, diffsec);
 			
 		MainFrame::myMsgOutput("%d--%d\t", m_vFrameNo[m_vSegment[i].start], m_vFrameNo[m_vSegment[i].end]);
 		MainFrame::myMsgOutput("%02d:%02d -- %02d:%02d, diff sec %.2f\n", smm, sss, emm, ess, diffsec);
 	}			
-	fclose(fpw);
+	fclose(fp);
 	MainFrame::myMsgOutput("OnProfileClassification ok, FrameSegment %d\n", m_vSegment.size());	
 
 }
