@@ -494,8 +494,11 @@ void MainFrame::readControlValues()
 	str = m_textCtrlProfileTh->GetValue();
 	str.ToDouble(&m_profileTh);
 	
-	str = m_textCtrlMinDuration->GetValue();
-	str.ToLong(&m_nMinDuration);
+	str = m_textCtrlMinSilence->GetValue();
+	str.ToLong(&m_nMinSilence);
+	
+	str = m_textCtrlMinActive->GetValue();
+	str.ToLong(&m_nMinActive);
 	
 	m_bLeftSide = m_radioButtonLeftSide->GetValue();
 	m_bShowPreprocess = m_checkBoxShowPreprocess->GetValue();
@@ -843,7 +846,7 @@ void MainFrame::OnProfileGaussianSmooth(wxCommandEvent& event)
 #if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) 
 	filename = "/Users/CCLee/tmp/nonzeroPixels.csv";
 #else
-	filename = "d:\\tmp\\nonzeroPixels.csv";
+	filename = "d:/tmp/nonzeroPixels.csv";
 #endif
 
 	if(m_profile.LoadProfileData(filename)==false) return;
@@ -868,8 +871,8 @@ void MainFrame::OnProfileGaussianSmooth(wxCommandEvent& event)
 void MainFrame::OnProfileClassification(wxCommandEvent& event)
 {
 	readControlValues();
-
-	m_profile.Classification(m_nMinDuration, m_profileTh, m_fps);
+	m_profile.Classification(m_nMinSilence, m_nMinActive, m_profileTh, m_fps);
+	myMsgOutput("min silence %d, min active %d, threshold %.2f\n", m_nMinSilence, m_nMinActive, m_profileTh);
 	m_profile.PlotClassificationResult(gPlotProfile);
 
 }

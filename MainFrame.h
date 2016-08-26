@@ -70,7 +70,8 @@ public:
 	long	m_nRangeYMin;
 	long	m_nRangeYMax;
 	double	m_profileTh;
-	long	m_nMinDuration;
+	long	m_nMinSilence;
+	long	m_nMinActive;
 		
 	
 	Profile	m_profile;

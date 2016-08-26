@@ -4,8 +4,8 @@
 // Do not modify this file by hand!
 //////////////////////////////////////////////////////////////////////
 
-#ifndef PROJECT_RATVIDEO_WXCRAFTER_BASE_CLASSES_H
-#define PROJECT_RATVIDEO_WXCRAFTER_BASE_CLASSES_H
+#ifndef RATVIDEO_WXCRAFTER_BASE_CLASSES_H
+#define RATVIDEO_WXCRAFTER_BASE_CLASSES_H
 
 #include <wx/settings.h>
 #include <wx/xrc/xmlres.h>
@@ -87,7 +87,9 @@ protected:
     wxStaticText* m_staticText179;
     wxTextCtrl* m_textCtrlProfileTh;
     wxStaticText* m_staticText183;
-    wxTextCtrl* m_textCtrlMinDuration;
+    wxTextCtrl* m_textCtrlMinSilence;
+    wxStaticText* m_staticText193;
+    wxTextCtrl* m_textCtrlMinActive;
     wxStaticText* m_staticText167;
     wxTextCtrl* m_textCtrlRangeXMin;
     wxTextCtrl* m_textCtrlRangeXMax;
@@ -141,7 +143,9 @@ public:
     wxStaticText* GetStaticText179() { return m_staticText179; }
     wxTextCtrl* GetTextCtrlProfileTh() { return m_textCtrlProfileTh; }
     wxStaticText* GetStaticText183() { return m_staticText183; }
-    wxTextCtrl* GetTextCtrlMinDuration() { return m_textCtrlMinDuration; }
+    wxTextCtrl* GetTextCtrlMinSilence() { return m_textCtrlMinSilence; }
+    wxStaticText* GetStaticText193() { return m_staticText193; }
+    wxTextCtrl* GetTextCtrlMinActive() { return m_textCtrlMinActive; }
     wxStaticText* GetStaticText167() { return m_staticText167; }
     wxTextCtrl* GetTextCtrlRangeXMin() { return m_textCtrlRangeXMin; }
     wxTextCtrl* GetTextCtrlRangeXMax() { return m_textCtrlRangeXMax; }

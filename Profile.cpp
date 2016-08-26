@@ -91,9 +91,9 @@ void Profile::GaussianSmoothOneVariable(vector<float>& vecIn, vector<float>&venO
 //	_OutputMat(mGaus1D, "d:\\tmp\\_gaus.csv", true);
 }
 
-void Profile::Classification(int  minSegment, double silenceTh, double fps)
+void Profile::Classification(int  minSilence, int minActive, double silenceTh, double fps)
 {
-	m_vSegment.clear();
+	m_vNoMotion.clear();
 		
 	int start, end;
 	start = end = -1;
@@ -103,22 +103,28 @@ void Profile::Classification(int  minSegment, double silenceTh, double fps)
 				start = i;
 		}else if(start >=0) {
 			end = i;
-			if(end - start > minSegment) {
+			if(end - start > minSilence) {
 				FSegment ft;
 				ft.start = start; //vProfile[start].frameno;
 				ft.end = end; //vProfile[end].frameno;
 				ft.frameType = 0;
-				m_vSegment.push_back(ft);				
+				m_vNoMotion.push_back(ft);				
 			}
 			start = end = -1;
 		}
 	}
-/*	
-	for(int i=0; i<vFrameType.size(); i++) {
-		myMsgOutput("%d--%d\n", vProfile[vFrameType[i].start].frameno, vProfile[vFrameType[i].end].frameno);
+	// merge two silence segment
+	for(int i=0; i<m_vNoMotion.size()-1; i++) {
+		if(m_vNoMotion[i+1].start - m_vNoMotion[i].end < minActive){
+			
+			MainFrame::myMsgOutput("erase pulse %d\n", m_vNoMotion[i].end);
+			
+			m_vNoMotion[i].end = m_vNoMotion[i+1].end;
+			m_vNoMotion.erase(m_vNoMotion.begin() +i+1);
+			i--;
+		}
 	}
-	myMsgOutput("before merge %d\n", vFrameType.size());
-*/	
+	
 	string filename; 
 #if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) 
 	filename = "~/tmp/frameType.csv";
@@ -133,32 +139,32 @@ void Profile::Classification(int  minSegment, double silenceTh, double fps)
 		wxMessageBox( msg,"Error", wxICON_ERROR);
 	}
 		
-	for(int i=0; i<m_vSegment.size(); i++) {
-		float ssec = m_vFrameNo[m_vSegment[i].start] /fps;
+	for(int i=0; i<m_vNoMotion.size(); i++) {
+		float ssec = m_vFrameNo[m_vNoMotion[i].start] /fps;
 		int smm = ssec / 60;
 		int sss = ssec - smm*60;
 
-		float esec = m_vFrameNo[m_vSegment[i].end] /fps;
+		float esec = m_vFrameNo[m_vNoMotion[i].end] /fps;
 		int emm = esec / 60;
 		int ess = esec - emm*60;		
 		
 		float diffsec = esec - ssec;
 		if(fp!=NULL)
 			fprintf(fp, "%d, %d, %d, %d, %d, %d, %f\n", 
-				m_vFrameNo[m_vSegment[i].start], m_vFrameNo[m_vSegment[i].end],
+				m_vFrameNo[m_vNoMotion[i].start], m_vFrameNo[m_vNoMotion[i].end],
 				smm, sss, emm, ess, diffsec);
 			
-		MainFrame::myMsgOutput("%d--%d\t", m_vFrameNo[m_vSegment[i].start], m_vFrameNo[m_vSegment[i].end]);
+		MainFrame::myMsgOutput("%d--%d\t", m_vFrameNo[m_vNoMotion[i].start], m_vFrameNo[m_vNoMotion[i].end]);
 		MainFrame::myMsgOutput("%02d:%02d -- %02d:%02d, diff sec %.2f\n", smm, sss, emm, ess, diffsec);
 	}			
 	fclose(fp);
-	MainFrame::myMsgOutput("OnProfileClassification ok, FrameSegment %d\n", m_vSegment.size());	
+	MainFrame::myMsgOutput("OnProfileClassification ok, FrameSegment %d\n", m_vNoMotion.size());	
 
 }
 
 void Profile::PlotClassificationResult(Gnuplot& gnuPlot)
 {
-	int  szSeg = m_vSegment.size();
+	int  szSeg = m_vNoMotion.size();
 	vector<int> vSegX(2*szSeg+1);
 	vector<int> vSegY(2*szSeg+1);
 	vSegX[0] = 0;
@@ -166,13 +172,13 @@ void Profile::PlotClassificationResult(Gnuplot& gnuPlot)
 
 	
 	for(int i=0; i<szSeg; i++) {
-		vSegX[2*i+1] = m_vSegment[i].start;
+		vSegX[2*i+1] = m_vNoMotion[i].start;
 		vSegY[2*i+1] = 1000;
 
-		vSegX[2*i+2] = m_vSegment[i].end;
+		vSegX[2*i+2] = m_vNoMotion[i].end;
 		vSegY[2*i+2] = 1500;
 	}
-	if(m_vSegment[szSeg-1].end < m_vSmoothWMM.size()) {
+	if(m_vNoMotion[szSeg-1].end < m_vSmoothWMM.size()) {
 		vSegX.push_back(m_vSmoothWMM.size());
 		vSegY.push_back(1500);
 	}

@@ -119,7 +119,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     wxBoxSizer* boxSizer160 = new wxBoxSizer(wxVERTICAL);
     m_panelProfile->SetSizer(boxSizer160);
     
-    wxFlexGridSizer* flexGridSizer163 = new wxFlexGridSizer(3, 2, 0, 0);
+    wxFlexGridSizer* flexGridSizer163 = new wxFlexGridSizer(3, 4, 0, 0);
     flexGridSizer163->SetFlexibleDirection( wxBOTH );
     flexGridSizer163->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
     
@@ -147,16 +147,27 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     flexGridSizer163->Add(m_textCtrlProfileTh, 0, wxALL, WXC_FROM_DIP(5));
     
-    m_staticText183 = new wxStaticText(m_panelProfile, wxID_ANY, _("Minimal duration"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
+    m_staticText183 = new wxStaticText(m_panelProfile, wxID_ANY, _("Min. silence"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
     
     flexGridSizer163->Add(m_staticText183, 0, wxALL, WXC_FROM_DIP(5));
     
-    m_textCtrlMinDuration = new wxTextCtrl(m_panelProfile, wxID_ANY, wxT("300"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(50,-1)), 0);
+    m_textCtrlMinSilence = new wxTextCtrl(m_panelProfile, wxID_ANY, wxT("400"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(50,-1)), 0);
     #if wxVERSION_NUMBER >= 3000
-    m_textCtrlMinDuration->SetHint(wxT(""));
+    m_textCtrlMinSilence->SetHint(wxT(""));
     #endif
     
-    flexGridSizer163->Add(m_textCtrlMinDuration, 0, wxALL, WXC_FROM_DIP(5));
+    flexGridSizer163->Add(m_textCtrlMinSilence, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_staticText193 = new wxStaticText(m_panelProfile, wxID_ANY, _("Min. Active"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
+    
+    flexGridSizer163->Add(m_staticText193, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_textCtrlMinActive = new wxTextCtrl(m_panelProfile, wxID_ANY, wxT("70"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(50,-1)), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrlMinActive->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer163->Add(m_textCtrlMinActive, 0, wxALL, WXC_FROM_DIP(5));
     
     wxFlexGridSizer* flexGridSizer165 = new wxFlexGridSizer(4, 3, 0, 0);
     flexGridSizer165->SetFlexibleDirection( wxBOTH );
