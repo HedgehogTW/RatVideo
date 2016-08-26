@@ -192,8 +192,6 @@
     <File Name="MainFrame.cpp"/>
     <File Name="wxcrafter.cpp"/>
     <File Name="wxcrafter_bitmaps.cpp"/>
-    <File Name="PreProcessor.cpp"/>
-    <File Name="PreProcessor.h"/>
     <File Name="KDEBg.h"/>
     <File Name="KDEBg.cpp"/>
     <File Name="gnuplot_i.cpp"/>

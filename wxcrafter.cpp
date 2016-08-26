@@ -51,10 +51,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_menuVideo = new wxMenu();
     m_menuBar->Append(m_menuVideo, _("Video"));
     
-    m_menuItemVideoBGSProcess = new wxMenuItem(m_menuVideo, wxID_BGS_PROCESS, _("BGS Process"), wxT(""), wxITEM_NORMAL);
-    m_menuVideo->Append(m_menuItemVideoBGSProcess);
-    
-    m_menuItemVideoFrameProcessor = new wxMenuItem(m_menuVideo, wxID_FRAME_PROCESSOR, _("FrameProcessor"), wxT(""), wxITEM_NORMAL);
+    m_menuItemVideoFrameProcessor = new wxMenuItem(m_menuVideo, wxID_FRAME_PROCESSOR, _("Background subtraction"), _("Background subtraction"), wxITEM_NORMAL);
     m_menuVideo->Append(m_menuItemVideoFrameProcessor);
     
     m_menuItemVideoExtractFrame = new wxMenuItem(m_menuVideo, wxID_EXTRACT_FRAME, _("Extract Frames"), wxT(""), wxITEM_NORMAL);
@@ -207,84 +204,6 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     m_panelKDE = new wxPanel(m_auiBook, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_auiBook, wxSize(-1,-1)), wxTAB_TRAVERSAL);
     m_auiBook->AddPage(m_panelKDE, _("KDE"), false);
-    
-    wxFlexGridSizer* flexGridSizer92 = new wxFlexGridSizer(0, 2, 0, 10);
-    flexGridSizer92->SetFlexibleDirection( wxBOTH );
-    flexGridSizer92->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-    m_panelKDE->SetSizer(flexGridSizer92);
-    
-    m_staticText59 = new wxStaticText(m_panelKDE, wxID_ANY, _("frames To Learn"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
-    
-    flexGridSizer92->Add(m_staticText59, 0, wxALL, WXC_FROM_DIP(5));
-    
-    m_textCtrlframesToLearn = new wxTextCtrl(m_panelKDE, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
-    #if wxVERSION_NUMBER >= 3000
-    m_textCtrlframesToLearn->SetHint(wxT(""));
-    #endif
-    
-    flexGridSizer92->Add(m_textCtrlframesToLearn, 0, wxALL, WXC_FROM_DIP(5));
-    
-    m_staticText63 = new wxStaticText(m_panelKDE, wxID_ANY, _("Sequence Length"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
-    
-    flexGridSizer92->Add(m_staticText63, 0, wxALL, WXC_FROM_DIP(5));
-    
-    m_textCtrlSequenceLen = new wxTextCtrl(m_panelKDE, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
-    #if wxVERSION_NUMBER >= 3000
-    m_textCtrlSequenceLen->SetHint(wxT(""));
-    #endif
-    
-    flexGridSizer92->Add(m_textCtrlSequenceLen, 0, wxALL, WXC_FROM_DIP(5));
-    
-    m_staticText67 = new wxStaticText(m_panelKDE, wxID_ANY, _("Time Window Size"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
-    
-    flexGridSizer92->Add(m_staticText67, 0, wxALL, WXC_FROM_DIP(5));
-    
-    m_textCtrlTimeWinSize = new wxTextCtrl(m_panelKDE, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
-    #if wxVERSION_NUMBER >= 3000
-    m_textCtrlTimeWinSize->SetHint(wxT(""));
-    #endif
-    
-    flexGridSizer92->Add(m_textCtrlTimeWinSize, 0, wxALL, WXC_FROM_DIP(5));
-    
-    m_staticText71 = new wxStaticText(m_panelKDE, wxID_ANY, _("SD Estimation Flag"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
-    
-    flexGridSizer92->Add(m_staticText71, 0, wxALL, WXC_FROM_DIP(5));
-    
-    m_checkBoxSDEstFlag = new wxCheckBox(m_panelKDE, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
-    m_checkBoxSDEstFlag->SetValue(false);
-    
-    flexGridSizer92->Add(m_checkBoxSDEstFlag, 0, wxALL, WXC_FROM_DIP(5));
-    
-    m_staticText75 = new wxStaticText(m_panelKDE, wxID_ANY, _("lUse Color Ratios Flag"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
-    
-    flexGridSizer92->Add(m_staticText75, 0, wxALL, WXC_FROM_DIP(5));
-    
-    m_checkBoxlUseColorRatiosFlag = new wxCheckBox(m_panelKDE, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
-    m_checkBoxlUseColorRatiosFlag->SetValue(false);
-    
-    flexGridSizer92->Add(m_checkBoxlUseColorRatiosFlag, 0, wxALL, WXC_FROM_DIP(5));
-    
-    m_staticText79 = new wxStaticText(m_panelKDE, wxID_ANY, _("threshold"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
-    
-    flexGridSizer92->Add(m_staticText79, 0, wxALL, WXC_FROM_DIP(5));
-    
-    m_textCtrlThreshold = new wxTextCtrl(m_panelKDE, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
-    #if wxVERSION_NUMBER >= 3000
-    m_textCtrlThreshold->SetHint(wxT(""));
-    #endif
-    
-    flexGridSizer92->Add(m_textCtrlThreshold, 0, wxALL, WXC_FROM_DIP(5));
-    
-    m_staticText85 = new wxStaticText(m_panelKDE, wxID_ANY, _("alpha"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
-    
-    flexGridSizer92->Add(m_staticText85, 0, wxALL, WXC_FROM_DIP(5));
-    
-    m_textCtrlAlpha = new wxTextCtrl(m_panelKDE, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
-    #if wxVERSION_NUMBER >= 3000
-    m_textCtrlAlpha->SetHint(wxT(""));
-    #endif
-    
-    flexGridSizer92->Add(m_textCtrlAlpha, 0, wxALL, WXC_FROM_DIP(5));
     
     m_panelAlgo = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), wxTAB_TRAVERSAL);
     wxFont m_panelAlgoFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
@@ -440,7 +359,6 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     this->Connect(m_menuItemViewMsgPane->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewMsgPane), NULL, this);
     this->Connect(m_menuItemViewShowProfile->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewShowProfile), NULL, this);
     this->Connect(m_menuItemViewShowFrameType->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewShowFrameType), NULL, this);
-    this->Connect(m_menuItemVideoBGSProcess->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnVideoBGSProcess), NULL, this);
     this->Connect(m_menuItemVideoFrameProcessor->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnVideoFrameProcessor), NULL, this);
     this->Connect(m_menuItemVideoExtractFrame->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnVideoExtractFrames), NULL, this);
     this->Connect(m_menuItemVideoFGPixels->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnVideoFGPixels), NULL, this);
@@ -464,7 +382,6 @@ MainFrameBaseClass::~MainFrameBaseClass()
     this->Disconnect(m_menuItemViewMsgPane->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewMsgPane), NULL, this);
     this->Disconnect(m_menuItemViewShowProfile->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewShowProfile), NULL, this);
     this->Disconnect(m_menuItemViewShowFrameType->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewShowFrameType), NULL, this);
-    this->Disconnect(m_menuItemVideoBGSProcess->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnVideoBGSProcess), NULL, this);
     this->Disconnect(m_menuItemVideoFrameProcessor->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnVideoFrameProcessor), NULL, this);
     this->Disconnect(m_menuItemVideoExtractFrame->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnVideoExtractFrames), NULL, this);
     this->Disconnect(m_menuItemVideoFGPixels->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnVideoFGPixels), NULL, this);

@@ -18,7 +18,6 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-#include "PreProcessor.h"
 #include "package_bgs/IBGS.h"
 
 #include "package_bgs/FrameDifferenceBGS.h"
@@ -79,6 +78,9 @@
 #include "MyUtil.h"
 #include "gnuplot_i.h"
 
+#define V_WIDTH  172
+#define V_HEIGHT 230
+
 using namespace std;
 using namespace cv;
 using namespace bgslibrary;
@@ -102,7 +104,7 @@ MainFrame::MainFrame(wxWindow* parent)
 #endif
 
 	m_pThis = this;
-	int statusWidth[4] = {110, 140, 140, 140};
+	int statusWidth[4] = {200, 140, 140, 140};
 	m_statusBar->SetFieldsCount(4, statusWidth);	
 	
 	wxConfigBase *pConfig = wxConfigBase::Get();
@@ -118,7 +120,8 @@ MainFrame::MainFrame(wxWindow* parent)
 	Center();	
 	
 	m_bStopProcess = false;
-//	m_pPreProcessor = NULL;
+	m_bShowPreprocess = m_checkBoxShowPreprocess->GetValue();
+
 	m_fps = 29.97;
 	
 //	DeleteContents();
@@ -141,9 +144,6 @@ MainFrame::MainFrame(wxWindow* parent)
 	
 	wxFont font(wxFontInfo(10).FaceName("Helvetica").Italic());
 	m_auimgr21->GetArtProvider()->SetFont(wxAUI_DOCKART_CAPTION_FONT, font);
-	SetPageKDE();
-	SetGlobalPara();
-	
 	
 	myMsgOutput("Hello.... Cute Rat ...\n");
 }
@@ -201,106 +201,7 @@ void MainFrame::OnAbout(wxCommandEvent& event)
     info.SetDescription(_("Short description goes here"));
     ::wxAboutBox(info);
 }
-void MainFrame::SetGlobalPara()
-{
-    CvFileStorage* fs = cvOpenFileStorage("./config/PreProcessor.xml", 0, CV_STORAGE_READ);
 
-    equalizeHist = cvReadIntByName(fs, 0, "equalizeHist", false);
-    gaussianBlur = cvReadIntByName(fs, 0, "gaussianBlur", false);
-    bShowPreprocess = cvReadIntByName(fs, 0, "enableShow", true);
-
-    cvReleaseFileStorage(&fs);	
-	
-	m_checkBoxShowPreprocess->SetValue(bShowPreprocess);
-}
-void MainFrame::SaveGlobalPara()
-{
-	bShowPreprocess = m_checkBoxShowPreprocess->GetValue();	
-	
-    CvFileStorage* fs = cvOpenFileStorage("./config/PreProcessor.xml", 0, CV_STORAGE_WRITE);
-
-    cvWriteInt(fs, "equalizeHist", equalizeHist);
-    cvWriteInt(fs, "gaussianBlur", gaussianBlur);
-    cvWriteInt(fs, "enableShow", bShowPreprocess);
-
-    cvReleaseFileStorage(&fs);	
-}
-void MainFrame::SetPageKDE()
-{
-
-	CvFileStorage* fs = cvOpenFileStorage("./config/KDE.xml", 0, CV_STORAGE_READ);
-
-	framesToLearn = cvReadIntByName(fs, 0, "framesToLearn", 10);
-	SequenceLength = cvReadIntByName(fs, 0, "SequenceLength", 50);
-	TimeWindowSize = cvReadIntByName(fs, 0, "TimeWindowSize", 100);
-	SDEstimationFlag = cvReadIntByName(fs, 0, "SDEstimationFlag", 1);
-	lUseColorRatiosFlag = cvReadIntByName(fs, 0, "lUseColorRatiosFlag", 1);
-	th = cvReadRealByName(fs, 0, "th", 10e-8);
-	alpha = cvReadRealByName(fs, 0, "alpha", 0.3);
-	//showOutput = cvReadIntByName(fs, 0, "showOutput", true);
-
-	cvReleaseFileStorage(&fs);		
-	
-	wxString  s1, s2, s3, s4, s5, s6;
-	s1 << framesToLearn;
-	s2 << SequenceLength;
-	s3 << TimeWindowSize;
-	s4 << th;
-	s5 << alpha;
-	
-	m_textCtrlframesToLearn->SetValue(s1);
-	m_textCtrlSequenceLen->SetValue(s2);
-	m_textCtrlTimeWinSize->SetValue(s3);
-	m_checkBoxSDEstFlag->SetValue(SDEstimationFlag);
-	m_checkBoxlUseColorRatiosFlag->SetValue(lUseColorRatiosFlag);
-	m_textCtrlThreshold->SetValue(s4);
-	m_textCtrlAlpha->SetValue(s5);
-	
-}
-
-void MainFrame::SavePageKDE()
-{		
-	
-	wxString  str;
-	long a;
-	double  value;
-	
-	str = m_textCtrlframesToLearn->GetValue();
-	str.ToLong(&a);	
-	framesToLearn = a;
-	
-	str = m_textCtrlSequenceLen->GetValue();
-	str.ToLong(&a);	
-	SequenceLength = a;
-	
-	str = m_textCtrlTimeWinSize->GetValue();
-	str.ToLong(&a);	
-	TimeWindowSize = a;
-	
-	SDEstimationFlag = m_checkBoxSDEstFlag->GetValue();
-	lUseColorRatiosFlag = m_checkBoxlUseColorRatiosFlag->GetValue();
-	
-	str = m_textCtrlThreshold->GetValue();
-	str.ToDouble(&value);	
-	th = value;
-	
-	str = m_textCtrlAlpha->GetValue();
-	str.ToDouble(&value);	
-	alpha = value;	
-	
-	CvFileStorage* fs = cvOpenFileStorage("./config/KDE.xml", 0, CV_STORAGE_WRITE);
-
-	cvWriteInt(fs, "framesToLearn", framesToLearn);
-	cvWriteInt(fs, "SequenceLength", SequenceLength);
-	cvWriteInt(fs, "TimeWindowSize", TimeWindowSize);
-	cvWriteInt(fs, "SDEstimationFlag", SDEstimationFlag);
-	cvWriteInt(fs, "lUseColorRatiosFlag", lUseColorRatiosFlag);
-	cvWriteReal(fs, "th", th);
-	cvWriteReal(fs, "alpha", alpha);
-//	cvWriteInt(fs, "showOutput", showOutput);
-
-	cvReleaseFileStorage(&fs);	
-}
 
 void MainFrame::OnFileOpen(wxCommandEvent& event)
 {
@@ -368,106 +269,26 @@ void MainFrame::OnViewMsgPane(wxCommandEvent& event)
 
 	m_auimgr21->Update();	
 }
-void MainFrame::OnVideoBGSProcess(wxCommandEvent& event)
-{
-	DeleteContents();
-			
-	cv::VideoCapture vidCap;
-	vidCap.open(m_Filename.ToStdString());
-	if(vidCap.isOpened()==false) {
-		myMsgOutput( "Load ... " + m_Filename + " ERROR\n");
-		return;
-	}
-	myMsgOutput( "\nLoad ... " + m_Filename + " OK\n");
-	
-	readVideoProperties(vidCap);	
-	readControlValues();
-	wxString msg;
-	msg.Printf("Wait time: %d ms,  startFrame: %d, sampling: %d\n", m_waitTime, m_startFrame, m_Sampling);
-	myMsgOutput( msg);
-	
-//	destroyAllWindows();
-		
-	int tab = m_auiBook->GetSelection();
-	myMsgOutput("OnBookPageChanged %d\n", tab);
-	switch(tab) {
-		case 0:
-			SavePageKDE();
-			BGS_KDE(vidCap);
-			break;
-		case 1:
-			break;
-		case 2:
-			break;
-	}
-}
+
 void MainFrame::OnBookPageChanged(wxAuiNotebookEvent& event)
 {
 	int tab = m_auiBook->GetSelection();
 	myMsgOutput("OnBookPageChanged %d\n", tab);
 }
 
-void MainFrame::BGS_KDE(cv::VideoCapture& vidCap)
-{	
-	myMsgOutput("----------------------------KDE\n");
-	myMsgOutput("framesToLearn %d, SequenceLength %d, TimeWindowSize %d\n", framesToLearn, SequenceLength, TimeWindowSize);
-	myMsgOutput("SDEstimationFlag %d, lUseColorRatiosFlag %d\n", SDEstimationFlag, lUseColorRatiosFlag);
-	myMsgOutput("threshold %.5f, alpha %.2f\n", th, alpha);
-
-
-	bgslibrary::PreProcessor* pPreProcessor = new bgslibrary::PreProcessor;	
-	IBGS *bgs = new KDE;
+void MainFrame::PreProcessor(const cv::Mat &img_input, cv::Mat &img_output, bool bLeftSide)
+{
+	cv::Mat mROI;
 	
-	int64 start_time;
-    int64 delta_time;
-    double freq;
-    double fps;	
-	int frameNumber = 0;
-	
-	cv::Mat img_input;
-	cv::Mat img_prep;
-	cv::Mat mMovingObj;
-    cv::Mat mbkgmodel;
-	
-	m_bStopProcess = false;
-	while(frameNumber < m_startFrame){
-		frameNumber++;	
-		vidCap >> img_input;
-		if (img_input.empty()) break;
-	}
-	
-   do
-    {
-		if(m_bStopProcess)  break;		
-		frameNumber++;
-
-		vidCap >> img_input;
-		if (img_input.empty()) break;
-
-		cv::imshow("Input", img_input);
-
-		pPreProcessor->process(img_input, img_prep, m_bLeftSide);
-
-		start_time = cv::getTickCount();
-
-		bgs->process(img_prep, mMovingObj, mbkgmodel); // by default, it shows automatically the foreground mask image
-
-		delta_time = cv::getTickCount() - start_time;
-		freq = cv::getTickFrequency();
-		fps = freq / delta_time;
-		//std::cout << "FPS: " << fps << std::endl;
+	if(bLeftSide) {
+		mROI = img_input(cv::Range(0, V_HEIGHT), cv::Range(0, V_WIDTH));		
+	}else 
+		mROI = img_input(cv::Range(0, V_HEIGHT), cv::Range(V_WIDTH, img_input.cols));
 		
-
-		if(cv::waitKey(m_waitTime) >= 0) break;
-		
-	}while(1);
-
-	delete bgs;
-	delete pPreProcessor;
-//	m_bgs = NULL;
-
-
+    cv::cvtColor(mROI, img_output, CV_BGR2GRAY);
+    cv::GaussianBlur(img_output, img_output, cv::Size(3, 3), 1.5);
 }
+
 void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 {
 	DeleteContents();
@@ -488,8 +309,7 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 	}
 	readVideoProperties(vidCap);
 	readControlValues();
-	
-	SaveGlobalPara();
+
 //	destroyAllWindows();
 	wxString strBGS = m_listBoxBGS->GetString(selBGS);	
 	wxString msg;
@@ -502,14 +322,6 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 		return;	
 	} 
 	
-	bgslibrary::PreProcessor* pPreProcessor = new bgslibrary::PreProcessor;	
-	
-/*
-	int64 start_time;
-    int64 delta_time;
-    double freq;
-    double fps;	
-	 */ 
 	int frameNumber = 0;
 	
 	cv::Mat img_input;
@@ -534,7 +346,7 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 		if(frameNumber % m_Sampling) continue;
 		
 		cv::imshow("Input", img_input);
-		pPreProcessor->process(img_input, img_prep, m_bLeftSide);
+		PreProcessor(img_input, img_prep, m_bLeftSide);
 
 		bgs->process(img_prep, mMovingObj, mbkgmodel);
 
@@ -560,9 +372,7 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 		
 	}while(1);	
 
-	delete bgs;
-	delete pPreProcessor;
-	
+	delete bgs;	
 }
 void MainFrame::OnVideoStop(wxCommandEvent& event)
 {
@@ -688,6 +498,7 @@ void MainFrame::readControlValues()
 	str.ToLong(&m_nMinDuration);
 	
 	m_bLeftSide = m_radioButtonLeftSide->GetValue();
+	m_bShowPreprocess = m_checkBoxShowPreprocess->GetValue();
 /*	
 	wxString msg;
 	msg << "readControlValues ... \n";
@@ -861,8 +672,6 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 	}
 	readVideoProperties(vidCap);
 	readControlValues();
-	
-	SaveGlobalPara();
 
 	wxString msg;
 	msg << "\nLoad ... " << m_Filename << " OK\n";
@@ -889,8 +698,6 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 		return;	
 	} 
 	
-	bgslibrary::PreProcessor* pPreProcessor = new bgslibrary::PreProcessor;
-
 	int frameNumber = 0;
 	
 	cv::Mat img_input;
@@ -918,7 +725,7 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 		if(frameNumber % m_Sampling) continue;
 		
 //		cv::imshow("Input", img_input);
-		pPreProcessor->process(img_input, img_prep, m_bLeftSide);
+		PreProcessor(img_input, img_prep, m_bLeftSide);
 
 		bgsFD->process(img_prep, mMovingObjFD, mbkgmodel);
 		bgsWMM->process(img_prep, mMovingObjWMM, mbkgmodel);
@@ -953,7 +760,6 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 	delete bgsABL;	
 	delete bgsFD;	
 	delete bgsWMM;	
-	delete pPreProcessor;
 
 	myMsgOutput( "generate nonzeroPixels.csv ok\n");
 }
@@ -1137,4 +943,7 @@ void MainFrame::OnProfileClassification(wxCommandEvent& event)
 	myMsgOutput("after merge %d\n", vFrameType.size());	
 	myMsgOutput( "OnProfileClassification ok\n");
 	
+}
+void MainFrame::OnVideoBGSProcess(wxCommandEvent& event)
+{
 }

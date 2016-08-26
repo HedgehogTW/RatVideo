@@ -27,8 +27,8 @@
 #include <wx/imaglist.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
-#include <wx/checkbox.h>
 #include <wx/listbox.h>
+#include <wx/checkbox.h>
 #include <wx/radiobut.h>
 #include <wx/richtext/richtextctrl.h>
 #if wxVERSION_NUMBER >= 2900
@@ -67,7 +67,6 @@ protected:
     wxMenuItem* m_menuItemViewShowProfile;
     wxMenuItem* m_menuItemViewShowFrameType;
     wxMenu* m_menuVideo;
-    wxMenuItem* m_menuItemVideoBGSProcess;
     wxMenuItem* m_menuItemVideoFrameProcessor;
     wxMenuItem* m_menuItemVideoExtractFrame;
     wxMenuItem* m_menuItem138;
@@ -97,20 +96,6 @@ protected:
     wxTextCtrl* m_textCtrlRangeYMin;
     wxTextCtrl* m_textCtrlRangeYMax;
     wxPanel* m_panelKDE;
-    wxStaticText* m_staticText59;
-    wxTextCtrl* m_textCtrlframesToLearn;
-    wxStaticText* m_staticText63;
-    wxTextCtrl* m_textCtrlSequenceLen;
-    wxStaticText* m_staticText67;
-    wxTextCtrl* m_textCtrlTimeWinSize;
-    wxStaticText* m_staticText71;
-    wxCheckBox* m_checkBoxSDEstFlag;
-    wxStaticText* m_staticText75;
-    wxCheckBox* m_checkBoxlUseColorRatiosFlag;
-    wxStaticText* m_staticText79;
-    wxTextCtrl* m_textCtrlThreshold;
-    wxStaticText* m_staticText85;
-    wxTextCtrl* m_textCtrlAlpha;
     wxPanel* m_panelAlgo;
     wxListBox* m_listBoxBGS;
     wxPanel* m_panelGlobalSet;
@@ -133,7 +118,6 @@ protected:
     virtual void OnViewMsgPane(wxCommandEvent& event) { event.Skip(); }
     virtual void OnViewShowProfile(wxCommandEvent& event) { event.Skip(); }
     virtual void OnViewShowFrameType(wxCommandEvent& event) { event.Skip(); }
-    virtual void OnVideoBGSProcess(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoFrameProcessor(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoExtractFrames(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoFGPixels(wxCommandEvent& event) { event.Skip(); }
@@ -141,6 +125,7 @@ protected:
     virtual void OnProfileGaussianSmooth(wxCommandEvent& event) { event.Skip(); }
     virtual void OnProfileClassification(wxCommandEvent& event) { event.Skip(); }
     virtual void OnAbout(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnVideoBGSProcess(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoStop(wxCommandEvent& event) { event.Skip(); }
     virtual void OnBookPageChanged(wxAuiNotebookEvent& event) { event.Skip(); }
 
@@ -161,20 +146,6 @@ public:
     wxTextCtrl* GetTextCtrlRangeYMin() { return m_textCtrlRangeYMin; }
     wxTextCtrl* GetTextCtrlRangeYMax() { return m_textCtrlRangeYMax; }
     wxPanel* GetPanelProfile() { return m_panelProfile; }
-    wxStaticText* GetStaticText59() { return m_staticText59; }
-    wxTextCtrl* GetTextCtrlframesToLearn() { return m_textCtrlframesToLearn; }
-    wxStaticText* GetStaticText63() { return m_staticText63; }
-    wxTextCtrl* GetTextCtrlSequenceLen() { return m_textCtrlSequenceLen; }
-    wxStaticText* GetStaticText67() { return m_staticText67; }
-    wxTextCtrl* GetTextCtrlTimeWinSize() { return m_textCtrlTimeWinSize; }
-    wxStaticText* GetStaticText71() { return m_staticText71; }
-    wxCheckBox* GetCheckBoxSDEstFlag() { return m_checkBoxSDEstFlag; }
-    wxStaticText* GetStaticText75() { return m_staticText75; }
-    wxCheckBox* GetCheckBoxlUseColorRatiosFlag() { return m_checkBoxlUseColorRatiosFlag; }
-    wxStaticText* GetStaticText79() { return m_staticText79; }
-    wxTextCtrl* GetTextCtrlThreshold() { return m_textCtrlThreshold; }
-    wxStaticText* GetStaticText85() { return m_staticText85; }
-    wxTextCtrl* GetTextCtrlAlpha() { return m_textCtrlAlpha; }
     wxPanel* GetPanelKDE() { return m_panelKDE; }
     wxAuiNotebook* GetAuiBook() { return m_auiBook; }
     wxListBox* GetListBoxBGS() { return m_listBoxBGS; }

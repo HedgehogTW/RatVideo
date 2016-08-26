@@ -48,8 +48,9 @@ public:
     MainFrame(wxWindow* parent);
     virtual ~MainFrame();
 
-	void BGS_KDE(cv::VideoCapture& vidCap);
+
 	IBGS * createBGSObj(wxString& strBGS);
+	void PreProcessor(const cv::Mat &img_input, cv::Mat &img_output, bool bLeftSide);
 	
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
@@ -68,10 +69,6 @@ public:
 	void DeleteContents();
 	void OnMRUFile(wxCommandEvent& event);
 	void openFile(wxString &dirName);
-	void SetPageKDE();
-	void SavePageKDE();
-	void SetGlobalPara();
-	void SaveGlobalPara();
 	void readVideoProperties(cv::VideoCapture& vidCap);
 	void readControlValues();
 	void GaussianSmooth(std::vector<float>& vecIn, std::vector<float>&venOut, int ksize);
@@ -97,6 +94,7 @@ public:
 	std::vector<float>  m_vSmoothWMM;		
 	
 ///////////////////// bgs	
+	bool m_bShowPreprocess;
 	bool m_bStopProcess;
 	long m_waitTime;
 	long m_startFrame;
@@ -106,21 +104,8 @@ public:
 	double m_fps;
 	bool m_bLeftSide;
 	
-///////////////////// KDE
-	int framesToLearn;	
-	int SequenceLength;
-	int TimeWindowSize;
-	int SDEstimationFlag;
-	int lUseColorRatiosFlag;
-	double th;
-	double alpha;
-
-///////////////////// Preprocessor
-    bool equalizeHist;
-    bool gaussianBlur;
-    bool bShowPreprocess;	
-
 protected:
+    virtual void OnVideoBGSProcess(wxCommandEvent& event);
     virtual void OnProfileGaussianSmooth(wxCommandEvent& event);
     virtual void OnViewShowFrameType(wxCommandEvent& event);
     virtual void OnViewShowProfile(wxCommandEvent& event);
@@ -130,7 +115,6 @@ protected:
     virtual void OnVideoExtractFrames(wxCommandEvent& event);
     virtual void OnVideoStop(wxCommandEvent& event);
     virtual void OnVideoFrameProcessor(wxCommandEvent& event);
-    virtual void OnVideoBGSProcess(wxCommandEvent& event);
     virtual void OnBookPageChanged(wxAuiNotebookEvent& event);
     virtual void OnViewMsgPane(wxCommandEvent& event);
     virtual void OnFileOpen(wxCommandEvent& event);
