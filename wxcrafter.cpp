@@ -222,7 +222,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     flexGridSizer165->Add(m_textCtrlFrameNo, 0, wxALL, WXC_FROM_DIP(5));
     
-    m_textCtrlMMSS = new wxTextCtrl(m_panelProfile, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(50,-1)), wxTE_PROCESS_ENTER);
+    m_textCtrlMMSS = new wxTextCtrl(m_panelProfile, wxID_ANY, wxT("14:55"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(50,-1)), wxTE_PROCESS_ENTER);
     #if wxVERSION_NUMBER >= 3000
     m_textCtrlMMSS->SetHint(wxT(""));
     #endif

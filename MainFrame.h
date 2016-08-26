@@ -32,7 +32,7 @@ public:
 
 
 	IBGS * createBGSObj(wxString& strBGS);
-	void PreProcessor(const cv::Mat &img_input, cv::Mat &img_output, bool bLeftSide);
+	void PreProcessor(const cv::Mat &img_input, cv::Mat &img_output, bool bLeftSide, bool bSmooth=false);
 	
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);

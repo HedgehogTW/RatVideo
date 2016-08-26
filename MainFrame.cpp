@@ -86,7 +86,7 @@ using namespace cv;
 using namespace bgslibrary;
 
 Gnuplot gPlotProfile("lines");
-Gnuplot gPlotFType("lines");
+Gnuplot gPlotView("lines");
 MainFrame *	MainFrame::m_pThis=NULL;
 
 MainFrame::MainFrame(wxWindow* parent)
@@ -276,7 +276,7 @@ void MainFrame::OnBookPageChanged(wxAuiNotebookEvent& event)
 	myMsgOutput("OnBookPageChanged %d\n", tab);
 }
 
-void MainFrame::PreProcessor(const cv::Mat &img_input, cv::Mat &img_output, bool bLeftSide)
+void MainFrame::PreProcessor(const cv::Mat &img_input, cv::Mat &img_output, bool bLeftSide, bool bSmooth)
 {
 	cv::Mat mROI;
 	
@@ -286,7 +286,8 @@ void MainFrame::PreProcessor(const cv::Mat &img_input, cv::Mat &img_output, bool
 		mROI = img_input(cv::Range(0, V_HEIGHT), cv::Range(V_WIDTH, img_input.cols));
 		
     cv::cvtColor(mROI, img_output, CV_BGR2GRAY);
-    cv::GaussianBlur(img_output, img_output, cv::Size(3, 3), 1.5);
+	if(bSmooth)
+		cv::GaussianBlur(img_output, img_output, cv::Size(3, 3), 1.5);
 }
 
 void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
@@ -822,24 +823,27 @@ void MainFrame::OnViewShowProfile(wxCommandEvent& event)
 		wxMessageBox( "cannot open nonzeroPixels.csv","Error", wxICON_ERROR);
 		return;		
 	}	
-	vector<int>  vProfile;
+	readControlValues();
+	
+	vector<int>  vWMM, vFD;
 	char title [200];
 	fgets(title, 200, fp );
 	while(!feof(fp)) {
-		int nonZeroWMM, frameNumber;
-		float ratioWMM;
-		int n = fscanf(fp, "%*d,%d,%*d,%d,%*d,%*f,%f,%*f", &frameNumber, &nonZeroWMM, &ratioWMM);
+		int nonZeroWMM, frameNumber, fd;
+		int n = fscanf(fp, "%*d,%d,%d,%d,%*d,%*f,%*f,%*f", &frameNumber, &fd, &nonZeroWMM);
 		if(n!=3)  break;
-		vProfile.push_back(nonZeroWMM);
+		vFD.push_back(fd);
+		vWMM.push_back(nonZeroWMM);
 	}
 	fclose(fp);	
-	myMsgOutput( "nonzeroPixels.csv  Profile size %d\n",vProfile.size() );
+	myMsgOutput( "nonzeroPixels.csv  Profile size %d\n",vWMM.size() );
 	
-	_gnuplotInit(gPlotProfile, "Profile", -500, 4500); // y min max
-	
-	gPlotProfile.set_xrange(0, 3000);
-	_gnuplotLine(gPlotProfile, "Profile", vProfile, "#000000ff");
+	_gnuplotInit(gPlotView, "Profile", 1200, 300, m_nRangeYMin, m_nRangeYMax); // y min max
+	gPlotView.set_xrange(m_nRangeXMin, m_nRangeXMax);
+	_gnuplotLine(gPlotView, "Weighted Moving Mean", vWMM, "#00ff0000");
+	_gnuplotLine(gPlotView, "FrameDiff", vFD, "#000000ff");		
 }
+
 void MainFrame::OnProfileGaussianSmooth(wxCommandEvent& event)
 {
 	std::string filename;

@@ -168,7 +168,7 @@ void Profile::PlotClassificationResult(Gnuplot& gnuPlot)
 	vector<int> vSegX(2*szSeg+1);
 	vector<int> vSegY(2*szSeg+1);
 	vSegX[0] = 0;
-	vSegY[0] = 1500;
+	vSegY[0] = 2000;
 
 	
 	for(int i=0; i<szSeg; i++) {
@@ -176,13 +176,13 @@ void Profile::PlotClassificationResult(Gnuplot& gnuPlot)
 		vSegY[2*i+1] = 1000;
 
 		vSegX[2*i+2] = m_vNoMotion[i].end;
-		vSegY[2*i+2] = 1500;
+		vSegY[2*i+2] = 2000;
 	}
 	if(m_vNoMotion[szSeg-1].end < m_vSmoothWMM.size()) {
 		vSegX.push_back(m_vSmoothWMM.size());
-		vSegY.push_back(1500);
+		vSegY.push_back(2000);
 	}
 //	_gnuplotInit(gPlotFType, "frame type", 1200, 300, m_nRangeYMin, m_nRangeYMax); // y min max
 //	gPlotFType.set_xrange(m_nRangeXMin, m_nRangeXMax);
-	_gnuplotSteps(gnuPlot, vSegX, vSegY, "#0000FF00", "frame type");		
+	_gnuplotSteps(gnuPlot, vSegX, vSegY, "#00000080", "frame type");		
 }
