@@ -52,10 +52,9 @@ class MainFrameBaseClass : public wxFrame
 {
 public:
     enum {
-        wxID_BGS_PROCESS = 10001,
-        wxID_EXTRACT_FRAME = 10002,
-        wxID_FRAME_PROCESSOR = 10003,
-        wxID_PROFILE_SMOOTH = 10004,
+        wxID_EXTRACT_FRAME = 10001,
+        wxID_FRAME_PROCESSOR = 10002,
+        wxID_PROFILE_SMOOTH = 10003,
     };
 protected:
     wxMenuBar* m_menuBar;
@@ -95,6 +94,9 @@ protected:
     wxStaticText* m_staticText173;
     wxTextCtrl* m_textCtrlRangeYMin;
     wxTextCtrl* m_textCtrlRangeYMax;
+    wxStaticText* m_staticText187;
+    wxTextCtrl* m_textCtrlFrameNo;
+    wxTextCtrl* m_textCtrlMMSS;
     wxPanel* m_panelKDE;
     wxPanel* m_panelAlgo;
     wxListBox* m_listBoxBGS;
@@ -125,9 +127,10 @@ protected:
     virtual void OnProfileGaussianSmooth(wxCommandEvent& event) { event.Skip(); }
     virtual void OnProfileClassification(wxCommandEvent& event) { event.Skip(); }
     virtual void OnAbout(wxCommandEvent& event) { event.Skip(); }
-    virtual void OnVideoBGSProcess(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoStop(wxCommandEvent& event) { event.Skip(); }
     virtual void OnBookPageChanged(wxAuiNotebookEvent& event) { event.Skip(); }
+    virtual void OnTextFrameNoEnter(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnTextMMSSEnter(wxCommandEvent& event) { event.Skip(); }
 
 public:
     wxMenuBar* GetMenuBar() { return m_menuBar; }
@@ -145,6 +148,9 @@ public:
     wxStaticText* GetStaticText173() { return m_staticText173; }
     wxTextCtrl* GetTextCtrlRangeYMin() { return m_textCtrlRangeYMin; }
     wxTextCtrl* GetTextCtrlRangeYMax() { return m_textCtrlRangeYMax; }
+    wxStaticText* GetStaticText187() { return m_staticText187; }
+    wxTextCtrl* GetTextCtrlFrameNo() { return m_textCtrlFrameNo; }
+    wxTextCtrl* GetTextCtrlMMSS() { return m_textCtrlMMSS; }
     wxPanel* GetPanelProfile() { return m_panelProfile; }
     wxPanel* GetPanelKDE() { return m_panelKDE; }
     wxAuiNotebook* GetAuiBook() { return m_auiBook; }

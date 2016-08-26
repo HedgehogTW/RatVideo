@@ -10,6 +10,7 @@
 
 #include "package_bgs/IBGS.h"
 
+#include "Profile.h"
 
 
 //#include "FrameProcessor.h"
@@ -22,26 +23,7 @@ public:
 	
 };
 
-class Profile{
-public:	
-	Profile() { 
-		motionType = 0; 
-	}
-	int frameno;
-	int value;
-	float ratio;
-	int motionType;
-};
 
-class FrameType{
-public:	
-	FrameType() { 
-		frameType = -1; 
-	}	
-	int start;
-	int end;
-	int frameType;
-};
 class MainFrame : public MainFrameBaseClass
 {
 public:
@@ -71,7 +53,7 @@ public:
 	void openFile(wxString &dirName);
 	void readVideoProperties(cv::VideoCapture& vidCap);
 	void readControlValues();
-	void GaussianSmooth(std::vector<float>& vecIn, std::vector<float>&venOut, int ksize);
+
 	
 	static MainFrame *	m_pThis;
 	wxFileHistory* 		m_FileHistory;
@@ -89,10 +71,9 @@ public:
 	long	m_nRangeYMax;
 	double	m_profileTh;
 	long	m_nMinDuration;
-	std::vector<int>  m_vFrameNo; 
-	std::vector<float>  m_vProWMM;
-	std::vector<float>  m_vSmoothWMM;		
+		
 	
+	Profile	m_profile;
 ///////////////////// bgs	
 	bool m_bShowPreprocess;
 	bool m_bStopProcess;
@@ -105,7 +86,8 @@ public:
 	bool m_bLeftSide;
 	
 protected:
-    virtual void OnVideoBGSProcess(wxCommandEvent& event);
+    virtual void OnTextMMSSEnter(wxCommandEvent& event);
+    virtual void OnTextFrameNoEnter(wxCommandEvent& event);
     virtual void OnProfileGaussianSmooth(wxCommandEvent& event);
     virtual void OnViewShowFrameType(wxCommandEvent& event);
     virtual void OnViewShowProfile(wxCommandEvent& event);

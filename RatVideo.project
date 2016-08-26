@@ -196,6 +196,8 @@
     <File Name="KDEBg.cpp"/>
     <File Name="gnuplot_i.cpp"/>
     <File Name="MyUtil.cpp"/>
+    <File Name="Profile.h"/>
+    <File Name="Profile.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="MainFrame.h"/>

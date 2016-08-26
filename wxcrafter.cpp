@@ -99,8 +99,6 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     m_auibar23->AddTool(wxID_OPEN, _("Open"), wxArtProvider::GetBitmap(wxART_FILE_OPEN, wxART_TOOLBAR, wxDefaultSize), wxNullBitmap, wxITEM_NORMAL, wxT(""), wxT(""), NULL);
     
-    m_auibar23->AddTool(wxID_BGS_PROCESS, _("BGS Process"), wxArtProvider::GetBitmap(wxART_GO_FORWARD, wxART_TOOLBAR, wxDefaultSize), wxNullBitmap, wxITEM_NORMAL, _("BGS Process"), wxT(""), NULL);
-    
     m_auibar23->AddTool(wxID_FRAME_PROCESSOR, _("FrameProcessor"), wxXmlResource::Get()->LoadBitmap(wxT("pokeball")), wxNullBitmap, wxITEM_NORMAL, _("FrameProcessor"), wxT(""), NULL);
     
     m_auibar23->AddTool(wxID_STOP, _("Stop"), wxXmlResource::Get()->LoadBitmap(wxT("error")), wxNullBitmap, wxITEM_NORMAL, _("Stop"), wxT(""), NULL);
@@ -142,7 +140,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     flexGridSizer163->Add(m_staticText179, 0, wxALL, WXC_FROM_DIP(5));
     
-    m_textCtrlProfileTh = new wxTextCtrl(m_panelProfile, wxID_ANY, wxT("10"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(50,-1)), 0);
+    m_textCtrlProfileTh = new wxTextCtrl(m_panelProfile, wxID_ANY, wxT("3"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(50,-1)), 0);
     #if wxVERSION_NUMBER >= 3000
     m_textCtrlProfileTh->SetHint(wxT(""));
     #endif
@@ -160,7 +158,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     flexGridSizer163->Add(m_textCtrlMinDuration, 0, wxALL, WXC_FROM_DIP(5));
     
-    wxFlexGridSizer* flexGridSizer165 = new wxFlexGridSizer(2, 3, 0, 0);
+    wxFlexGridSizer* flexGridSizer165 = new wxFlexGridSizer(4, 3, 0, 0);
     flexGridSizer165->SetFlexibleDirection( wxBOTH );
     flexGridSizer165->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
     
@@ -201,6 +199,24 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     #endif
     
     flexGridSizer165->Add(m_textCtrlRangeYMax, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_staticText187 = new wxStaticText(m_panelProfile, wxID_ANY, _("frame<->time"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
+    
+    flexGridSizer165->Add(m_staticText187, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_textCtrlFrameNo = new wxTextCtrl(m_panelProfile, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(50,-1)), wxTE_PROCESS_ENTER);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrlFrameNo->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer165->Add(m_textCtrlFrameNo, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_textCtrlMMSS = new wxTextCtrl(m_panelProfile, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(50,-1)), wxTE_PROCESS_ENTER);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrlMMSS->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer165->Add(m_textCtrlMMSS, 0, wxALL, WXC_FROM_DIP(5));
     
     m_panelKDE = new wxPanel(m_auiBook, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_auiBook, wxSize(-1,-1)), wxTAB_TRAVERSAL);
     m_auiBook->AddPage(m_panelKDE, _("KDE"), false);
@@ -367,11 +383,12 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     this->Connect(m_menuItemProfileClassification->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnProfileClassification), NULL, this);
     this->Connect(m_menuItem9->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
     this->Connect(wxID_OPEN, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnFileOpen), NULL, this);
-    this->Connect(wxID_BGS_PROCESS, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoBGSProcess), NULL, this);
     this->Connect(wxID_FRAME_PROCESSOR, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoFrameProcessor), NULL, this);
     this->Connect(wxID_STOP, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoStop), NULL, this);
     this->Connect(wxID_EXTRACT_FRAME, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoExtractFrames), NULL, this);
     m_auiBook->Connect(wxEVT_COMMAND_AUINOTEBOOK_PAGE_CHANGED, wxAuiNotebookEventHandler(MainFrameBaseClass::OnBookPageChanged), NULL, this);
+    m_textCtrlFrameNo->Connect(wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler(MainFrameBaseClass::OnTextFrameNoEnter), NULL, this);
+    m_textCtrlMMSS->Connect(wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler(MainFrameBaseClass::OnTextMMSSEnter), NULL, this);
     
 }
 
@@ -390,11 +407,12 @@ MainFrameBaseClass::~MainFrameBaseClass()
     this->Disconnect(m_menuItemProfileClassification->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnProfileClassification), NULL, this);
     this->Disconnect(m_menuItem9->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
     this->Disconnect(wxID_OPEN, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnFileOpen), NULL, this);
-    this->Disconnect(wxID_BGS_PROCESS, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoBGSProcess), NULL, this);
     this->Disconnect(wxID_FRAME_PROCESSOR, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoFrameProcessor), NULL, this);
     this->Disconnect(wxID_STOP, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoStop), NULL, this);
     this->Disconnect(wxID_EXTRACT_FRAME, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoExtractFrames), NULL, this);
     m_auiBook->Disconnect(wxEVT_COMMAND_AUINOTEBOOK_PAGE_CHANGED, wxAuiNotebookEventHandler(MainFrameBaseClass::OnBookPageChanged), NULL, this);
+    m_textCtrlFrameNo->Disconnect(wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler(MainFrameBaseClass::OnTextFrameNoEnter), NULL, this);
+    m_textCtrlMMSS->Disconnect(wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler(MainFrameBaseClass::OnTextMMSSEnter), NULL, this);
     
     m_auimgr21->UnInit();
     delete m_auimgr21;

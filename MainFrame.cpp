@@ -86,7 +86,7 @@ using namespace cv;
 using namespace bgslibrary;
 
 Gnuplot gPlotProfile("lines");
-Gnuplot gPlotFrameType("lines");
+Gnuplot gPlotFType("lines");
 MainFrame *	MainFrame::m_pThis=NULL;
 
 MainFrame::MainFrame(wxWindow* parent)
@@ -784,10 +784,10 @@ void MainFrame::OnViewShowFrameType(wxCommandEvent& event)
 	fclose(fp);	
 	myMsgOutput( "frameType.csv.csv  frameType size %d\n",vFrameDiffsec.size() );
 	
-	_gnuplotInit(gPlotFrameType, "FrameDiffsec", -10, 150); // y min max
+//	_gnuplotInit(gPlotFrameType, "FrameDiffsec", -10, 150); // y min max
 	
 //	gPlotFrameType.set_xrange(0, 3000);
-	_gnuplotLine(gPlotFrameType, "FrameDiffsec", vFrameDiffsec, "#000000ff");
+//	_gnuplotLine(gPlotFrameType, "FrameDiffsec", vFrameDiffsec, "#000000ff");
 }
 void MainFrame::OnViewShowProfile(wxCommandEvent& event)
 {
@@ -817,133 +817,60 @@ void MainFrame::OnViewShowProfile(wxCommandEvent& event)
 }
 void MainFrame::OnProfileGaussianSmooth(wxCommandEvent& event)
 {
-	FILE *fp = fopen("d:\\tmp\\nonzeroPixels.csv", "r");
-	if(fp == NULL) {
-		myMsgOutput( "cannot open nonzeroPixels.csv\n");		
-		wxMessageBox( "cannot open nonzeroPixels.csv","Error", wxICON_ERROR);
-		return;		
-	}	
-	
-	m_vFrameNo.clear(); 
-	m_vProWMM.clear();
-	m_vSmoothWMM.clear();
-	vector<float>  vProABL, vSmoothABL;
-	char title [200];
-	fgets(title, 200, fp );
-	while(!feof(fp)) {
-		int nonZeroWMM, frameNumber, nonZeroABL;
-		int n = fscanf(fp, "%*d,%d,%*d,%d,%d,%*f,%*f,%*f", &frameNumber, &nonZeroWMM, &nonZeroABL);
-		if(n!=3)  break;
-		m_vFrameNo.push_back(frameNumber);
-		m_vProWMM.push_back(nonZeroWMM);
-		vProABL.push_back(nonZeroABL);
-	}
-	fclose(fp);	
-	myMsgOutput( "read nonzeroPixels.csv  Profile size %d\n", m_vProWMM.size() );	
+	std::string filename;
+	filename = "d:\\tmp\\nonzeroPixels.csv";
+	m_profile.LoadProfileData(filename);
 	
 	readControlValues();
 	
 	int ksize = m_nGauKSize;  // should be odd
-	GaussianSmooth(m_vProWMM, m_vSmoothWMM, ksize);
-	GaussianSmooth(vProABL, vSmoothABL, ksize);
-	
-	fp = fopen("d:\\tmp\\smoothProfile.csv", "w");
-	for(int i=0; i<m_vProWMM.size(); i++)
-		fprintf(fp, "%d, %f, %f, %f, %f\n", m_vFrameNo[i], m_vProWMM[i], m_vSmoothWMM[i], vProABL[i], vSmoothABL[i]);
-	fclose(fp);
+	m_profile.GaussianSmooth(ksize);
 	
 	myMsgOutput("X range: %d..%d, Y range: %d..%d\n", m_nRangeXMin, m_nRangeXMax, m_nRangeYMin, m_nRangeYMax);	
-	myMsgOutput( "Gaussian smooth with ksize %d\n",ksize );	
-
 	
 	char str[100];
 	sprintf(str, "Gaussian smooth with ksize %d", ksize);
 	_gnuplotInit(gPlotProfile, str, 1200, 300, m_nRangeYMin, m_nRangeYMax); // y min max
 	gPlotProfile.set_xrange(m_nRangeXMin, m_nRangeXMax);
-	_gnuplotLine(gPlotProfile, "Profile", m_vProWMM, "#00ff0000");
-	_gnuplotLine(gPlotProfile, "Smooth", m_vSmoothWMM, "#000000ff");
+	_gnuplotLine(gPlotProfile, "Profile", m_profile.m_vSignalWMM, "#00ff0000");
+	_gnuplotLine(gPlotProfile, "Smooth", m_profile.m_vSmoothWMM, "#000000ff");	
 }
 
 
-void MainFrame::GaussianSmooth(vector<float>& vecIn, vector<float>&venOut, int ksize)
-{
-	Mat mGaus1D = getGaussianKernel(ksize, -1, CV_64F);
-	int inSize = vecIn.size();
-	
-	venOut.resize(inSize);
-	float* pOut = venOut.data();
-	memset(pOut, 0, sizeof(float)*inSize );
-	double *gau = (double*)mGaus1D.data;
-	for(int i=0; i<inSize - ksize; i++) {
-		double avg = 0;
-		for(int k=0; k<ksize; k++)
-			avg += vecIn[i+k] * gau[k];
-		//avg /= ksize;
-		venOut[i+ksize/2] = avg;
-	}
-	for(int i=0; i<ksize/2; i++)
-		venOut[i] = venOut[ksize/2];
-	for(int i=inSize - ksize; i<inSize; i++)
-		venOut[i] = venOut[inSize - ksize + ksize/2-1];
-//	_OutputMat(mGaus1D, "d:\\tmp\\_gaus.csv", true);
-}
 
 void MainFrame::OnProfileClassification(wxCommandEvent& event)
 {
 	readControlValues();
-	int  silenceLen = m_nMinDuration;
-	double silenceTh = m_profileTh;
 
-	vector<FrameType>  vFrameType;		
-	int start, end;
-	start = end = -1;
-	for(int i=0; i<m_vSmoothWMM.size(); i++) {
-		if(m_vSmoothWMM[i] <silenceTh) {
-			if(start < 0)
-				start = i;
-		}else if(start >=0) {
-			end = i;
-			if(end - start > silenceLen) {
-				FrameType ft;
-				ft.start = start; //vProfile[start].frameno;
-				ft.end = end; //vProfile[end].frameno;
-				ft.frameType = 0;
-				vFrameType.push_back(ft);				
-			}
-			start = end = -1;
-		}
-	}
-/*	
-	for(int i=0; i<vFrameType.size(); i++) {
-		myMsgOutput("%d--%d\n", vProfile[vFrameType[i].start].frameno, vProfile[vFrameType[i].end].frameno);
-	}
-	myMsgOutput("before merge %d\n", vFrameType.size());
-*/	
+	m_profile.Classification(m_nMinDuration, m_profileTh, m_fps);
+	m_profile.PlotClassificationResult(gPlotProfile);
 
-	FILE* fpw = fopen("d:\\tmp\\frameType.csv", "w");
-	
-	for(int i=0; i<vFrameType.size(); i++) {
-		float ssec = m_vFrameNo[vFrameType[i].start] /m_fps;
-		int smm = ssec / 60;
-		int sss = ssec - smm*60;
-
-		float esec = m_vFrameNo[vFrameType[i].end] /m_fps;
-		int emm = esec / 60;
-		int ess = esec - emm*60;		
-		
-		float diffsec = esec - ssec;
-		fprintf(fpw, "%d, %d, %d, %d, %d, %d, %f\n", 
-			m_vFrameNo[vFrameType[i].start], m_vFrameNo[vFrameType[i].end],
-			smm, sss, emm, ess, diffsec);
-			
-		myMsgOutput("%d--%d\t", m_vFrameNo[vFrameType[i].start], m_vFrameNo[vFrameType[i].end]);
-		myMsgOutput("%02d:%02d -- %02d:%02d, diff sec %.2f\n", smm, sss, emm, ess, diffsec);
-	}			
-	fclose(fpw);
-	myMsgOutput("after merge %d\n", vFrameType.size());	
-	myMsgOutput( "OnProfileClassification ok\n");
-	
 }
-void MainFrame::OnVideoBGSProcess(wxCommandEvent& event)
+
+void MainFrame::OnTextFrameNoEnter(wxCommandEvent& event)
 {
+	long frameno;
+	wxString str;
+	str = m_textCtrlFrameNo->GetValue();
+	str.ToLong(&frameno);	
+	
+	float sec = frameno /m_fps;
+	int mm = sec / 60;
+	float ss = sec - mm*60;
+	str.Printf("%02d:%05.2f", mm, ss);	
+	
+	m_textCtrlMMSS->SetValue(str);	
+}
+void MainFrame::OnTextMMSSEnter(wxCommandEvent& event)
+{
+	wxString str, str1;
+	str = m_textCtrlMMSS->GetValue();
+	char* cstr = str.char_str();
+	int mm;
+	float ss;
+	int n = sscanf(cstr, "%d:%f", &mm, &ss);
+	long frameno = (mm * 60 + ss)*m_fps;
+	
+	str1.Printf("%d", frameno);
+	m_textCtrlFrameNo->SetValue(str1);
 }
