@@ -72,7 +72,7 @@ public:
 	double	m_profileTh;
 	long	m_nMinSilence;
 	long	m_nMinActive;
-		
+	bool 	m_bClassWMM;	
 	
 	Profile	m_profile;
 ///////////////////// bgs	

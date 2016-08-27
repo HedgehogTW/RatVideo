@@ -27,27 +27,32 @@ bool Profile::LoadProfileData(std::string& filename)
 	m_vFrameNo.clear(); 
 	m_vSignalWMM.clear();
 	m_vSmoothWMM.clear();
-//	vector<float>  vProABL, vSmoothABL;
+	m_vSignalFD.clear();
+	m_vSmoothFD.clear();
 	char title [200];
 	fgets(title, 200, fp );
 	while(!feof(fp)) {
-		int nonZeroWMM, frameNumber, nonZeroABL;
-		int n = fscanf(fp, "%*d,%d,%*d,%d,%*d,%*f,%*f,%*f", &frameNumber, &nonZeroWMM);
-		if(n!=2)  break;
+		int frameNumber, nonZeroWMM, nonZeroFD;
+		int n = fscanf(fp, "%*d,%d,%d,%d,%*d,%*f,%*f,%*f", &frameNumber, &nonZeroFD, &nonZeroWMM);
+		if(n!=3)  break;
 		m_vFrameNo.push_back(frameNumber);
+		m_vSignalFD.push_back(nonZeroFD);		
 		m_vSignalWMM.push_back(nonZeroWMM);
-//		vProABL.push_back(nonZeroABL);
 	}
 	fclose(fp);	
-	MainFrame::myMsgOutput( "read nonzeroPixels.csv  Profile size %d\n", m_vSignalWMM.size() );	
+	MainFrame::myMsgOutput( "LoadProfileData(): read nonzeroPixels.csv, size %d\n", m_vSignalWMM.size() );	
 	return true;
 	
 }
 
-void Profile::GaussianSmooth(int ksize)
+bool Profile::GaussianSmooth(int ksize)
 {
-	GaussianSmoothOneVariable(m_vSignalWMM, m_vSmoothWMM, ksize);
-
+	bool bRet;
+	bRet = GaussianSmoothOneVariable(m_vSignalWMM, m_vSmoothWMM, ksize);
+	if(! bRet) return false;
+	bRet = GaussianSmoothOneVariable(m_vSignalFD, m_vSmoothFD, ksize);
+	if(! bRet) return false;
+	
 	string filename; 
 #if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) 
 	filename = "~/tmp/smoothProfile.csv";
@@ -60,18 +65,28 @@ void Profile::GaussianSmooth(int ksize)
 		wxString msg = "cannot write "+filename + "\n";
 		MainFrame::myMsgOutput( msg);		
 		wxMessageBox( msg,"Error", wxICON_ERROR);
-		return ;				
+		return false;				
 	}
 	for(int i=0; i<m_vSignalWMM.size(); i++)
-		fprintf(fp, "%d, %f, %f\n", m_vFrameNo[i], m_vSignalWMM[i], m_vSmoothWMM[i]);
+		fprintf(fp, "%d, %f, %f, %f, %f\n", m_vFrameNo[i], 
+			m_vSignalWMM[i], m_vSmoothWMM[i], m_vSignalFD[i], m_vSmoothFD[i]);
 	fclose(fp);	
 	
 	MainFrame::myMsgOutput( "Gaussian smooth with ksize %d\n",ksize );	
+	
+	return true;
 }
-void Profile::GaussianSmoothOneVariable(vector<float>& vecIn, vector<float>&venOut, int ksize)
+bool Profile::GaussianSmoothOneVariable(vector<float>& vecIn, vector<float>&venOut, int ksize)
 {
 	Mat mGaus1D = getGaussianKernel(ksize, -1, CV_64F);
 	int inSize = vecIn.size();
+	
+	if(inSize <=ksize) {
+		wxString msg;
+		msg.Printf("Not enough data, size %d", inSize);
+		MainFrame::myMsgOutput(msg );
+		return false;
+	}
 	
 	venOut.resize(inSize);
 	float* pOut = venOut.data();
@@ -89,16 +104,23 @@ void Profile::GaussianSmoothOneVariable(vector<float>& vecIn, vector<float>&venO
 	for(int i=inSize - ksize; i<inSize; i++)
 		venOut[i] = venOut[inSize - ksize + ksize/2-1];
 //	_OutputMat(mGaus1D, "d:\\tmp\\_gaus.csv", true);
+
+	return true;
 }
 
-void Profile::Classification(int  minSilence, int minActive, double silenceTh, double fps)
+bool Profile::Classification(vector<float>& vecIn, int  minSilence, int minActive, double silenceTh, double fps)
 {
+	if(vecIn.size() <=0) {
+		wxMessageBox( "No input data","Error", wxICON_ERROR);
+		return false;
+	}
+	
 	m_vNoMotion.clear();
-		
+	
 	int start, end;
 	start = end = -1;
-	for(int i=0; i<m_vSmoothWMM.size(); i++) {
-		if(m_vSmoothWMM[i] <silenceTh) {
+	for(int i=0; i<vecIn.size(); i++) {
+		if(vecIn[i] <silenceTh) {
 			if(start < 0)
 				start = i;
 		}else if(start >=0) {
@@ -137,6 +159,7 @@ void Profile::Classification(int  minSilence, int minActive, double silenceTh, d
 		wxString msg = "cannot write "+filename + "\n";
 		MainFrame::myMsgOutput( msg);		
 		wxMessageBox( msg,"Error", wxICON_ERROR);
+		return false;
 	}
 		
 	for(int i=0; i<m_vNoMotion.size(); i++) {
@@ -159,7 +182,7 @@ void Profile::Classification(int  minSilence, int minActive, double silenceTh, d
 	}			
 	fclose(fp);
 	MainFrame::myMsgOutput("OnProfileClassification ok, FrameSegment %d\n", m_vNoMotion.size());	
-
+	return true;
 }
 
 void Profile::PlotClassificationResult(Gnuplot& gnuPlot)

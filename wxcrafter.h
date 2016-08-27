@@ -27,9 +27,9 @@
 #include <wx/imaglist.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
+#include <wx/radiobut.h>
 #include <wx/listbox.h>
 #include <wx/checkbox.h>
-#include <wx/radiobut.h>
 #include <wx/richtext/richtextctrl.h>
 #if wxVERSION_NUMBER >= 2900
 #include <wx/persist.h>
@@ -90,6 +90,9 @@ protected:
     wxTextCtrl* m_textCtrlMinSilence;
     wxStaticText* m_staticText193;
     wxTextCtrl* m_textCtrlMinActive;
+    wxStaticText* m_staticText197;
+    wxRadioButton* m_radioButtonClassWMM;
+    wxRadioButton* m_radioButtonClassFD;
     wxStaticText* m_staticText167;
     wxTextCtrl* m_textCtrlRangeXMin;
     wxTextCtrl* m_textCtrlRangeXMax;
@@ -146,6 +149,9 @@ public:
     wxTextCtrl* GetTextCtrlMinSilence() { return m_textCtrlMinSilence; }
     wxStaticText* GetStaticText193() { return m_staticText193; }
     wxTextCtrl* GetTextCtrlMinActive() { return m_textCtrlMinActive; }
+    wxStaticText* GetStaticText197() { return m_staticText197; }
+    wxRadioButton* GetRadioButtonClassWMM() { return m_radioButtonClassWMM; }
+    wxRadioButton* GetRadioButtonClassFD() { return m_radioButtonClassFD; }
     wxStaticText* GetStaticText167() { return m_staticText167; }
     wxTextCtrl* GetTextCtrlRangeXMin() { return m_textCtrlRangeXMin; }
     wxTextCtrl* GetTextCtrlRangeXMax() { return m_textCtrlRangeXMax; }
@@ -174,7 +180,7 @@ public:
     wxRichTextCtrl* GetRichTextMsg() { return m_richTextMsg; }
     wxPanel* GetPanelMsg() { return m_panelMsg; }
     wxAuiManager* GetAuimgr21() { return m_auimgr21; }
-    MainFrameBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("RatVideo"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(700,550), long style = wxCAPTION|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCLOSE_BOX);
+    MainFrameBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("RatVideo"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(750,550), long style = wxCAPTION|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCLOSE_BOX);
     virtual ~MainFrameBaseClass();
 };
 

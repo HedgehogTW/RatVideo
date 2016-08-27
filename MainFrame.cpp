@@ -85,7 +85,8 @@ using namespace std;
 using namespace cv;
 using namespace bgslibrary;
 
-Gnuplot gPlotProfile("lines");
+Gnuplot gPlotWMM("lines");
+Gnuplot gPlotFD("lines");
 Gnuplot gPlotView("lines");
 MainFrame *	MainFrame::m_pThis=NULL;
 
@@ -104,7 +105,7 @@ MainFrame::MainFrame(wxWindow* parent)
 #endif
 
 	m_pThis = this;
-	int statusWidth[4] = {200, 140, 140, 140};
+	int statusWidth[4] = {200, 100, 140, 150};
 	m_statusBar->SetFieldsCount(4, statusWidth);	
 	
 	wxConfigBase *pConfig = wxConfigBase::Get();
@@ -156,6 +157,15 @@ MainFrame::~MainFrame()
 	m_FileHistory->Save(*pConfig);
 	delete m_FileHistory;	
 	delete wxConfigBase::Set((wxConfigBase *) NULL);	
+	
+	wxString fileSpec = _T("gnuploti*");
+	wxArrayString  	files;
+	wxDir::GetAllFiles(".", &files,  fileSpec, wxDIR_FILES  );
+	for(unsigned int i=0; i<files.size(); i++ ) {
+		wxFileName fileName = files[i];
+		wxString  fName = fileName.GetName();
+		wxRemoveFile(fName);
+	}
 }
 
 void MainFrame::DeleteContents()
@@ -501,6 +511,7 @@ void MainFrame::readControlValues()
 	str = m_textCtrlMinActive->GetValue();
 	str.ToLong(&m_nMinActive);
 	
+	m_bClassWMM = m_radioButtonClassWMM->GetValue();
 	m_bLeftSide = m_radioButtonLeftSide->GetValue();
 	m_bShowPreprocess = m_checkBoxShowPreprocess->GetValue();
 /*	
@@ -706,9 +717,10 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 	
 	cv::Mat img_input;
 	cv::Mat img_prep;
-	cv::Mat mMovingObjFD;
-	cv::Mat mMovingObjWMM;
-	cv::Mat mMovingObjABL;
+	cv::Mat mMovingObj;
+//	cv::Mat mMovingObjFD;
+//	cv::Mat mMovingObjWMM;
+//	cv::Mat mMovingObjABL;
     cv::Mat mbkgmodel;
 	m_bStopProcess = false;
 
@@ -738,26 +750,34 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 		
 //		cv::imshow("Input", img_input);
 		PreProcessor(img_input, img_prep, m_bLeftSide);
-
-		bgsFD->process(img_prep, mMovingObjFD, mbkgmodel);
-		bgsWMM->process(img_prep, mMovingObjWMM, mbkgmodel);
-		bgsABL->process(img_prep, mMovingObjABL, mbkgmodel);
-		
 		int imgSize = img_prep.rows * img_prep.cols;
-		int nonZeroFD = countNonZero(mMovingObjFD);
-		int nonZeroWMM = countNonZero(mMovingObjWMM);
-		int nonZeroABL = countNonZero(mMovingObjABL);
+		
+		bgsFD->process(img_prep, mMovingObj, mbkgmodel);
+//		cv::medianBlur(mMovingObj, mMovingObj, 3);
+		int nonZeroFD = countNonZero(mMovingObj);	
+	
+		bgsWMM->process(img_prep, mMovingObj, mbkgmodel);
+//		cv::medianBlur(mMovingObj, mMovingObj, 3);
+		int nonZeroWMM = countNonZero(mMovingObj);	
+	
+		bgsABL->process(img_prep, mMovingObj, mbkgmodel);
+//		cv::medianBlur(mMovingObj, mMovingObj, 3);
+		int nonZeroABL = countNonZero(mMovingObj);
+		
+		if(frameNumber<5) {
+			 nonZeroFD = nonZeroWMM = nonZeroABL = 0;
+		}
 		
 		float sec = frameNumber /m_fps;
 		int mm = sec / 60;
-		int ss = sec - mm*60;
+		float ss = sec - mm*60;
 		wxString str;
-		str.Printf("Frame No. %d, %02d:%02d", frameNumber, mm, ss);
+		str.Printf("Frame %d, %02d:%05.02f", frameNumber, mm, ss);
 		m_statusBar->SetStatusText(str, 3);
 		
 		float ratio = (float)nonZeroWMM/imgSize;
 		if( ratio > 0.22) {
-			myMsgOutput( "too many nonZero in frame %d,  %02d:%02d, ratio %f\n", frameNumber, mm, ss, ratio);
+			myMsgOutput( "too many nonZero in frame %d,  %02d:%05.02f, ratio %f\n", frameNumber, mm, ss, ratio);
 			break;
 		}
 		fprintf(fp, "%d, %d, %d, %d, %d, %f, %f, %f\n", imgSize, frameNumber, nonZeroFD, nonZeroWMM, nonZeroABL,
@@ -774,6 +794,7 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 	delete bgsWMM;	
 
 	myMsgOutput( "generate nonzeroPixels.csv ok\n");
+	wxBell();
 }
 
 void MainFrame::OnViewShowFrameType(wxCommandEvent& event)
@@ -853,32 +874,49 @@ void MainFrame::OnProfileGaussianSmooth(wxCommandEvent& event)
 	filename = "d:/tmp/nonzeroPixels.csv";
 #endif
 
-	if(m_profile.LoadProfileData(filename)==false) return;
+	if(m_profile.LoadProfileData(filename)==false) 
+		return;
 	
 	readControlValues();
-	
-	int ksize = m_nGauKSize;  // should be odd
-	m_profile.GaussianSmooth(ksize);
+	int ksize = m_nGauKSize;  // should be odd	
+	if(m_profile.GaussianSmooth(ksize)==false) 
+		return;
 	
 	myMsgOutput("X range: %d..%d, Y range: %d..%d\n", m_nRangeXMin, m_nRangeXMax, m_nRangeYMin, m_nRangeYMax);	
 	
 	char str[100];
-	sprintf(str, "Gaussian smooth with ksize %d", ksize);
-	_gnuplotInit(gPlotProfile, str, 1200, 300, m_nRangeYMin, m_nRangeYMax); // y min max
-	gPlotProfile.set_xrange(m_nRangeXMin, m_nRangeXMax);
-	_gnuplotLine(gPlotProfile, "Profile", m_profile.m_vSignalWMM, "#00ff0000");
-	_gnuplotLine(gPlotProfile, "Smooth", m_profile.m_vSmoothWMM, "#000000ff");	
+	sprintf(str, "WMM Gaussian smooth (ksize %d)", ksize);
+	_gnuplotInit(gPlotWMM, str, 1200, 300, m_nRangeYMin, m_nRangeYMax); // y min max
+	gPlotWMM.set_xrange(m_nRangeXMin, m_nRangeXMax);
+	_gnuplotLine(gPlotWMM, "WMM Profile", m_profile.m_vSignalWMM, "#00DC143C");
+	_gnuplotLine(gPlotWMM, "Smooth", m_profile.m_vSmoothWMM, "#000000ff");	
+	
+	sprintf(str, "FD Gaussian smooth (ksize %d)", ksize);
+	_gnuplotInit(gPlotFD, str, 1200, 300, m_nRangeYMin, m_nRangeYMax); // y min max
+	gPlotFD.set_xrange(m_nRangeXMin, m_nRangeXMax);
+	_gnuplotLine(gPlotFD, "FD Profile", m_profile.m_vSignalFD, "#00D2691E");
+	_gnuplotLine(gPlotFD, "Smooth", m_profile.m_vSmoothFD, "#000000ff");		
 }
 
 
 
 void MainFrame::OnProfileClassification(wxCommandEvent& event)
 {
+	bool bRet;
+	
 	readControlValues();
-	m_profile.Classification(m_nMinSilence, m_nMinActive, m_profileTh, m_fps);
-	myMsgOutput("min silence %d, min active %d, threshold %.2f\n", m_nMinSilence, m_nMinActive, m_profileTh);
-	m_profile.PlotClassificationResult(gPlotProfile);
-
+	if(m_bClassWMM) {
+		bRet = m_profile.Classification(m_profile.m_vSmoothWMM, m_nMinSilence, m_nMinActive, m_profileTh, m_fps);
+		if(! bRet) return;
+		m_profile.PlotClassificationResult(gPlotWMM);		
+	}else {
+		bRet = m_profile.Classification(m_profile.m_vSmoothFD, m_nMinSilence, m_nMinActive, m_profileTh, m_fps);
+		if(! bRet) return;
+		m_profile.PlotClassificationResult(gPlotFD);
+	}
+	
+	myMsgOutput("Classification %d, min silence %d, min active %d, threshold %.2f\n", 
+		m_bClassWMM, m_nMinSilence, m_nMinActive, m_profileTh);
 }
 
 void MainFrame::OnTextFrameNoEnter(wxCommandEvent& event)
@@ -891,7 +929,7 @@ void MainFrame::OnTextFrameNoEnter(wxCommandEvent& event)
 	float sec = frameno /m_fps;
 	int mm = sec / 60;
 	float ss = sec - mm*60;
-	str.Printf("%02d:%05.2f", mm, ss);	
+	str.Printf("%02d:%05.02f", mm, ss);	
 	
 	m_textCtrlMMSS->SetValue(str);	
 }
@@ -903,6 +941,10 @@ void MainFrame::OnTextMMSSEnter(wxCommandEvent& event)
 	int mm;
 	float ss;
 	int n = sscanf(cstr, "%d:%f", &mm, &ss);
+	if(n!=2) {
+		wxMessageBox( "Not time format","Error", wxICON_ERROR);
+		return;
+	}
 	long frameno = (mm * 60 + ss)*m_fps;
 	
 	str1.Printf("%d", frameno);

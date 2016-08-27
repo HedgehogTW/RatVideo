@@ -175,6 +175,20 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     boxSizer160->Add(flexGridSizer165, 1, wxALL|wxEXPAND, WXC_FROM_DIP(5));
     
+    m_staticText197 = new wxStaticText(m_panelProfile, wxID_ANY, _("Classification"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
+    
+    flexGridSizer165->Add(m_staticText197, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_radioButtonClassWMM = new wxRadioButton(m_panelProfile, wxID_ANY, _("WMM"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), wxRB_GROUP);
+    m_radioButtonClassWMM->SetValue(0);
+    
+    flexGridSizer165->Add(m_radioButtonClassWMM, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_radioButtonClassFD = new wxRadioButton(m_panelProfile, wxID_ANY, _("FD"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
+    m_radioButtonClassFD->SetValue(1);
+    
+    flexGridSizer165->Add(m_radioButtonClassFD, 0, wxALL, WXC_FROM_DIP(5));
+    
     m_staticText167 = new wxStaticText(m_panelProfile, wxID_ANY, _("x range"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
     
     flexGridSizer165->Add(m_staticText167, 0, wxALL, WXC_FROM_DIP(5));
@@ -301,7 +315,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     gridSizer108->Add(m_staticText114, 0, wxALL|wxALIGN_TOP, WXC_FROM_DIP(5));
     
-    m_textCtrlStartFrame = new wxTextCtrl(m_panelGlobalSet, wxID_ANY, wxT("2"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(50,-1)), 0);
+    m_textCtrlStartFrame = new wxTextCtrl(m_panelGlobalSet, wxID_ANY, wxT("0"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(50,-1)), 0);
     #if wxVERSION_NUMBER >= 3000
     m_textCtrlStartFrame->SetHint(wxT(""));
     #endif
@@ -364,7 +378,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     #endif
     
     SetName(wxT("MainFrameBaseClass"));
-    SetSize(700,550);
+    SetSize(750,550);
     if (GetSizer()) {
          GetSizer()->Fit(this);
     }

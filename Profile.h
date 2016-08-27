@@ -24,15 +24,17 @@ public:
 	~Profile();
 
 	bool LoadProfileData(std::string& filename);
-	void GaussianSmoothOneVariable(std::vector<float>& vecIn, std::vector<float>&venOut, int ksize);
-	void GaussianSmooth(int ksize);
-	void Classification(int minSilence, int minActive, double silenceTh, double fps);
+	bool GaussianSmoothOneVariable(std::vector<float>& vecIn, std::vector<float>&venOut, int ksize);
+	bool GaussianSmooth(int ksize);
+	bool Classification(std::vector<float>& vecIn, int minSilence, int minActive, double silenceTh, double fps);
 	void PlotClassificationResult(Gnuplot& gnuPlot);
 	
 	
 	std::vector<int>  		m_vFrameNo; 
 	std::vector<float>  	m_vSignalWMM;
 	std::vector<float>  	m_vSmoothWMM;	
+	std::vector<float>  	m_vSignalFD;
+	std::vector<float>  	m_vSmoothFD;	
 	std::vector<FSegment>  	m_vNoMotion;
 };
 
