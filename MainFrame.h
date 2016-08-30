@@ -61,7 +61,7 @@ public:
 
 ///////////////////// config
 	MyConfigData	m_configData;
-	wxString 		m_strSourcePath;
+	std::string 	m_DataPath;
 
 ///////////////////// profile
 	long	m_nGauKSize;

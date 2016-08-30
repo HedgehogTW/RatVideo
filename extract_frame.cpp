@@ -26,82 +26,62 @@ DlgExtractFrameBase::DlgExtractFrameBase(wxWindow* parent, wxWindowID id, const 
     wxBoxSizer* boxSizer2 = new wxBoxSizer(wxVERTICAL);
     this->SetSizer(boxSizer2);
     
-    wxStaticBoxSizer* staticBoxSizer4 = new wxStaticBoxSizer( new wxStaticBox(this, wxID_ANY, _("Select Frames")), wxHORIZONTAL);
+    m_panel34 = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), wxTAB_TRAVERSAL);
     
-    boxSizer2->Add(staticBoxSizer4, 1, wxALL|wxEXPAND, WXC_FROM_DIP(5));
+    boxSizer2->Add(m_panel34, 1, wxALL|wxEXPAND, WXC_FROM_DIP(5));
     
-    wxFlexGridSizer* flexGridSizer18 = new wxFlexGridSizer(0, 5, 0, 0);
-    flexGridSizer18->SetFlexibleDirection( wxBOTH );
-    flexGridSizer18->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+    wxFlexGridSizer* flexGridSizer53 = new wxFlexGridSizer(0, 2, 0, 0);
+    flexGridSizer53->SetFlexibleDirection( wxBOTH );
+    flexGridSizer53->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+    m_panel34->SetSizer(flexGridSizer53);
     
-    staticBoxSizer4->Add(flexGridSizer18, 1, wxALL|wxEXPAND, WXC_FROM_DIP(5));
+    m_staticText38 = new wxStaticText(m_panel34, wxID_ANY, _("Output Path"), wxDefaultPosition, wxDLG_UNIT(m_panel34, wxSize(-1,-1)), 0);
     
-    m_staticText6 = new wxStaticText(this, wxID_ANY, _("From"), wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), 0);
+    flexGridSizer53->Add(m_staticText38, 0, wxALL, WXC_FROM_DIP(5));
     
-    flexGridSizer18->Add(m_staticText6, 0, wxALL, WXC_FROM_DIP(5));
-    
-    m_textCtrlFromMM = new wxTextCtrl(this, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(this, wxSize(50,-1)), 0);
+    m_textCtrlOutPath = new wxTextCtrl(m_panel34, wxID_ANY, wxT("d:/tmp/"), wxDefaultPosition, wxDLG_UNIT(m_panel34, wxSize(200,-1)), 0);
     #if wxVERSION_NUMBER >= 3000
-    m_textCtrlFromMM->SetHint(wxT(""));
+    m_textCtrlOutPath->SetHint(wxT(""));
     #endif
     
-    flexGridSizer18->Add(m_textCtrlFromMM, 0, wxALL, WXC_FROM_DIP(5));
+    flexGridSizer53->Add(m_textCtrlOutPath, 1, wxALL|wxEXPAND, WXC_FROM_DIP(5));
     
-    m_staticText10 = new wxStaticText(this, wxID_ANY, _("mm"), wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), 0);
+    m_staticText6 = new wxStaticText(m_panel34, wxID_ANY, _("From (mm:ss)"), wxDefaultPosition, wxDLG_UNIT(m_panel34, wxSize(-1,-1)), 0);
     
-    flexGridSizer18->Add(m_staticText10, 0, wxALL, WXC_FROM_DIP(5));
+    flexGridSizer53->Add(m_staticText6, 0, wxALL, WXC_FROM_DIP(5));
     
-    m_textCtrlFromSS = new wxTextCtrl(this, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(this, wxSize(50,-1)), 0);
+    m_textCtrlFrom = new wxTextCtrl(m_panel34, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panel34, wxSize(50,-1)), 0);
     #if wxVERSION_NUMBER >= 3000
-    m_textCtrlFromSS->SetHint(wxT(""));
+    m_textCtrlFrom->SetHint(wxT(""));
     #endif
     
-    flexGridSizer18->Add(m_textCtrlFromSS, 0, wxALL, WXC_FROM_DIP(5));
+    flexGridSizer53->Add(m_textCtrlFrom, 0, wxALL, WXC_FROM_DIP(5));
     
-    m_staticText14 = new wxStaticText(this, wxID_ANY, _("ss"), wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), 0);
+    m_staticText20 = new wxStaticText(m_panel34, wxID_ANY, _("To (mm:ss)"), wxDefaultPosition, wxDLG_UNIT(m_panel34, wxSize(-1,-1)), 0);
     
-    flexGridSizer18->Add(m_staticText14, 0, wxALL, WXC_FROM_DIP(5));
+    flexGridSizer53->Add(m_staticText20, 0, wxALL, WXC_FROM_DIP(5));
     
-    m_staticText20 = new wxStaticText(this, wxID_ANY, _("To"), wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), 0);
-    
-    flexGridSizer18->Add(m_staticText20, 0, wxALL, WXC_FROM_DIP(5));
-    
-    m_textCtrlToMM = new wxTextCtrl(this, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(this, wxSize(50,-1)), 0);
+    m_textCtrlTo = new wxTextCtrl(m_panel34, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panel34, wxSize(50,-1)), 0);
     #if wxVERSION_NUMBER >= 3000
-    m_textCtrlToMM->SetHint(wxT(""));
+    m_textCtrlTo->SetHint(wxT(""));
     #endif
     
-    flexGridSizer18->Add(m_textCtrlToMM, 0, wxALL, WXC_FROM_DIP(5));
+    flexGridSizer53->Add(m_textCtrlTo, 0, wxALL, WXC_FROM_DIP(5));
     
-    m_staticText22 = new wxStaticText(this, wxID_ANY, _("mm"), wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), 0);
+    m_stdBtnSizer48 = new wxStdDialogButtonSizer();
     
-    flexGridSizer18->Add(m_staticText22, 0, wxALL, WXC_FROM_DIP(5));
+    boxSizer2->Add(m_stdBtnSizer48, 0, wxALL, WXC_FROM_DIP(5));
     
-    m_textCtrlToSS = new wxTextCtrl(this, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(this, wxSize(50,-1)), 0);
-    #if wxVERSION_NUMBER >= 3000
-    m_textCtrlToSS->SetHint(wxT(""));
-    #endif
+    m_button50 = new wxButton(this, wxID_OK, wxT(""), wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1, -1)), 0);
+    m_button50->SetDefault();
+    m_stdBtnSizer48->AddButton(m_button50);
     
-    flexGridSizer18->Add(m_textCtrlToSS, 0, wxALL, WXC_FROM_DIP(5));
-    
-    m_staticText26 = new wxStaticText(this, wxID_ANY, _("ss"), wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), 0);
-    
-    flexGridSizer18->Add(m_staticText26, 0, wxALL, WXC_FROM_DIP(5));
-    
-    m_stdBtnSizer28 = new wxStdDialogButtonSizer();
-    
-    boxSizer2->Add(m_stdBtnSizer28, 0, wxALL|wxALIGN_RIGHT, WXC_FROM_DIP(5));
-    
-    m_buttonOK = new wxButton(this, wxID_OK, wxT(""), wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1, -1)), 0);
-    m_buttonOK->SetDefault();
-    m_stdBtnSizer28->AddButton(m_buttonOK);
-    
-    m_buttonCancel = new wxButton(this, wxID_CANCEL, wxT(""), wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1, -1)), 0);
-    m_stdBtnSizer28->AddButton(m_buttonCancel);
-    m_stdBtnSizer28->Realize();
+    m_button52 = new wxButton(this, wxID_CANCEL, wxT(""), wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1, -1)), 0);
+    m_stdBtnSizer48->AddButton(m_button52);
+    m_stdBtnSizer48->Realize();
     
     SetName(wxT("DlgExtractFrameBase"));
-    SetSize(300,200);
+    SetSize(500,250);
     if (GetSizer()) {
          GetSizer()->Fit(this);
     }

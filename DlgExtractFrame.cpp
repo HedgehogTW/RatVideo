@@ -1,4 +1,5 @@
 #include "DlgExtractFrame.h"
+#include <wx/msgdlg.h>
 
 DlgExtractFrame::DlgExtractFrame(wxWindow* parent)
     : DlgExtractFrameBase(parent)
@@ -9,17 +10,26 @@ DlgExtractFrame::~DlgExtractFrame()
 {
 }
 
-void DlgExtractFrame::getParam(long &fromMM, long &fromSS, long &toMM, long &toSS)
+void DlgExtractFrame::getParam(std::string & outpath, int &fromMM, int &fromSS, int &toMM, int &toSS)
 {
-	wxString str = m_textCtrlFromMM->GetValue();
-	str.ToLong(&fromMM);	
+	wxString str = m_textCtrlFrom->GetValue();
+	char* cstr = str.char_str();
+	int n = sscanf(cstr, "%d:%d", &fromMM, &fromSS);
+	if(n!=2) {
+		wxMessageBox( "From: Not time format","Error", wxICON_ERROR);
+		return;
+	}
 	
-	str = m_textCtrlFromSS->GetValue();
-	str.ToLong(&fromSS);	
+	str = m_textCtrlTo->GetValue();
+	cstr = str.char_str();
+	n = sscanf(cstr, "%d:%d", &toMM, &toSS);
+	if(n!=2) {
+		wxMessageBox( "To: Not time format","Error", wxICON_ERROR);
+		return;
+	}
 	
-	str = m_textCtrlToMM->GetValue();
-	str.ToLong(&toMM);	
-	
-	str = m_textCtrlToSS->GetValue();
-	str.ToLong(&toSS);
+
+	outpath = m_textCtrlOutPath->GetValue();
+	if(outpath.back() != '/' || outpath.back() != '\\')
+		outpath += "/";	
 }

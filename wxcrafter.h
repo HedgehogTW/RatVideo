@@ -82,6 +82,9 @@ protected:
     wxAuiToolBar* m_auibar23;
     wxAuiNotebook* m_auiBook;
     wxPanel* m_panelProfile;
+    wxPanel* m_panel209;
+    wxStaticText* m_staticText205;
+    wxTextCtrl* m_textCtrlDataPath;
     wxStaticText* m_staticText154;
     wxTextCtrl* m_textCtrlGausKSize;
     wxStaticText* m_staticText179;
@@ -141,6 +144,9 @@ public:
     wxMenuBar* GetMenuBar() { return m_menuBar; }
     wxStatusBar* GetStatusBar() { return m_statusBar; }
     wxAuiToolBar* GetAuibar23() { return m_auibar23; }
+    wxStaticText* GetStaticText205() { return m_staticText205; }
+    wxTextCtrl* GetTextCtrlDataPath() { return m_textCtrlDataPath; }
+    wxPanel* GetPanel209() { return m_panel209; }
     wxStaticText* GetStaticText154() { return m_staticText154; }
     wxTextCtrl* GetTextCtrlGausKSize() { return m_textCtrlGausKSize; }
     wxStaticText* GetStaticText179() { return m_staticText179; }

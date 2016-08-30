@@ -14,7 +14,7 @@
 #include <wx/iconbndl.h>
 #include <wx/artprov.h>
 #include <wx/sizer.h>
-#include <wx/statbox.h>
+#include <wx/panel.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 #include <wx/button.h>
@@ -38,34 +38,28 @@
 class DlgExtractFrameBase : public wxDialog
 {
 protected:
+    wxPanel* m_panel34;
+    wxStaticText* m_staticText38;
+    wxTextCtrl* m_textCtrlOutPath;
     wxStaticText* m_staticText6;
-    wxTextCtrl* m_textCtrlFromMM;
-    wxStaticText* m_staticText10;
-    wxTextCtrl* m_textCtrlFromSS;
-    wxStaticText* m_staticText14;
+    wxTextCtrl* m_textCtrlFrom;
     wxStaticText* m_staticText20;
-    wxTextCtrl* m_textCtrlToMM;
-    wxStaticText* m_staticText22;
-    wxTextCtrl* m_textCtrlToSS;
-    wxStaticText* m_staticText26;
-    wxStdDialogButtonSizer* m_stdBtnSizer28;
-    wxButton* m_buttonOK;
-    wxButton* m_buttonCancel;
+    wxTextCtrl* m_textCtrlTo;
+    wxStdDialogButtonSizer* m_stdBtnSizer48;
+    wxButton* m_button50;
+    wxButton* m_button52;
 
 protected:
 
 public:
+    wxStaticText* GetStaticText38() { return m_staticText38; }
+    wxTextCtrl* GetTextCtrlOutPath() { return m_textCtrlOutPath; }
     wxStaticText* GetStaticText6() { return m_staticText6; }
-    wxTextCtrl* GetTextCtrlFromMM() { return m_textCtrlFromMM; }
-    wxStaticText* GetStaticText10() { return m_staticText10; }
-    wxTextCtrl* GetTextCtrlFromSS() { return m_textCtrlFromSS; }
-    wxStaticText* GetStaticText14() { return m_staticText14; }
+    wxTextCtrl* GetTextCtrlFrom() { return m_textCtrlFrom; }
     wxStaticText* GetStaticText20() { return m_staticText20; }
-    wxTextCtrl* GetTextCtrlToMM() { return m_textCtrlToMM; }
-    wxStaticText* GetStaticText22() { return m_staticText22; }
-    wxTextCtrl* GetTextCtrlToSS() { return m_textCtrlToSS; }
-    wxStaticText* GetStaticText26() { return m_staticText26; }
-    DlgExtractFrameBase(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Extract Frames"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(300,200), long style = wxDEFAULT_DIALOG_STYLE);
+    wxTextCtrl* GetTextCtrlTo() { return m_textCtrlTo; }
+    wxPanel* GetPanel34() { return m_panel34; }
+    DlgExtractFrameBase(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Extract Frames"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(500,250), long style = wxDEFAULT_DIALOG_STYLE);
     virtual ~DlgExtractFrameBase();
 };
 

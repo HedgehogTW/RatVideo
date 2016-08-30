@@ -129,10 +129,12 @@ MainFrame::MainFrame(wxWindow* parent)
 	wxString outpath, str; 
 #if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) 
 	outpath = "./config";// + subpath;
-	m_Filename = "~/tmp/1218(4).AVI";
+//	m_Filename = "~/tmp/1218(4).AVI";
+	*m_textCtrlDataPath << "~/tmp/";
 #else
 	outpath = ".\\config";
-	m_Filename = "d:\\tmp\\1218(4).AVI";
+//	m_Filename = "d:\\tmp\\1218(4).AVI";
+	*m_textCtrlDataPath << "D:/Dropbox/Rat_Lick/data/";
 #endif	
 
 	if(wxDirExists(outpath)==false) {
@@ -255,7 +257,7 @@ void MainFrame::openFile(wxString &fileName)
 //		myMsgOutput( "Load ... " + fileName + " ERROR\n");
 //	}
 	m_Filename = fileName;		
-	m_strSourcePath = fileName;
+//	m_strSourcePath = fileName;
 	myMsgOutput("\n++++++++++++++++++++++++++++++++++++++++++++++++\n");
 	myMsgOutput( "Load ... " + fileName + "\n");
 /*
@@ -308,10 +310,10 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 	if(selBGS == wxNOT_FOUND) {
 		myMsgOutput( "No BGS algorithm selection\n");		
 		wxMessageBox( "No BGS algorithm selection","Error", wxICON_ERROR);
-
 		return;		
 	}
-
+	readControlValues();
+	
 	cv::VideoCapture vidCap;
 	vidCap.open(m_Filename.ToStdString());
 	if(vidCap.isOpened()==false) {
@@ -319,7 +321,7 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 		return;
 	}
 	readVideoProperties(vidCap);
-	readControlValues();
+
 
 //	destroyAllWindows();
 	wxString strBGS = m_listBoxBGS->GetString(selBGS);	
@@ -514,6 +516,12 @@ void MainFrame::readControlValues()
 	m_bClassWMM = m_radioButtonClassWMM->GetValue();
 	m_bLeftSide = m_radioButtonLeftSide->GetValue();
 	m_bShowPreprocess = m_checkBoxShowPreprocess->GetValue();
+	
+	m_DataPath = m_textCtrlDataPath->GetValue();
+	if(m_DataPath.back() != '/' || m_DataPath.back() != '\\')
+		m_DataPath += "/";
+		
+	m_Filename = m_DataPath + "1218(4).AVI";
 /*	
 	wxString msg;
 	msg << "readControlValues ... \n";
@@ -529,6 +537,8 @@ void MainFrame::OnVideoExtractFrames(wxCommandEvent& event)
 	DlgExtractFrame dlg(this);
 	if(dlg.ShowModal()== wxID_CANCEL ) return;
 		
+	readControlValues();
+	
 	cv::VideoCapture vidCap;
 	vidCap.open(m_Filename.ToStdString());
 	if(vidCap.isOpened()==false) {
@@ -538,9 +548,10 @@ void MainFrame::OnVideoExtractFrames(wxCommandEvent& event)
 	
 	double fps = vidCap.get(CV_CAP_PROP_FPS);
 	
-	long fromMM, fromSS, toMM, toSS, fromFrame, toFrame;
+	std::string outpath;
+	int fromMM, toMM, fromSS, toSS, fromFrame, toFrame;
 	
-	dlg.getParam(fromMM, fromSS, toMM, toSS);
+	dlg.getParam(outpath, fromMM, fromSS, toMM, toSS);
 	
 	fromFrame = (fromMM*60+fromSS)*fps;
 	toFrame = (toMM*60+toSS)*fps;
@@ -553,30 +564,49 @@ void MainFrame::OnVideoExtractFrames(wxCommandEvent& event)
 		frameNumber++;	
 	}
 	
-	wxString outpath, strFramename, outName, str; 
+	wxString destPath, strFramename, outName, str; 
 #if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) 
-	outpath.Printf("~/tmp/frame_%02d%02d_%02d%02d/", fromMM, fromSS, toMM, toSS);
+	destPath.Printf("%sframe_%02d%02d_%02d%02d/", outpath, fromMM, fromSS, toMM, toSS);
 #else
-	outpath.Printf("d:\\tmp\\frame_%02d%02d_%02d%02d\\", fromMM, fromSS, toMM, toSS);
+	destPath.Printf("%sframe_%02d%02d_%02d%02d/", outpath, fromMM, fromSS, toMM, toSS);
 #endif	
 
-	if(wxDirExists(outpath)==false) {
-		if(wxMkdir(outpath)==false) {
-			str.Printf("Create frame directory error, %s", outpath);
+	if(wxDirExists(destPath)==false) {
+		if(wxMkdir(destPath)==false) {
+			str.Printf("Create frame directory error, %s", destPath);
 			wxLogMessage(str);
 			return;
 		}
 	}
+/*
+	VideoWriter outputVideo; // For writing the video
+	int width = img_input.cols; // Declare width here
+    int height = img_input.rows; // Declare height here
+    cv::Size S = Size(width, height); // Declare Size structure
 
+    // Open up the video for writing
+    const string filename = outpath + "_xxx.mp4"; // Declare name of file here
+
+    // Declare FourCC code
+    int fourcc = CV_FOURCC('H','2','6','4');
+
+    // Declare FPS here
+    bool bVideoWriter = outputVideo.open(filename, fourcc, fps, S);
+	if (!bVideoWriter) 
+		myMsgOutput("outputVideo.open Failed\n");
+*/	
 	while(frameNumber < toFrame){
 		vidCap >> img_input;
 		if (img_input.empty()) break;
 		strFramename.Printf("f%02d%02d_%02d%02d_%06d.png", fromMM, fromSS, toMM, toSS, frameNumber);
-		outName  = outpath + strFramename;
+		outName  = destPath + strFramename;
 		imwrite(outName.ToStdString(), img_input);
+		
+//		if (bVideoWriter) 
+//			outputVideo << img_input; 
 		frameNumber++;	
 	}	
-	
+//	outputVideo.release();
 	wxString msg;
 	msg.Printf("Extract frame from %02d:%02d (%d) to  %02d:%02d (%d)\n",fromMM, fromSS, fromFrame, toMM, toSS, toFrame );
 	myMsgOutput(msg);
@@ -584,6 +614,8 @@ void MainFrame::OnVideoExtractFrames(wxCommandEvent& event)
 
 void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 {
+	readControlValues();	
+	
 	cv::VideoCapture vidCap;
 	vidCap.open(m_Filename.ToStdString());
 	if(vidCap.isOpened()==false) {
@@ -592,7 +624,7 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	}
 
 	readVideoProperties(vidCap);
-	readControlValues();
+
 	
 	wxString msg;
 	msg.Printf("\nLoad %s, w%d x h%d, do KDE background ...\n", m_Filename, m_width, m_height);
@@ -678,6 +710,7 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 {
 	DeleteContents();
+	readControlValues();	
 	
 	cv::VideoCapture vidCap;
 	vidCap.open(m_Filename.ToStdString());
@@ -686,7 +719,7 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 		return;
 	}
 	readVideoProperties(vidCap);
-	readControlValues();
+
 
 	wxString msg;
 	msg << "\nLoad ... " << m_Filename << " OK\n";
@@ -730,12 +763,7 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 		if (img_input.empty()) break;
 	}
 	
-	string outFilename; 
-#if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) 
-	outFilename = "~/tmp/nonzeroPixels.csv";
-#else
-	outFilename = "d:\\tmp\\nonzeroPixels.csv";
-#endif
+	string outFilename = m_DataPath + "nonzeroPixels.csv"; 
 	
 	FILE *fp = fopen(outFilename.c_str(), "w");
 	fprintf(fp, "imgSize, frameNumber, FD, WMM, ABL, rFD, rWMM, rABL\n");
@@ -799,12 +827,7 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 
 void MainFrame::OnViewShowFrameType(wxCommandEvent& event)
 {
-	string filename; 
-#if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) 
-	filename = "~/tmp/frameType.csv";
-#else
-	filename = "d:\\tmp\\frameType.csv";
-#endif
+	string filename = m_DataPath + "frameType.csv"; 
 	
 	FILE *fp = fopen(filename.c_str(), "r");
 	if(fp == NULL) {
@@ -831,12 +854,8 @@ void MainFrame::OnViewShowFrameType(wxCommandEvent& event)
 }
 void MainFrame::OnViewShowProfile(wxCommandEvent& event)
 {
-	string filename; 
-#if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) 
-	filename = "~/tmp/nonzeroPixels.csv";
-#else
-	filename = "d:\\tmp\\nonzeroPixels.csv";
-#endif
+	readControlValues();
+	string filename = m_DataPath + "nonzeroPixels.csv";
 	
 	FILE *fp = fopen(filename.c_str(), "r");
 	if(fp == NULL) {
@@ -844,7 +863,7 @@ void MainFrame::OnViewShowProfile(wxCommandEvent& event)
 		wxMessageBox( "cannot open nonzeroPixels.csv","Error", wxICON_ERROR);
 		return;		
 	}	
-	readControlValues();
+
 	
 	vector<int>  vWMM, vFD;
 	char title [200];
@@ -867,17 +886,13 @@ void MainFrame::OnViewShowProfile(wxCommandEvent& event)
 
 void MainFrame::OnProfileGaussianSmooth(wxCommandEvent& event)
 {
-	std::string filename;
-#if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) 
-	filename = "/Users/CCLee/tmp/nonzeroPixels.csv";
-#else
-	filename = "d:/tmp/nonzeroPixels.csv";
-#endif
+	readControlValues();
+	std::string filename = m_DataPath + "nonzeroPixels.csv";
 
 	if(m_profile.LoadProfileData(filename)==false) 
 		return;
 	
-	readControlValues();
+
 	int ksize = m_nGauKSize;  // should be odd	
 	if(m_profile.GaussianSmooth(ksize)==false) 
 		return;

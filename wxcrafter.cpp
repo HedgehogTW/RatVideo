@@ -119,6 +119,24 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     wxBoxSizer* boxSizer160 = new wxBoxSizer(wxVERTICAL);
     m_panelProfile->SetSizer(boxSizer160);
     
+    m_panel209 = new wxPanel(m_panelProfile, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), wxTAB_TRAVERSAL);
+    
+    boxSizer160->Add(m_panel209, 0, wxALL|wxEXPAND, WXC_FROM_DIP(5));
+    
+    wxBoxSizer* boxSizer203 = new wxBoxSizer(wxHORIZONTAL);
+    m_panel209->SetSizer(boxSizer203);
+    
+    m_staticText205 = new wxStaticText(m_panel209, wxID_ANY, _("Data Path"), wxDefaultPosition, wxDLG_UNIT(m_panel209, wxSize(-1,-1)), 0);
+    
+    boxSizer203->Add(m_staticText205, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_textCtrlDataPath = new wxTextCtrl(m_panel209, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panel209, wxSize(-1,-1)), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrlDataPath->SetHint(wxT(""));
+    #endif
+    
+    boxSizer203->Add(m_textCtrlDataPath, 1, wxALL|wxEXPAND, WXC_FROM_DIP(5));
+    
     wxFlexGridSizer* flexGridSizer163 = new wxFlexGridSizer(3, 4, 0, 0);
     flexGridSizer163->SetFlexibleDirection( wxBOTH );
     flexGridSizer163->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
