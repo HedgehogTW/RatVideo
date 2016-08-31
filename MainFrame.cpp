@@ -117,7 +117,7 @@ MainFrame::MainFrame(wxWindow* parent)
 
 	this->Connect(wxID_FILE1, wxID_FILE9, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMRUFile), NULL, this);
 	
-	SetSize(700, 550);
+	SetSize(700, 590);
 	Center();	
 	
 	m_bStopProcess = false;
@@ -491,6 +491,11 @@ void MainFrame::readControlValues()
 	str.ToLong(&m_Sampling);
 	if(m_Sampling<=0) m_Sampling = 1;	
 	
+	str = m_textCtrlGnuplotW->GetValue();
+	str.ToLong(&m_nGnuplotW);
+
+	str = m_textCtrlGnuplotH->GetValue();
+	str.ToLong(&m_nGnuplotH);	
 	
 	str = m_textCtrlRangeXMin->GetValue();
 	str.ToLong(&m_nRangeXMin);
@@ -610,6 +615,7 @@ void MainFrame::OnVideoExtractFrames(wxCommandEvent& event)
 	wxString msg;
 	msg.Printf("Extract frame from %02d:%02d (%d) to  %02d:%02d (%d)\n",fromMM, fromSS, fromFrame, toMM, toSS, toFrame );
 	myMsgOutput(msg);
+	wxBell();
 }
 
 void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
@@ -873,14 +879,14 @@ void MainFrame::OnViewShowProfile(wxCommandEvent& event)
 		int n = fscanf(fp, "%*d,%d,%d,%d,%*d,%*f,%*f,%*f", &frameNumber, &fd, &nonZeroWMM);
 		if(n!=3)  break;
 		vFD.push_back(fd);
-		vWMM.push_back(nonZeroWMM);
+//		vWMM.push_back(nonZeroWMM);
 	}
 	fclose(fp);	
 	myMsgOutput( "nonzeroPixels.csv  Profile size %d\n",vWMM.size() );
 	
-	_gnuplotInit(gPlotView, "Profile", 1200, 300, m_nRangeYMin, m_nRangeYMax); // y min max
+	_gnuplotInit(gPlotView, "Profile", m_nGnuplotW, m_nGnuplotH, m_nRangeYMin, m_nRangeYMax); // y min max
 	gPlotView.set_xrange(m_nRangeXMin, m_nRangeXMax);
-	_gnuplotLine(gPlotView, "Weighted Moving Mean", vWMM, "#00ff0000");
+//	_gnuplotLine(gPlotView, "Weighted Moving Mean", vWMM, "#00ff0000");
 	_gnuplotLine(gPlotView, "FrameDiff", vFD, "#000000ff");		
 }
 
@@ -901,13 +907,13 @@ void MainFrame::OnProfileGaussianSmooth(wxCommandEvent& event)
 	
 	char str[100];
 	sprintf(str, "WMM Gaussian smooth (ksize %d)", ksize);
-	_gnuplotInit(gPlotWMM, str, 1200, 300, m_nRangeYMin, m_nRangeYMax); // y min max
+	_gnuplotInit(gPlotWMM, str, m_nGnuplotW, m_nGnuplotH, m_nRangeYMin, m_nRangeYMax); // y min max
 	gPlotWMM.set_xrange(m_nRangeXMin, m_nRangeXMax);
 	_gnuplotLine(gPlotWMM, "WMM Profile", m_profile.m_vSignalWMM, "#00DC143C");
 	_gnuplotLine(gPlotWMM, "Smooth", m_profile.m_vSmoothWMM, "#000000ff");	
 	
 	sprintf(str, "FD Gaussian smooth (ksize %d)", ksize);
-	_gnuplotInit(gPlotFD, str, 1200, 300, m_nRangeYMin, m_nRangeYMax); // y min max
+	_gnuplotInit(gPlotFD, str, m_nGnuplotW, m_nGnuplotH, m_nRangeYMin, m_nRangeYMax); // y min max
 	gPlotFD.set_xrange(m_nRangeXMin, m_nRangeXMax);
 	_gnuplotLine(gPlotFD, "FD Profile", m_profile.m_vSignalFD, "#00D2691E");
 	_gnuplotLine(gPlotFD, "Smooth", m_profile.m_vSmoothFD, "#000000ff");		

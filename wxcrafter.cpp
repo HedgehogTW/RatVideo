@@ -108,10 +108,10 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_auibar23->AddTool(wxID_PROFILE_SMOOTH, _("Profile Gaussian Smooth"), wxXmlResource::Get()->LoadBitmap(wxT("smooth")), wxNullBitmap, wxITEM_NORMAL, _("Profile Gaussian Smooth"), wxT(""), NULL);
     m_auibar23->Realize();
     
-    m_auiBook = new wxAuiNotebook(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(250,250)), wxAUI_NB_TAB_FIXED_WIDTH|wxBK_DEFAULT);
+    m_auiBook = new wxAuiNotebook(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(250,200)), wxAUI_NB_TAB_FIXED_WIDTH|wxBK_DEFAULT);
     m_auiBook->SetName(wxT("m_auiBook"));
     
-    m_auimgr21->AddPane(m_auiBook, wxAuiPaneInfo().Direction(wxAUI_DOCK_CENTER).Layer(0).Row(0).Position(0).BestSize(100,100).MinSize(100,100).MaxSize(100,100).CaptionVisible(false).MaximizeButton(false).CloseButton(false).MinimizeButton(false).PinButton(false));
+    m_auimgr21->AddPane(m_auiBook, wxAuiPaneInfo().Direction(wxAUI_DOCK_CENTER).Layer(0).Row(0).Position(0).BestSize(250,200).MinSize(250,100).MaxSize(250,550).CaptionVisible(false).MaximizeButton(false).CloseButton(false).MinimizeButton(false).PinButton(false));
     
     m_panelProfile = new wxPanel(m_auiBook, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_auiBook, wxSize(-1,-1)), wxTAB_TRAVERSAL);
     m_auiBook->AddPage(m_panelProfile, _("Profile"), true);
@@ -119,29 +119,26 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     wxBoxSizer* boxSizer160 = new wxBoxSizer(wxVERTICAL);
     m_panelProfile->SetSizer(boxSizer160);
     
-    m_panel209 = new wxPanel(m_panelProfile, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), wxTAB_TRAVERSAL);
-    
-    boxSizer160->Add(m_panel209, 0, wxALL|wxEXPAND, WXC_FROM_DIP(5));
-    
     wxBoxSizer* boxSizer203 = new wxBoxSizer(wxHORIZONTAL);
-    m_panel209->SetSizer(boxSizer203);
     
-    m_staticText205 = new wxStaticText(m_panel209, wxID_ANY, _("Data Path"), wxDefaultPosition, wxDLG_UNIT(m_panel209, wxSize(-1,-1)), 0);
+    boxSizer160->Add(boxSizer203, 0, wxALL|wxEXPAND, WXC_FROM_DIP(5));
+    
+    m_staticText205 = new wxStaticText(m_panelProfile, wxID_ANY, _("Data Path"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
     
     boxSizer203->Add(m_staticText205, 0, wxALL, WXC_FROM_DIP(5));
     
-    m_textCtrlDataPath = new wxTextCtrl(m_panel209, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panel209, wxSize(-1,-1)), 0);
+    m_textCtrlDataPath = new wxTextCtrl(m_panelProfile, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(400,-1)), 0);
     #if wxVERSION_NUMBER >= 3000
     m_textCtrlDataPath->SetHint(wxT(""));
     #endif
     
-    boxSizer203->Add(m_textCtrlDataPath, 1, wxALL|wxEXPAND, WXC_FROM_DIP(5));
+    boxSizer203->Add(m_textCtrlDataPath, 0, wxALL, WXC_FROM_DIP(5));
     
     wxFlexGridSizer* flexGridSizer163 = new wxFlexGridSizer(3, 4, 0, 0);
     flexGridSizer163->SetFlexibleDirection( wxBOTH );
     flexGridSizer163->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
     
-    boxSizer160->Add(flexGridSizer163, 1, wxALL|wxEXPAND, WXC_FROM_DIP(5));
+    boxSizer160->Add(flexGridSizer163, 0, wxALL|wxEXPAND, WXC_FROM_DIP(5));
     
     m_staticText154 = new wxStaticText(m_panelProfile, wxID_ANY, _("Gaussian kSize"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
     
@@ -187,11 +184,33 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     flexGridSizer163->Add(m_textCtrlMinActive, 0, wxALL, WXC_FROM_DIP(5));
     
-    wxFlexGridSizer* flexGridSizer165 = new wxFlexGridSizer(4, 3, 0, 0);
+    m_staticText211 = new wxStaticText(m_panelProfile, wxID_ANY, _("gnuplot width"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
+    
+    flexGridSizer163->Add(m_staticText211, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_textCtrlGnuplotW = new wxTextCtrl(m_panelProfile, wxID_ANY, wxT("1200"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(50,-1)), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrlGnuplotW->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer163->Add(m_textCtrlGnuplotW, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_staticText215 = new wxStaticText(m_panelProfile, wxID_ANY, _("height"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
+    
+    flexGridSizer163->Add(m_staticText215, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_textCtrlGnuplotH = new wxTextCtrl(m_panelProfile, wxID_ANY, wxT("300"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(50,-1)), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrlGnuplotH->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer163->Add(m_textCtrlGnuplotH, 0, wxALL, WXC_FROM_DIP(5));
+    
+    wxFlexGridSizer* flexGridSizer165 = new wxFlexGridSizer(5, 3, 0, 0);
     flexGridSizer165->SetFlexibleDirection( wxBOTH );
     flexGridSizer165->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
     
-    boxSizer160->Add(flexGridSizer165, 1, wxALL|wxEXPAND, WXC_FROM_DIP(5));
+    boxSizer160->Add(flexGridSizer165, 0, wxALL|wxEXPAND, WXC_FROM_DIP(5));
     
     m_staticText197 = new wxStaticText(m_panelProfile, wxID_ANY, _("Classification"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
     
@@ -268,7 +287,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     wxFont m_panelAlgoFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
     m_panelAlgo->SetFont(m_panelAlgoFont);
     
-    m_auimgr21->AddPane(m_panelAlgo, wxAuiPaneInfo().Caption(_("Algorithm")).Direction(wxAUI_DOCK_RIGHT).Layer(0).Row(0).Position(0).BestSize(220,100).MinSize(200,100).MaxSize(200,100).CaptionVisible(true).MaximizeButton(false).CloseButton(false).MinimizeButton(false).PinButton(false));
+    m_auimgr21->AddPane(m_panelAlgo, wxAuiPaneInfo().Caption(_("Algorithm")).Direction(wxAUI_DOCK_RIGHT).Layer(0).Row(0).Position(0).BestSize(220,200).MinSize(200,200).MaxSize(200,200).CaptionVisible(true).MaximizeButton(false).CloseButton(false).MinimizeButton(false).PinButton(false));
     
     wxBoxSizer* boxSizer53 = new wxBoxSizer(wxVERTICAL);
     m_panelAlgo->SetSizer(boxSizer53);
@@ -374,7 +393,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     wxFont m_panelMsgFont(10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Calibri"));
     m_panelMsg->SetFont(m_panelMsgFont);
     
-    m_auimgr21->AddPane(m_panelMsg, wxAuiPaneInfo().Name(wxT("MsgPane")).Caption(_("Message Pane")).Direction(wxAUI_DOCK_BOTTOM).Layer(0).Row(0).Position(1).BestSize(450,150).MinSize(450,150).MaxSize(450,300).CaptionVisible(true).MaximizeButton(false).CloseButton(true).MinimizeButton(false).PinButton(false));
+    m_auimgr21->AddPane(m_panelMsg, wxAuiPaneInfo().Name(wxT("MsgPane")).Caption(_("Message Pane")).Direction(wxAUI_DOCK_BOTTOM).Layer(0).Row(0).Position(1).BestSize(450,150).MinSize(450,100).MaxSize(450,300).CaptionVisible(true).MaximizeButton(false).CloseButton(true).MinimizeButton(false).PinButton(false));
     m_auimgr21->Update();
     
     wxBoxSizer* boxSizer27 = new wxBoxSizer(wxVERTICAL);
@@ -396,7 +415,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     #endif
     
     SetName(wxT("MainFrameBaseClass"));
-    SetSize(750,550);
+    SetSize(750,580);
     if (GetSizer()) {
          GetSizer()->Fit(this);
     }

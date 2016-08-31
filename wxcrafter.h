@@ -82,7 +82,6 @@ protected:
     wxAuiToolBar* m_auibar23;
     wxAuiNotebook* m_auiBook;
     wxPanel* m_panelProfile;
-    wxPanel* m_panel209;
     wxStaticText* m_staticText205;
     wxTextCtrl* m_textCtrlDataPath;
     wxStaticText* m_staticText154;
@@ -93,6 +92,10 @@ protected:
     wxTextCtrl* m_textCtrlMinSilence;
     wxStaticText* m_staticText193;
     wxTextCtrl* m_textCtrlMinActive;
+    wxStaticText* m_staticText211;
+    wxTextCtrl* m_textCtrlGnuplotW;
+    wxStaticText* m_staticText215;
+    wxTextCtrl* m_textCtrlGnuplotH;
     wxStaticText* m_staticText197;
     wxRadioButton* m_radioButtonClassWMM;
     wxRadioButton* m_radioButtonClassFD;
@@ -146,7 +149,6 @@ public:
     wxAuiToolBar* GetAuibar23() { return m_auibar23; }
     wxStaticText* GetStaticText205() { return m_staticText205; }
     wxTextCtrl* GetTextCtrlDataPath() { return m_textCtrlDataPath; }
-    wxPanel* GetPanel209() { return m_panel209; }
     wxStaticText* GetStaticText154() { return m_staticText154; }
     wxTextCtrl* GetTextCtrlGausKSize() { return m_textCtrlGausKSize; }
     wxStaticText* GetStaticText179() { return m_staticText179; }
@@ -155,6 +157,10 @@ public:
     wxTextCtrl* GetTextCtrlMinSilence() { return m_textCtrlMinSilence; }
     wxStaticText* GetStaticText193() { return m_staticText193; }
     wxTextCtrl* GetTextCtrlMinActive() { return m_textCtrlMinActive; }
+    wxStaticText* GetStaticText211() { return m_staticText211; }
+    wxTextCtrl* GetTextCtrlGnuplotW() { return m_textCtrlGnuplotW; }
+    wxStaticText* GetStaticText215() { return m_staticText215; }
+    wxTextCtrl* GetTextCtrlGnuplotH() { return m_textCtrlGnuplotH; }
     wxStaticText* GetStaticText197() { return m_staticText197; }
     wxRadioButton* GetRadioButtonClassWMM() { return m_radioButtonClassWMM; }
     wxRadioButton* GetRadioButtonClassFD() { return m_radioButtonClassFD; }
@@ -186,7 +192,7 @@ public:
     wxRichTextCtrl* GetRichTextMsg() { return m_richTextMsg; }
     wxPanel* GetPanelMsg() { return m_panelMsg; }
     wxAuiManager* GetAuimgr21() { return m_auimgr21; }
-    MainFrameBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("RatVideo"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(750,550), long style = wxCAPTION|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCLOSE_BOX);
+    MainFrameBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("RatVideo"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(750,580), long style = wxCAPTION|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCLOSE_BOX);
     virtual ~MainFrameBaseClass();
 };
 

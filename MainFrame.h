@@ -64,6 +64,8 @@ public:
 	std::string 	m_DataPath;
 
 ///////////////////// profile
+	long	m_nGnuplotW;
+	long	m_nGnuplotH;
 	long	m_nGauKSize;
 	long	m_nRangeXMin;
 	long	m_nRangeXMax;	
