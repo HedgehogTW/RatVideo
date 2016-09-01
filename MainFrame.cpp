@@ -340,6 +340,7 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 	cv::Mat img_input;
 	cv::Mat img_prep;
 	cv::Mat mMovingObj;
+	cv::Mat mMedianObj;
     cv::Mat mbkgmodel;
 	m_bStopProcess = false;
 
@@ -348,7 +349,7 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 		vidCap >> img_input;
 		if (img_input.empty()) break;
 	}
-	
+	bool firstTime = true;
     do
     {
 		if(m_bStopProcess)  break;
@@ -360,18 +361,16 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 		
 		cv::imshow("Input", img_input);
 		PreProcessor(img_input, img_prep, m_bLeftSide);
-
 		bgs->process(img_prep, mMovingObj, mbkgmodel);
-
-/*		
-		double msec = vidCap.get(CV_CAP_PROP_POS_MSEC );
-		int fmm = msec / (1000*60);
-		int fss = (msec - fmm*60*1000 )/1000;
-		int fms =  msec - fmm*60*1000 - fss*1000 ;
-		wxString str;
-		str.Printf("%02d:%02d.%03d", fmm, fss, fms);
-		m_statusBar->SetStatusText(str, 1);
-*/
+		if(firstTime) {
+			frameNumber++;
+			firstTime = false;
+			continue;
+		}
+		cv::imshow("mMovingObj", mMovingObj);	
+		int nonZeroFD = countNonZero(mMovingObj);	
+//		cv::medianBlur(mMovingObj, mMedianObj, 3);
+//		cv::imshow("mMedianObj", mMedianObj);
 		
 		float sec = frameNumber /m_fps;
 		int mm = sec / 60;
@@ -756,10 +755,9 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 	
 	cv::Mat img_input;
 	cv::Mat img_prep;
+	cv::Mat mMedianObj;
 	cv::Mat mMovingObj;
-//	cv::Mat mMovingObjFD;
-//	cv::Mat mMovingObjWMM;
-//	cv::Mat mMovingObjABL;
+
     cv::Mat mbkgmodel;
 	m_bStopProcess = false;
 
@@ -787,9 +785,9 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 		int imgSize = img_prep.rows * img_prep.cols;
 		
 		bgsFD->process(img_prep, mMovingObj, mbkgmodel);
-//		cv::medianBlur(mMovingObj, mMovingObj, 3);
+//		cv::medianBlur(mMovingObj, mMedianObj, 3);
 		int nonZeroFD = countNonZero(mMovingObj);	
-	
+
 		bgsWMM->process(img_prep, mMovingObj, mbkgmodel);
 //		cv::medianBlur(mMovingObj, mMovingObj, 3);
 		int nonZeroWMM = countNonZero(mMovingObj);	

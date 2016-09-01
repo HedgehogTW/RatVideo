@@ -327,6 +327,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_listBoxBGSArr.Add(_("SuBSENSEBGS"));
     m_listBoxBGSArr.Add(_("LOBSTERBGS"));
     m_listBoxBGS = new wxListBox(m_panelAlgo, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_panelAlgo, wxSize(-1,220)), m_listBoxBGSArr, wxLB_SINGLE);
+    m_listBoxBGS->SetSelection(0);
     
     boxSizer53->Add(m_listBoxBGS, 0, wxALL|wxEXPAND, WXC_FROM_DIP(5));
     
