@@ -283,6 +283,37 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_panelKDE = new wxPanel(m_auiBook, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_auiBook, wxSize(-1,-1)), wxTAB_TRAVERSAL);
     m_auiBook->AddPage(m_panelKDE, _("KDE"), false);
     
+    wxBoxSizer* boxSizer219 = new wxBoxSizer(wxVERTICAL);
+    m_panelKDE->SetSizer(boxSizer219);
+    
+    wxFlexGridSizer* flexGridSizer221 = new wxFlexGridSizer(0, 2, 0, 10);
+    flexGridSizer221->SetFlexibleDirection( wxBOTH );
+    flexGridSizer221->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+    
+    boxSizer219->Add(flexGridSizer221, 1, wxALL|wxEXPAND, WXC_FROM_DIP(5));
+    
+    m_staticText223 = new wxStaticText(m_panelKDE, wxID_ANY, _("KernelBW"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    
+    flexGridSizer221->Add(m_staticText223, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_textCtrlKernelBW = new wxTextCtrl(m_panelKDE, wxID_ANY, wxT("2"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrlKernelBW->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer221->Add(m_textCtrlKernelBW, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_staticText227 = new wxStaticText(m_panelKDE, wxID_ANY, _("fg Prob"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    
+    flexGridSizer221->Add(m_staticText227, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_textCtrlFgProb = new wxTextCtrl(m_panelKDE, wxID_ANY, wxT("0.000001"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrlFgProb->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer221->Add(m_textCtrlFgProb, 0, wxALL, WXC_FROM_DIP(5));
+    
     m_panelAlgo = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), wxTAB_TRAVERSAL);
     wxFont m_panelAlgoFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
     m_panelAlgo->SetFont(m_panelAlgoFont);

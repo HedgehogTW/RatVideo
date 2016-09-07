@@ -48,6 +48,7 @@ void KDEBg::BuildBackgroundModel(cv::Mat mIn)
 		pixelIdx = 3*i;
 
 		v = frame[pixelIdx  ];
+//		if(v-15 >=0) v-=15;
 		for(int x=-m_nKnlBW; x<=m_nKnlBW; x++) {
 			p = m_kernel[x+m_nKnlBW];
 /*
@@ -78,7 +79,7 @@ void KDEBg::CreateBackgroundImage()
 
 //	float thH = 0.05;
 //	float thS = 0.05;
-	double thV = 0.03;
+	double thV = m_fg_prob;
 		
 	for(int i=0; i<m_szImage; i++) {
 		double sum = 0;

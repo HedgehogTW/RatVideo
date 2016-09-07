@@ -516,6 +516,12 @@ void MainFrame::readControlValues()
 	
 	str = m_textCtrlMinActive->GetValue();
 	str.ToLong(&m_nMinActive);
+
+	str = m_textCtrlKernelBW->GetValue();
+	str.ToLong(&m_nKernelBW);
+
+	str = m_textCtrlFgProb->GetValue();
+	str.ToDouble(&m_fgProb);
 	
 	m_bClassWMM = m_radioButtonClassWMM->GetValue();
 	m_bLeftSide = m_radioButtonLeftSide->GetValue();
@@ -620,7 +626,25 @@ void MainFrame::OnVideoExtractFrames(wxCommandEvent& event)
 void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 {
 	readControlValues();	
+	//////// Profile Gaussian smooth
+	std::string filename = m_DataPath + "nonzeroPixels.csv";
+	if(m_profile.LoadProfileData(filename)==false) 
+		return;
 	
+	int ksize = m_nGauKSize;  // should be odd	
+	if(m_profile.GaussianSmooth(ksize)==false) 
+		return;
+	
+	myMsgOutput("X range: %d..%d, Y range: %d..%d\n", m_nRangeXMin, m_nRangeXMax, m_nRangeYMin, m_nRangeYMax);	
+	
+	char strTitle[100];
+	sprintf(strTitle, "FD Gaussian smooth (ksize %d)", ksize);
+	_gnuplotInit(gPlotFD, strTitle, m_nGnuplotW, m_nGnuplotH, m_nRangeYMin, m_nRangeYMax); // y min max
+	gPlotFD.set_xrange(m_nRangeXMin, m_nRangeXMax);
+	_gnuplotLine(gPlotFD, "FD Profile", m_profile.m_vSignalFD, "#00D2691E");
+	_gnuplotLine(gPlotFD, "Smooth", m_profile.m_vSmoothFD, "#000000ff");
+
+////////////////////////////////////////////////////////	
 	cv::VideoCapture vidCap;
 	vidCap.open(m_Filename.ToStdString());
 	if(vidCap.isOpened()==false) {
@@ -639,21 +663,19 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	cv::Mat img_input;
 	KDEBg kdeModel;	
 	int frameNumber = 0;
-	int counter = 0;
-	int nTrainMin = 10;
-	int sampling = 200;
-	int	nKernelBW = 10;
-	double fgProb = 0.001;
-	int nTrainingFrames = nTrainMin*60*m_fps/sampling;	
-
 	
-	myMsgOutput("training %d min, %d frames, sampling %d\n", nTrainMin, nTrainingFrames, sampling);
-	kdeModel.init(m_width, m_height, nKernelBW, nTrainingFrames, fgProb);
+	int sampling = 20;
+	int nTrainingFrames = 300; //nTrainMin*60*m_fps/sampling;	
+	float thSmoothFD = 100;
+	
+	myMsgOutput("KDE training: %d frames, sampling %d, KernelBW %d, fgProb %f\n", nTrainingFrames, sampling, m_nKernelBW, m_fgProb);
+	kdeModel.init(m_width, m_height, m_nKernelBW, nTrainingFrames, m_fgProb);
 	while(frameNumber < m_startFrame){
 		frameNumber++;	
 		vidCap >> img_input;
 		if (img_input.empty()) break;
 	}
+	int counter = 0;
 	bool bAbort = false;	
 	m_bStopProcess = false;
 	do {
@@ -663,7 +685,9 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 		}
 		vidCap >> img_input;
 		if (img_input.empty()) break;
-		if(frameNumber % sampling ==0) {
+		if((frameNumber % sampling ==0) && (m_profile.m_vSmoothFD[frameNumber]>thSmoothFD)) {
+			//PreProcessor(img_input, img_prep, m_bLeftSide);
+			//int imgSize = img_prep.rows * img_prep.cols;
 			kdeModel.BuildBackgroundModel(img_input);
 			counter++;
 		}
@@ -676,6 +700,14 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 		
 		frameNumber ++;
 	}while(counter < nTrainingFrames);
+	
+	wxString str;
+	float sec = frameNumber /m_fps;
+	int mm = sec / 60;
+	float ss = sec - mm*60;
+	str.Printf("Training stop at frame %d, %02d:%05.02f, collect frame %d\n", frameNumber, mm, ss, counter);	
+	myMsgOutput(str);
+	
 	kdeModel.CreateBackgroundImage();
 	
 	if(bAbort) return;
@@ -686,7 +718,7 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 		myMsgOutput( "Load ... " + m_Filename + " ERROR\n");
 		return;
 	}
-	
+	frameNumber = 0;
 	m_bStopProcess = false;
 	cv::Mat matOut(m_height, m_width, CV_8UC1);
 	

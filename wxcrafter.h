@@ -109,6 +109,10 @@ protected:
     wxTextCtrl* m_textCtrlFrameNo;
     wxTextCtrl* m_textCtrlMMSS;
     wxPanel* m_panelKDE;
+    wxStaticText* m_staticText223;
+    wxTextCtrl* m_textCtrlKernelBW;
+    wxStaticText* m_staticText227;
+    wxTextCtrl* m_textCtrlFgProb;
     wxPanel* m_panelAlgo;
     wxListBox* m_listBoxBGS;
     wxPanel* m_panelGlobalSet;
@@ -174,6 +178,10 @@ public:
     wxTextCtrl* GetTextCtrlFrameNo() { return m_textCtrlFrameNo; }
     wxTextCtrl* GetTextCtrlMMSS() { return m_textCtrlMMSS; }
     wxPanel* GetPanelProfile() { return m_panelProfile; }
+    wxStaticText* GetStaticText223() { return m_staticText223; }
+    wxTextCtrl* GetTextCtrlKernelBW() { return m_textCtrlKernelBW; }
+    wxStaticText* GetStaticText227() { return m_staticText227; }
+    wxTextCtrl* GetTextCtrlFgProb() { return m_textCtrlFgProb; }
     wxPanel* GetPanelKDE() { return m_panelKDE; }
     wxAuiNotebook* GetAuiBook() { return m_auiBook; }
     wxListBox* GetListBoxBGS() { return m_listBoxBGS; }

@@ -62,7 +62,11 @@ public:
 ///////////////////// config
 	MyConfigData	m_configData;
 	std::string 	m_DataPath;
-
+	
+/////////////////////KDE
+	long	m_nKernelBW;
+	double 	m_fgProb;
+	
 ///////////////////// profile
 	long	m_nGnuplotW;
 	long	m_nGnuplotH;
