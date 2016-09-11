@@ -297,7 +297,8 @@ void MainFrame::PreProcessor(const cv::Mat &img_input, cv::Mat &img_output, bool
 	}else 
 		mROI = img_input(cv::Range(0, V_HEIGHT), cv::Range(V_WIDTH, img_input.cols));
 		
-    cv::cvtColor(mROI, img_output, CV_BGR2GRAY);
+ //   cv::cvtColor(mROI, img_output, CV_BGR2GRAY);
+	mROI.copyTo(img_output);
 	if(bSmooth)
 		cv::GaussianBlur(img_output, img_output, cv::Size(3, 3), 1.5);
 }
@@ -722,12 +723,19 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	m_bStopProcess = false;
 	cv::Mat matOut(m_height, m_width, CV_8UC1);
 	
+	Mat kernel = Mat::ones(3, 3, CV_8U);
+	Mat mMedian;
 	do {
 		if(m_bStopProcess)  break;	
 		
 		vidCap >> img_input;
 		if (img_input.empty()) break;
 		kdeModel.DetectMovingObject(img_input, matOut);
+morphologyEx(matOut, mMedian, MORPH_CLOSE, kernel);		
+		cv::medianBlur(mMedian, mMedian, 3);
+
+
+		cv::imshow("median", mMedian);
 		
 		cv::imshow("Input", img_input);
 		cv::imshow( "MovingObject", matOut );
