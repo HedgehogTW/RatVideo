@@ -4320,7 +4320,7 @@
                 }, {
                  "type": "string",
                  "m_label": "Value:",
-                 "m_value": "0.000001"
+                 "m_value": "0.0000001"
                 }, {
                  "type": "string",
                  "m_label": "Text Hint",

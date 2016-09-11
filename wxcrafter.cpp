@@ -307,7 +307,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     flexGridSizer221->Add(m_staticText227, 0, wxALL, WXC_FROM_DIP(5));
     
-    m_textCtrlFgProb = new wxTextCtrl(m_panelKDE, wxID_ANY, wxT("0.000001"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    m_textCtrlFgProb = new wxTextCtrl(m_panelKDE, wxID_ANY, wxT("0.0000001"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
     #if wxVERSION_NUMBER >= 3000
     m_textCtrlFgProb->SetHint(wxT(""));
     #endif

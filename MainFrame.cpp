@@ -665,7 +665,7 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	int frameNumber = 0;
 	
 	int sampling = 20;
-	int nTrainingFrames = 300; //nTrainMin*60*m_fps/sampling;	
+	int nTrainingFrames = 100; //nTrainMin*60*m_fps/sampling;	
 	float thSmoothFD = 100;
 	
 	myMsgOutput("KDE training: %d frames, sampling %d, KernelBW %d, fgProb %f\n", nTrainingFrames, sampling, m_nKernelBW, m_fgProb);
