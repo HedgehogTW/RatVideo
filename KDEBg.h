@@ -27,7 +27,7 @@ public:
 
 	void	init(int w, int h, int nBandWidth, int nBGframes, double fgProb);
 	void 	BuildBackgroundModel(cv::Mat mIn);
-	void	CreateBackgroundImage();
+	void	CreateBackgroundImage(cv::Mat& mBg);
 	void	DetectMovingObject(cv::Mat& matIn, cv::Mat& matOut);
 	
 	int		m_nWidth;

@@ -661,7 +661,7 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	myMsgOutput(msg );
 	
 
-	cv::Mat img_input;
+	cv::Mat img_input, mBg;
 	KDEBg kdeModel;	
 	int frameNumber = 0;
 	
@@ -709,7 +709,7 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	str.Printf("Training stop at frame %d, %02d:%05.02f, collect frame %d\n", frameNumber, mm, ss, counter);	
 	myMsgOutput(str);
 	
-	kdeModel.CreateBackgroundImage();
+	kdeModel.CreateBackgroundImage(mBg);
 	
 	if(bAbort) return;
 	
@@ -724,14 +724,20 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	cv::Mat matOut(m_height, m_width, CV_8UC1);
 	
 	Mat kernel = Mat::ones(3, 3, CV_8U);
-	Mat mMedian;
+	Mat mMedian, mSub, mGray;
 	do {
 		if(m_bStopProcess)  break;	
 		
 		vidCap >> img_input;
 		if (img_input.empty()) break;
 		kdeModel.DetectMovingObject(img_input, matOut);
-morphologyEx(matOut, mMedian, MORPH_CLOSE, kernel);		
+		
+		cv::cvtColor(img_input, mGray, CV_BGR2GRAY);
+		mSub = mGray - mBg;
+		threshold(mSub, mSub, 0, 255, THRESH_TOZERO);
+		cv::imshow("mSub", mSub);
+		
+		cv::morphologyEx(matOut, mMedian, MORPH_CLOSE, kernel);		
 		cv::medianBlur(mMedian, mMedian, 3);
 
 
@@ -1008,4 +1014,7 @@ void MainFrame::OnTextMMSSEnter(wxCommandEvent& event)
 	
 	str1.Printf("%d", frameno);
 	m_textCtrlFrameNo->SetValue(str1);
+}
+void MainFrame::OnVideoCamShift(wxCommandEvent& event)
+{
 }

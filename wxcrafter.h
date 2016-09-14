@@ -70,6 +70,8 @@ protected:
     wxMenuItem* m_menuItemVideoExtractFrame;
     wxMenuItem* m_menuItem138;
     wxMenuItem* m_menuItemVideoFGPixels;
+    wxMenuItem* m_menuItem231;
+    wxMenuItem* m_menuItemVideoCamShift;
     wxMenu* m_menuBackground;
     wxMenuItem* m_menuItemBgKDE;
     wxMenu* m_menuProfile;
@@ -138,6 +140,7 @@ protected:
     virtual void OnVideoFrameProcessor(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoExtractFrames(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoFGPixels(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnVideoCamShift(wxCommandEvent& event) { event.Skip(); }
     virtual void OnBackgroundKDE(wxCommandEvent& event) { event.Skip(); }
     virtual void OnProfileGaussianSmooth(wxCommandEvent& event) { event.Skip(); }
     virtual void OnProfileClassification(wxCommandEvent& event) { event.Skip(); }

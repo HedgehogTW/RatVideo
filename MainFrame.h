@@ -93,6 +93,7 @@ public:
 	bool m_bLeftSide;
 	
 protected:
+    virtual void OnVideoCamShift(wxCommandEvent& event);
     virtual void OnTextMMSSEnter(wxCommandEvent& event);
     virtual void OnTextFrameNoEnter(wxCommandEvent& event);
     virtual void OnProfileGaussianSmooth(wxCommandEvent& event);

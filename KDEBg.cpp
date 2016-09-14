@@ -64,7 +64,7 @@ void KDEBg::BuildBackgroundModel(cv::Mat mIn)
 
 }
 
-void KDEBg::CreateBackgroundImage()
+void KDEBg::CreateBackgroundImage(cv::Mat& mBg)
 {
 
 	cv::Mat bgImage(m_nHeight, m_nWidth, CV_8UC1);  // CV_8UC3
@@ -135,6 +135,7 @@ void KDEBg::CreateBackgroundImage()
 		pBGPixel[i] = vIdx[KDE_BIN_V-1];
 	}
 
+	bgImage.copyTo(mBg);
 	// convert background image to HSV
 	cv::imwrite("background.png", bgImage);
 	//cv::namedWindow( "background", 1 );
