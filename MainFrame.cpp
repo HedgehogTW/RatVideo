@@ -120,7 +120,7 @@ MainFrame::MainFrame(wxWindow* parent)
 	SetSize(700, 590);
 	Center();	
 	
-	m_bStopProcess = false;
+	m_bStopProcess = m_bPause = false;
 	m_bShowPreprocess = m_checkBoxShowPreprocess->GetValue();
 
 	m_fps = 29.97;
@@ -343,7 +343,7 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 	cv::Mat mMovingObj;
 	cv::Mat mMedianObj;
     cv::Mat mbkgmodel;
-	m_bStopProcess = false;
+	m_bStopProcess = m_bPause = false;
 
 	while(frameNumber < m_startFrame){
 		frameNumber++;	
@@ -387,6 +387,13 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 
 	delete bgs;	
 }
+
+void MainFrame::OnVideoPause(wxCommandEvent& event)
+{
+	m_bPause = true;
+	myMsgOutput( "OnVideoPause\n");	
+}
+
 void MainFrame::OnVideoStop(wxCommandEvent& event)
 {
 	m_bStopProcess = true;
@@ -635,7 +642,7 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	int ksize = m_nGauKSize;  // should be odd	
 	if(m_profile.GaussianSmooth(ksize)==false) 
 		return;
-	
+/*	
 	myMsgOutput("X range: %d..%d, Y range: %d..%d\n", m_nRangeXMin, m_nRangeXMax, m_nRangeYMin, m_nRangeYMax);	
 	
 	char strTitle[100];
@@ -644,7 +651,7 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	gPlotFD.set_xrange(m_nRangeXMin, m_nRangeXMax);
 	_gnuplotLine(gPlotFD, "FD Profile", m_profile.m_vSignalFD, "#00D2691E");
 	_gnuplotLine(gPlotFD, "Smooth", m_profile.m_vSmoothFD, "#000000ff");
-
+*/
 ////////////////////////////////////////////////////////	
 	cv::VideoCapture vidCap;
 	vidCap.open(m_Filename.ToStdString());
@@ -678,7 +685,7 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	}
 	int counter = 0;
 	bool bAbort = false;	
-	m_bStopProcess = false;
+	m_bStopProcess = m_bPause = false;
 	do {
 		if(m_bStopProcess)  {
 			bAbort = true;
@@ -720,11 +727,12 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 		return;
 	}
 	frameNumber = 0;
-	m_bStopProcess = false;
+	m_bStopProcess = m_bPause = false;
 	cv::Mat matOut(m_height, m_width, CV_8UC1);
 	
-	Mat kernel = Mat::ones(3, 3, CV_8U);
-	Mat mMedian, mSub, mGray;
+	Mat kernel = Mat::ones(5, 5, CV_8U);
+	Mat mMedian, mSub, mGray, mOtsu;
+	
 	do {
 		if(m_bStopProcess)  break;	
 		
@@ -735,16 +743,15 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 		cv::cvtColor(img_input, mGray, CV_BGR2GRAY);
 		mSub = mGray - mBg;
 		threshold(mSub, mSub, 0, 255, THRESH_TOZERO);
-		cv::imshow("mSub", mSub);
+		cv::medianBlur(mSub, mMedian, 5);
 		
-		cv::morphologyEx(matOut, mMedian, MORPH_CLOSE, kernel);		
-		cv::medianBlur(mMedian, mMedian, 3);
-
-
+		threshold(mMedian, mOtsu, 0, 255, THRESH_BINARY|THRESH_OTSU);
+		
 		cv::imshow("median", mMedian);
+		cv::imshow("mOtsu", mOtsu);
 		
 		cv::imshow("Input", img_input);
-		cv::imshow( "MovingObject", matOut );
+//		cv::imshow( "MovingObject", matOut );
 		
 		float sec = frameNumber /m_fps;
 		int mm = sec / 60;
@@ -757,6 +764,8 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 		if(cv::waitKey(m_waitTime) >= 0) break;
 		
 	}while(1);
+	imwrite("_median.bmp", mMedian);
+	imwrite("_otsu.bmp", mOtsu);
 }
 void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 {
@@ -805,7 +814,7 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 	cv::Mat mMovingObj;
 
     cv::Mat mbkgmodel;
-	m_bStopProcess = false;
+	m_bStopProcess = m_bPause = false;
 
 	while(frameNumber < m_startFrame){
 		frameNumber++;	
@@ -1015,6 +1024,8 @@ void MainFrame::OnTextMMSSEnter(wxCommandEvent& event)
 	str1.Printf("%d", frameno);
 	m_textCtrlFrameNo->SetValue(str1);
 }
+
 void MainFrame::OnVideoCamShift(wxCommandEvent& event)
 {
+
 }

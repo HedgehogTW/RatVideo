@@ -108,6 +108,8 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     m_auibar23->AddTool(wxID_STOP, _("Stop"), wxXmlResource::Get()->LoadBitmap(wxT("error")), wxNullBitmap, wxITEM_NORMAL, _("Stop"), wxT(""), NULL);
     
+    m_auibar23->AddTool(wxID_PAUSE, _("Pause"), wxXmlResource::Get()->LoadBitmap(wxT("pause")), wxNullBitmap, wxITEM_NORMAL, wxT(""), wxT(""), NULL);
+    
     m_auibar23->AddTool(wxID_EXTRACT_FRAME, _("Extract Frames"), wxXmlResource::Get()->LoadBitmap(wxT("download")), wxNullBitmap, wxITEM_NORMAL, _("Extract Frames"), wxT(""), NULL);
     
     m_auibar23->AddTool(wxID_PROFILE_SMOOTH, _("Profile Gaussian Smooth"), wxXmlResource::Get()->LoadBitmap(wxT("smooth")), wxNullBitmap, wxITEM_NORMAL, _("Profile Gaussian Smooth"), wxT(""), NULL);
@@ -485,6 +487,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     this->Connect(wxID_OPEN, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnFileOpen), NULL, this);
     this->Connect(wxID_FRAME_PROCESSOR, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoFrameProcessor), NULL, this);
     this->Connect(wxID_STOP, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoStop), NULL, this);
+    this->Connect(wxID_PAUSE, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoPause), NULL, this);
     this->Connect(wxID_EXTRACT_FRAME, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoExtractFrames), NULL, this);
     m_auiBook->Connect(wxEVT_COMMAND_AUINOTEBOOK_PAGE_CHANGED, wxAuiNotebookEventHandler(MainFrameBaseClass::OnBookPageChanged), NULL, this);
     m_textCtrlFrameNo->Connect(wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler(MainFrameBaseClass::OnTextFrameNoEnter), NULL, this);
@@ -510,6 +513,7 @@ MainFrameBaseClass::~MainFrameBaseClass()
     this->Disconnect(wxID_OPEN, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnFileOpen), NULL, this);
     this->Disconnect(wxID_FRAME_PROCESSOR, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoFrameProcessor), NULL, this);
     this->Disconnect(wxID_STOP, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoStop), NULL, this);
+    this->Disconnect(wxID_PAUSE, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoPause), NULL, this);
     this->Disconnect(wxID_EXTRACT_FRAME, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoExtractFrames), NULL, this);
     m_auiBook->Disconnect(wxEVT_COMMAND_AUINOTEBOOK_PAGE_CHANGED, wxAuiNotebookEventHandler(MainFrameBaseClass::OnBookPageChanged), NULL, this);
     m_textCtrlFrameNo->Disconnect(wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler(MainFrameBaseClass::OnTextFrameNoEnter), NULL, this);

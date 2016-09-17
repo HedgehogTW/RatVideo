@@ -84,6 +84,7 @@ public:
 ///////////////////// bgs	
 	bool m_bShowPreprocess;
 	bool m_bStopProcess;
+	bool m_bPause;
 	long m_waitTime;
 	long m_startFrame;
 	long m_Sampling;
@@ -93,6 +94,7 @@ public:
 	bool m_bLeftSide;
 	
 protected:
+    virtual void OnVideoPause(wxCommandEvent& event);
     virtual void OnVideoCamShift(wxCommandEvent& event);
     virtual void OnTextMMSSEnter(wxCommandEvent& event);
     virtual void OnTextFrameNoEnter(wxCommandEvent& event);

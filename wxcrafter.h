@@ -54,7 +54,8 @@ public:
     enum {
         wxID_EXTRACT_FRAME = 10001,
         wxID_FRAME_PROCESSOR = 10002,
-        wxID_PROFILE_SMOOTH = 10003,
+        wxID_PAUSE = 10003,
+        wxID_PROFILE_SMOOTH = 10004,
     };
 protected:
     wxMenuBar* m_menuBar;
@@ -146,6 +147,7 @@ protected:
     virtual void OnProfileClassification(wxCommandEvent& event) { event.Skip(); }
     virtual void OnAbout(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoStop(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnVideoPause(wxCommandEvent& event) { event.Skip(); }
     virtual void OnBookPageChanged(wxAuiNotebookEvent& event) { event.Skip(); }
     virtual void OnTextFrameNoEnter(wxCommandEvent& event) { event.Skip(); }
     virtual void OnTextMMSSEnter(wxCommandEvent& event) { event.Skip(); }
