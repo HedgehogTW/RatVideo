@@ -28,6 +28,7 @@
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 #include <wx/radiobut.h>
+#include <wx/statbox.h>
 #include <wx/listbox.h>
 #include <wx/checkbox.h>
 #include <wx/richtext/richtextctrl.h>
@@ -116,6 +117,10 @@ protected:
     wxTextCtrl* m_textCtrlKernelBW;
     wxStaticText* m_staticText227;
     wxTextCtrl* m_textCtrlFgProb;
+    wxStaticText* m_staticText243;
+    wxTextCtrl* m_textCtrlLambdaOut;
+    wxStaticText* m_staticText247;
+    wxTextCtrl* m_textCtrlLambdaIn;
     wxPanel* m_panelAlgo;
     wxListBox* m_listBoxBGS;
     wxPanel* m_panelGlobalSet;
@@ -187,6 +192,10 @@ public:
     wxTextCtrl* GetTextCtrlKernelBW() { return m_textCtrlKernelBW; }
     wxStaticText* GetStaticText227() { return m_staticText227; }
     wxTextCtrl* GetTextCtrlFgProb() { return m_textCtrlFgProb; }
+    wxStaticText* GetStaticText243() { return m_staticText243; }
+    wxTextCtrl* GetTextCtrlLambdaOut() { return m_textCtrlLambdaOut; }
+    wxStaticText* GetStaticText247() { return m_staticText247; }
+    wxTextCtrl* GetTextCtrlLambdaIn() { return m_textCtrlLambdaIn; }
     wxPanel* GetPanelKDE() { return m_panelKDE; }
     wxAuiNotebook* GetAuiBook() { return m_auiBook; }
     wxListBox* GetListBoxBGS() { return m_listBoxBGS; }

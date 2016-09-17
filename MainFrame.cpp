@@ -80,6 +80,7 @@
 
 #define V_WIDTH  172
 #define V_HEIGHT 230
+#define PAUSE_TIME 5000
 
 using namespace std;
 using namespace cv;
@@ -353,8 +354,11 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 	bool firstTime = true;
     do
     {
+		if(m_bPause)  {
+			m_bPause = false;
+			waitKey(PAUSE_TIME);
+		}		
 		if(m_bStopProcess)  break;
-
 
 		vidCap >> img_input;
 		if (img_input.empty()) break;
@@ -391,7 +395,7 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 void MainFrame::OnVideoPause(wxCommandEvent& event)
 {
 	m_bPause = true;
-	myMsgOutput( "OnVideoPause\n");	
+	myMsgOutput( "OnVideoPause: wait %d milliseconds.\n", PAUSE_TIME);
 }
 
 void MainFrame::OnVideoStop(wxCommandEvent& event)
@@ -734,7 +738,12 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	Mat mMedian, mSub, mGray, mOtsu;
 	
 	do {
+		if(m_bPause)  {
+			m_bPause = false;
+			waitKey(PAUSE_TIME);
+		}
 		if(m_bStopProcess)  break;	
+		
 		
 		vidCap >> img_input;
 		if (img_input.empty()) break;

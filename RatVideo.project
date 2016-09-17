@@ -329,4 +329,16 @@
       </Completion>
     </Configuration>
   </Settings>
+  <VirtualDirectory Name="OfeliSnake">
+    <File Name="OfeliSnake/ac_withoutedges.cpp"/>
+    <File Name="OfeliSnake/ac_withoutedges.hpp"/>
+    <File Name="OfeliSnake/activecontour.cpp"/>
+    <File Name="OfeliSnake/activecontour.hpp"/>
+    <File Name="OfeliSnake/geodesic_ac.cpp"/>
+    <File Name="OfeliSnake/geodesic_ac.hpp"/>
+    <File Name="OfeliSnake/linked_list.hpp"/>
+    <File Name="OfeliSnake/linked_list.tpp"/>
+    <File Name="OfeliSnake/OfeliSnake.cpp"/>
+    <File Name="OfeliSnake/OfeliSnake.h"/>
+  </VirtualDirectory>
 </CodeLite_Project>

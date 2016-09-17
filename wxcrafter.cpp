@@ -321,6 +321,38 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     flexGridSizer221->Add(m_textCtrlFgProb, 0, wxALL, WXC_FROM_DIP(5));
     
+    wxStaticBoxSizer* staticBoxSizer239 = new wxStaticBoxSizer( new wxStaticBox(m_panelKDE, wxID_ANY, _("Snake Parameters")), wxVERTICAL);
+    
+    boxSizer219->Add(staticBoxSizer239, 1, wxALL|wxEXPAND, WXC_FROM_DIP(5));
+    
+    wxFlexGridSizer* flexGridSizer241 = new wxFlexGridSizer(0, 2, 0, 0);
+    flexGridSizer241->SetFlexibleDirection( wxBOTH );
+    flexGridSizer241->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+    
+    staticBoxSizer239->Add(flexGridSizer241, 1, wxALL|wxEXPAND, WXC_FROM_DIP(5));
+    
+    m_staticText243 = new wxStaticText(m_panelKDE, wxID_ANY, _("lambda out"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    
+    flexGridSizer241->Add(m_staticText243, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_textCtrlLambdaOut = new wxTextCtrl(m_panelKDE, wxID_ANY, wxT("20"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrlLambdaOut->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer241->Add(m_textCtrlLambdaOut, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_staticText247 = new wxStaticText(m_panelKDE, wxID_ANY, _("lambda in"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    
+    flexGridSizer241->Add(m_staticText247, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_textCtrlLambdaIn = new wxTextCtrl(m_panelKDE, wxID_ANY, wxT("3"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    #if wxVERSION_NUMBER >= 3000
+    m_textCtrlLambdaIn->SetHint(wxT(""));
+    #endif
+    
+    flexGridSizer241->Add(m_textCtrlLambdaIn, 0, wxALL, WXC_FROM_DIP(5));
+    
     m_panelAlgo = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), wxTAB_TRAVERSAL);
     wxFont m_panelAlgoFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
     m_panelAlgo->SetFont(m_panelAlgoFont);
