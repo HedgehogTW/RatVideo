@@ -33,6 +33,7 @@ public:
 
 	IBGS * createBGSObj(wxString& strBGS);
 	void PreProcessor(const cv::Mat &img_input, cv::Mat &img_output, bool bLeftSide, bool bSmooth=false);
+	void PostProcess(cv::Mat& mBg, cv::Mat& mInput);
 	
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
@@ -66,6 +67,10 @@ public:
 /////////////////////KDE
 	long	m_nKernelBW;
 	double 	m_fgProb;
+	
+/////////////////////active contour
+	long 	m_nLambdaIn;
+	long  	m_nLambdaOut;
 	
 ///////////////////// profile
 	long	m_nGnuplotW;

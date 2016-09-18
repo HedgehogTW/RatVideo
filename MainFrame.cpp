@@ -74,6 +74,7 @@
 
 #include "DlgExtractFrame.h"
 #include "KDEBg.h"
+#include "OfeliSnake/OfeliSnake.h"
 
 #include "MyUtil.h"
 #include "gnuplot_i.h"
@@ -489,6 +490,12 @@ void MainFrame::readVideoProperties(cv::VideoCapture& vidCap)
 void MainFrame::readControlValues()
 {	
 	wxString str;
+	str = m_textCtrlLambdaIn->GetValue();
+	str.ToLong(&m_nLambdaIn);
+	
+	str = m_textCtrlLambdaOut->GetValue();
+	str.ToLong(&m_nLambdaOut);	
+	
 	str = m_textCtrlGausKSize->GetValue();
 	str.ToLong(&m_nGauKSize);
 	
@@ -749,15 +756,8 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 		if (img_input.empty()) break;
 		kdeModel.DetectMovingObject(img_input, matOut);
 		
-		cv::cvtColor(img_input, mGray, CV_BGR2GRAY);
-		mSub = mGray - mBg;
-		threshold(mSub, mSub, 0, 255, THRESH_TOZERO);
-		cv::medianBlur(mSub, mMedian, 5);
-		
-		threshold(mMedian, mOtsu, 0, 255, THRESH_BINARY|THRESH_OTSU);
-		
-		cv::imshow("median", mMedian);
-		cv::imshow("mOtsu", mOtsu);
+		PostProcess(mBg, img_input);
+
 		
 		cv::imshow("Input", img_input);
 //		cv::imshow( "MovingObject", matOut );
@@ -775,6 +775,42 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	}while(1);
 	imwrite("_median.bmp", mMedian);
 	imwrite("_otsu.bmp", mOtsu);
+}
+
+void MainFrame::PostProcess(Mat& mBg, Mat& mInput)
+{
+	Mat mMedian, mSub, mGray, mOtsu;
+	
+	cv::cvtColor(mInput, mGray, CV_BGR2GRAY);
+	mSub = mGray - mBg;
+	threshold(mSub, mSub, 0, 255, THRESH_TOZERO);
+	cv::medianBlur(mSub, mMedian, 5);
+	threshold(mMedian, mOtsu, 0, 255, THRESH_BINARY|THRESH_OTSU);
+	
+	//// find maxima CC
+	vector<vector<cv::Point> > contours;
+	vector<Vec4i> hierarchy;
+	int mode = CV_RETR_LIST;
+	int method = CV_CHAIN_APPROX_NONE;
+	cv::Mat m = mOtsu.clone();
+	findContours(m, contours, hierarchy, mode, method);
+	
+	vector<vector<cv::Point> > maxContour;
+	int maxIdx;
+	double maxArea = 0;
+	int numCont = contours.size();
+	for(int j=0; j<numCont; j++) {
+		double area = cv::contourArea(contours[j]);
+		if(area >= maxArea) {
+			maxArea = area;
+			maxIdx = j;
+		}
+	}	
+	maxContour.push_back(contours[maxIdx]);
+	cv::drawContours(mOtsu, maxContour, 0, cv::Scalar(0, 255, 0), 2);
+	
+	cv::imshow("median", mMedian);
+	cv::imshow("mOtsu", mOtsu);	
 }
 void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 {
