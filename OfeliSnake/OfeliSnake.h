@@ -19,6 +19,7 @@ public:
 	void create(bool hasCycle2_1, int kernel_length1, double sigma1, int Na1, int Ns1, int lambda_out1, int lambda_in1, int model);
 	void showFinalResult();
 	void showStepResult();
+	void EvolveNoshow();
 	void RetrieveContour(vector<vector<cv::Point> >& vecContour, bool bInContour = true);
 
 	ofeli::ActiveContour* m_pAC;

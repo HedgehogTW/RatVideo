@@ -300,7 +300,10 @@ void COfeliSnake::showStepResult()
 	}
 	//MessageBeep(MB_OK);
 }
-
+void COfeliSnake::EvolveNoshow()
+{
+	m_pAC->evolve();	
+}
 void COfeliSnake::showFinalResult()
 {
 	m_pAC->evolve();

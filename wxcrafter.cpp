@@ -335,7 +335,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     flexGridSizer241->Add(m_staticText243, 0, wxALL, WXC_FROM_DIP(5));
     
-    m_textCtrlLambdaOut = new wxTextCtrl(m_panelKDE, wxID_ANY, wxT("20"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    m_textCtrlLambdaOut = new wxTextCtrl(m_panelKDE, wxID_ANY, wxT("15"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
     #if wxVERSION_NUMBER >= 3000
     m_textCtrlLambdaOut->SetHint(wxT(""));
     #endif
@@ -346,7 +346,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     flexGridSizer241->Add(m_staticText247, 0, wxALL, WXC_FROM_DIP(5));
     
-    m_textCtrlLambdaIn = new wxTextCtrl(m_panelKDE, wxID_ANY, wxT("3"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    m_textCtrlLambdaIn = new wxTextCtrl(m_panelKDE, wxID_ANY, wxT("7"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
     #if wxVERSION_NUMBER >= 3000
     m_textCtrlLambdaIn->SetHint(wxT(""));
     #endif

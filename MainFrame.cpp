@@ -724,7 +724,8 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	float sec = frameNumber /m_fps;
 	int mm = sec / 60;
 	float ss = sec - mm*60;
-	str.Printf("Training stop at frame %d, %02d:%05.02f, collect frame %d\n", frameNumber, mm, ss, counter);	
+	str.Printf("Training stop at frame %d, %02d:%05.02f, collect frame %d, snake: lambdaOut %d, lambdaIn %d\n", 
+		frameNumber, mm, ss, counter, m_nLambdaOut, m_nLambdaIn);	
 	myMsgOutput(str);
 	
 	kdeModel.CreateBackgroundImage(mBg);
@@ -756,7 +757,9 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 		if (img_input.empty()) break;
 		kdeModel.DetectMovingObject(img_input, matOut);
 		
-		PostProcess(mBg, img_input);
+		Mat  mROIBG = mBg(cv::Range(0, V_HEIGHT), cv::Range(V_WIDTH, mBg.cols));
+		Mat  mROIIn = img_input(cv::Range(0, V_HEIGHT), cv::Range(V_WIDTH, img_input.cols));
+		PostProcess(mROIBG, mROIIn);
 
 		
 		cv::imshow("Input", img_input);
@@ -779,7 +782,7 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 
 void MainFrame::PostProcess(Mat& mBg, Mat& mInput)
 {
-	Mat mMedian, mSub, mGray, mOtsu;
+	Mat mMedian, mSub, mGray, mOtsu, mResult;
 	
 	cv::cvtColor(mInput, mGray, CV_BGR2GRAY);
 	mSub = mGray - mBg;
@@ -796,7 +799,7 @@ void MainFrame::PostProcess(Mat& mBg, Mat& mInput)
 	findContours(m, contours, hierarchy, mode, method);
 	
 	vector<vector<cv::Point> > maxContour;
-	int maxIdx;
+	int maxIdx = -1;
 	double maxArea = 0;
 	int numCont = contours.size();
 	for(int j=0; j<numCont; j++) {
@@ -806,11 +809,36 @@ void MainFrame::PostProcess(Mat& mBg, Mat& mInput)
 			maxIdx = j;
 		}
 	}	
+	if(maxIdx < 0)  {
+		myMsgOutput( "no contour\n");
+		return;
+	}
+	
+	cv::cvtColor(mOtsu, mResult, CV_GRAY2BGR);
 	maxContour.push_back(contours[maxIdx]);
-	cv::drawContours(mOtsu, maxContour, 0, cv::Scalar(0, 255, 0), 2);
+	
+	
+	bool hasSmoothingCycle = true;
+	int nNa = 30;  // 30 iterations
+	int nNs = 3;
+	int nNg = 5; // kernel_curve1
+	double stddev = 2; // stddev of Gaussian Kernel
+	int nModel = 0; // 0: graylevel
+	bool bInnerCon = true;	
+	COfeliSnake snake(mMedian);
+	snake.setInitialContour(maxContour);
+	snake.create(hasSmoothingCycle, nNg, stddev, nNa, nNs, m_nLambdaOut, m_nLambdaIn, nModel);
+	snake.EvolveNoshow();
+	snake.RetrieveContour(contours, bInnerCon);
+	
+	cv::drawContours(mInput, contours, 0, cv::Scalar(0, 0, 255), 2);	
+	cv::drawContours(mInput, maxContour, 0, cv::Scalar(0, 255, 0), 1);	
+
+	cv::drawContours(mResult, contours, 0, cv::Scalar(0, 0, 255), 2);	
+	cv::drawContours(mResult, maxContour, 0, cv::Scalar(0, 255, 0), 1);
 	
 	cv::imshow("median", mMedian);
-	cv::imshow("mOtsu", mOtsu);	
+	cv::imshow("mResult", mResult);	
 }
 void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 {

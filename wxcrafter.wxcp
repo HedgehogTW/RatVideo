@@ -4710,7 +4710,7 @@
                   }, {
                    "type": "string",
                    "m_label": "Value:",
-                   "m_value": "20"
+                   "m_value": "15"
                   }, {
                    "type": "string",
                    "m_label": "Text Hint",
@@ -4872,7 +4872,7 @@
                   }, {
                    "type": "string",
                    "m_label": "Value:",
-                   "m_value": "3"
+                   "m_value": "7"
                   }, {
                    "type": "string",
                    "m_label": "Text Hint",
