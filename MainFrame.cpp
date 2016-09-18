@@ -689,11 +689,7 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	
 	myMsgOutput("KDE training: %d frames, sampling %d, KernelBW %d, fgProb %f\n", nTrainingFrames, sampling, m_nKernelBW, m_fgProb);
 	kdeModel.init(m_width, m_height, m_nKernelBW, nTrainingFrames, m_fgProb);
-	while(frameNumber < m_startFrame){
-		frameNumber++;	
-		vidCap >> img_input;
-		if (img_input.empty()) break;
-	}
+
 	int counter = 0;
 	bool bAbort = false;	
 	m_bStopProcess = m_bPause = false;
@@ -739,6 +735,12 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 		return;
 	}
 	frameNumber = 0;
+	while(frameNumber < m_startFrame){
+		frameNumber++;	
+		vidCap >> img_input;
+		if (img_input.empty()) break;
+	}
+	
 	m_bStopProcess = m_bPause = false;
 	cv::Mat matOut(m_height, m_width, CV_8UC1);
 	
@@ -787,7 +789,7 @@ void MainFrame::PostProcess(Mat& mBg, Mat& mInput)
 	cv::cvtColor(mInput, mGray, CV_BGR2GRAY);
 	mSub = mGray - mBg;
 	threshold(mSub, mSub, 0, 255, THRESH_TOZERO);
-	cv::medianBlur(mSub, mMedian, 5);
+	cv::medianBlur(mSub, mMedian, 5);	
 	threshold(mMedian, mOtsu, 0, 255, THRESH_BINARY|THRESH_OTSU);
 	
 	//// find maxima CC
