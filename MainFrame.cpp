@@ -744,7 +744,8 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	
 	Mat kernel = Mat::ones(5, 5, CV_8U);
 	Mat mMedian, mSub, mGray, mOtsu;
-	
+	Scalar centroid;
+	FILE* fp = fopen("_centroid.csv", "w");
 	do {
 		if(m_bPause)  {
 			m_bPause = false;
@@ -759,8 +760,8 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 		
 		Mat  mROIBG = mBg(cv::Range(0, V_HEIGHT), cv::Range(V_WIDTH, mBg.cols));
 		Mat  mROIIn = img_input(cv::Range(0, V_HEIGHT), cv::Range(V_WIDTH, img_input.cols));
-		PostProcess(mROIBG, mROIIn);
-
+		PostProcess(mROIBG, mROIIn, centroid);
+		fprintf(fp, "%3d, %3d\n", centroid(0), centroid(1));
 		
 		cv::imshow("Input", img_input);
 //		cv::imshow( "MovingObject", matOut );
@@ -776,11 +777,12 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 		if(cv::waitKey(m_waitTime) >= 0) break;
 		
 	}while(1);
+	fclose(fp);
 	imwrite("_median.bmp", mMedian);
 	imwrite("_otsu.bmp", mOtsu);
 }
 
-void MainFrame::PostProcess(Mat& mBg, Mat& mInput)
+void MainFrame::PostProcess(Mat& mBg, Mat& mInput, Scalar& centroid)
 {
 	Mat mMedian, mSub, mGray, mOtsu, mResult;
 	
@@ -830,6 +832,8 @@ void MainFrame::PostProcess(Mat& mBg, Mat& mInput)
 	snake.create(hasSmoothingCycle, nNg, stddev, nNa, nNs, m_nLambdaOut, m_nLambdaIn, nModel);
 	snake.EvolveNoshow();
 	snake.RetrieveContour(contours, bInnerCon);
+	
+	centroid = cv::mean(contours[0]);
 	
 	cv::drawContours(mInput, contours, 0, cv::Scalar(0, 0, 255), 2);	
 	cv::drawContours(mInput, maxContour, 0, cv::Scalar(0, 255, 0), 1);	
