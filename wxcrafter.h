@@ -53,10 +53,11 @@ class MainFrameBaseClass : public wxFrame
 {
 public:
     enum {
-        wxID_EXTRACT_FRAME = 10001,
-        wxID_FRAME_PROCESSOR = 10002,
-        wxID_PAUSE = 10003,
-        wxID_PROFILE_SMOOTH = 10004,
+        wxID_BGKDE = 10001,
+        wxID_EXTRACT_FRAME = 10002,
+        wxID_FRAME_PROCESSOR = 10003,
+        wxID_PAUSE = 10004,
+        wxID_PROFILE_SMOOTH = 10005,
     };
 protected:
     wxMenuBar* m_menuBar;

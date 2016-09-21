@@ -70,7 +70,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_menuBackground = new wxMenu();
     m_menuBar->Append(m_menuBackground, _("Background"));
     
-    m_menuItemBgKDE = new wxMenuItem(m_menuBackground, wxID_ANY, _("KDE"), wxT(""), wxITEM_NORMAL);
+    m_menuItemBgKDE = new wxMenuItem(m_menuBackground, wxID_BGKDE, _("KDE"), wxT(""), wxITEM_NORMAL);
     m_menuBackground->Append(m_menuItemBgKDE);
     
     m_menuProfile = new wxMenu();
@@ -105,6 +105,8 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_auibar23->AddTool(wxID_OPEN, _("Open"), wxArtProvider::GetBitmap(wxART_FILE_OPEN, wxART_TOOLBAR, wxDefaultSize), wxNullBitmap, wxITEM_NORMAL, wxT(""), wxT(""), NULL);
     
     m_auibar23->AddTool(wxID_FRAME_PROCESSOR, _("FrameProcessor"), wxXmlResource::Get()->LoadBitmap(wxT("pokeball")), wxNullBitmap, wxITEM_NORMAL, _("FrameProcessor"), wxT(""), NULL);
+    
+    m_auibar23->AddTool(wxID_BGKDE, _("KDE Bg"), wxXmlResource::Get()->LoadBitmap(wxT("layer")), wxNullBitmap, wxITEM_NORMAL, _("KDE background"), wxT(""), NULL);
     
     m_auibar23->AddTool(wxID_STOP, _("Stop"), wxXmlResource::Get()->LoadBitmap(wxT("error")), wxNullBitmap, wxITEM_NORMAL, _("Stop"), wxT(""), NULL);
     
@@ -335,7 +337,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     flexGridSizer241->Add(m_staticText243, 0, wxALL, WXC_FROM_DIP(5));
     
-    m_textCtrlLambdaOut = new wxTextCtrl(m_panelKDE, wxID_ANY, wxT("15"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    m_textCtrlLambdaOut = new wxTextCtrl(m_panelKDE, wxID_ANY, wxT("20"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
     #if wxVERSION_NUMBER >= 3000
     m_textCtrlLambdaOut->SetHint(wxT(""));
     #endif
@@ -346,7 +348,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     flexGridSizer241->Add(m_staticText247, 0, wxALL, WXC_FROM_DIP(5));
     
-    m_textCtrlLambdaIn = new wxTextCtrl(m_panelKDE, wxID_ANY, wxT("7"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    m_textCtrlLambdaIn = new wxTextCtrl(m_panelKDE, wxID_ANY, wxT("9"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
     #if wxVERSION_NUMBER >= 3000
     m_textCtrlLambdaIn->SetHint(wxT(""));
     #endif
