@@ -33,7 +33,7 @@ public:
 
 	IBGS * createBGSObj(wxString& strBGS);
 	void PreProcessor(const cv::Mat &img_input, cv::Mat &img_output, bool bLeftSide, bool bSmooth=false);
-	void PostProcess(cv::Mat& mBg, cv::Mat& mInput, Scalar& centroid);
+	void PostProcess(cv::Mat& mBg, cv::Mat& mInput, std::vector<std::vector<cv::Point>>& ratContour);
 	
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
