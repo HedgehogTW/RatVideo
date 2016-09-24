@@ -65,7 +65,7 @@ void _gnuplotSteps(Gnuplot& gnuPlot, const X& x, const Y& y, const char* color="
 	gnuPlot.set_style("steps").plot_xy(x, y, 1, color, titleName);
 }
 template<typename X>
-void _gnuplotPoint(Gnuplot& gnuPlot, const X& pts, const char* color="", const char* titleName="")
+void _gnuplotPoint(Gnuplot& gnuPlot, const X& pts, const char* color="", const char* titleName="", const char* style="points pt 6 ")
 {
 	if (pts.size() <= 0) {
 		wxMessageBox("gnuplotShow:: no data", "Error");
@@ -78,7 +78,7 @@ void _gnuplotPoint(Gnuplot& gnuPlot, const X& pts, const char* color="", const c
 		x[i] = pts[i].x;
 		y[i] = pts[i].y;
 	}
-	gnuPlot.set_style("points pt 6 ").plot_xy(x, y, 1, color, titleName);
+	gnuPlot.set_style(style).plot_xy(x, y, 1, color, titleName);
 }
 
 template<typename X>

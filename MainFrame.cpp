@@ -1114,22 +1114,57 @@ void MainFrame::OnVideoCamShift(wxCommandEvent& event)
 }
 void MainFrame::OnProfileCentroid(wxCommandEvent& event)
 {
-	FILE* fp = fopen("_centroid.csv", "r");
+	int lickRangeLow[] = {6026, 15392, 16345, 26793, 28358, 29164, 33445, 34680, 35113, 44345, 46753};
+	int lickRangeUp[]  = {6084, 15404, 16362, 27048, 28604, 29360, 34164, 35098, 35449, 44414, 46898};
+	readControlValues();
+	string filename = m_DataPath + "_centroid.csv";
+	FILE* fp = fopen(filename.c_str(), "r");
 	if(fp==NULL) {
 		wxMessageBox( "cannot open _centroid.csv","Error", wxICON_ERROR);
 		return;				
 	}
-	vector<cv::Point2f> vecPoint;
+	int frame = 1;
+	vector<Point2f> vecPoint;
+	vector<Point2f> vecPointLick;
 	while(!feof(fp)) {
 		float x, y;
 		int n = fscanf(fp, "%f,%f\n", &x, &y);
 		if(n!=2) break;
-		cv::Point2f pt(x, 240- y);
-		vecPoint.push_back(pt);
+		Point2f pt(x + V_WIDTH, 240- y);
+		bool bLick = false;
+		for(int i=0; i<11; i++) {
+			if(frame >=lickRangeLow[i] && frame <= lickRangeUp[i]) {				
+				bLick = true;
+				break;
+			}
+		}
+		if(bLick) 
+			vecPointLick.push_back(pt);
+		else 
+			vecPoint.push_back(pt);
+		
+		frame++;
 	}
 	fclose(fp);
-
-	_gnuplotInit(gPlotCentroid, "Centroid", 320, 240, 0, 240); // y min max
+	
+	_gnuplotInit(gPlotCentroid, "Centroid", 600, 400, 0, 240); // y min max
 	gPlotCentroid.set_xrange(0, 320);
-	_gnuplotPoint(gPlotCentroid, vecPoint, "#000000ff");		
+	_gnuplotPoint(gPlotCentroid, vecPoint, "#000000ff", "", "dots ");	
+	_gnuplotPoint(gPlotCentroid, vecPointLick, "#00ff0000", "", "dots ");	
+	
+	
+	filename = m_DataPath + "background.png";
+	Mat img = imread(filename);
+	if(img.data==NULL) {
+		wxMessageBox( "cannot open background.png","Error", wxICON_ERROR);
+		return;			
+	}
+	myMsgOutput("image channel: %d\n", img.channels());
+	for(int i=0; i<vecPoint.size(); i++) 
+		circle(img, Point(vecPoint[i].x, 240-vecPoint[i].y), 0, Scalar(255, 0, 0));
+	for(int i=0; i<vecPointLick.size(); i++) 
+		circle(img, Point(vecPointLick[i].x, 240-vecPointLick[i].y), 0, Scalar(0, 0, 255));
+	
+	imshow("lick location", img);
+	imwrite("lick_location.bmp", img);
 }
