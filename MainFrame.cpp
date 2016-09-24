@@ -90,6 +90,7 @@ using namespace bgslibrary;
 Gnuplot gPlotWMM("lines");
 Gnuplot gPlotFD("lines");
 Gnuplot gPlotView("lines");
+Gnuplot gPlotCentroid("dots");
 MainFrame *	MainFrame::m_pThis=NULL;
 
 MainFrame::MainFrame(wxWindow* parent)
@@ -1110,4 +1111,25 @@ void MainFrame::OnTextMMSSEnter(wxCommandEvent& event)
 void MainFrame::OnVideoCamShift(wxCommandEvent& event)
 {
 
+}
+void MainFrame::OnProfileCentroid(wxCommandEvent& event)
+{
+	FILE* fp = fopen("_centroid.csv", "r");
+	if(fp==NULL) {
+		wxMessageBox( "cannot open _centroid.csv","Error", wxICON_ERROR);
+		return;				
+	}
+	vector<cv::Point2f> vecPoint;
+	while(!feof(fp)) {
+		float x, y;
+		int n = fscanf(fp, "%f,%f\n", &x, &y);
+		if(n!=2) break;
+		cv::Point2f pt(x, 240- y);
+		vecPoint.push_back(pt);
+	}
+	fclose(fp);
+
+	_gnuplotInit(gPlotCentroid, "Centroid", 320, 240, 0, 240); // y min max
+	gPlotCentroid.set_xrange(0, 320);
+	_gnuplotPoint(gPlotCentroid, vecPoint, "#000000ff");		
 }

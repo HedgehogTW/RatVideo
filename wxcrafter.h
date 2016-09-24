@@ -80,6 +80,8 @@ protected:
     wxMenu* m_menuProfile;
     wxMenuItem* m_menuItemProfileGaussianSmooth;
     wxMenuItem* m_menuItemProfileClassification;
+    wxMenuItem* m_menuItem253;
+    wxMenuItem* m_menuItemProfileCentroid;
     wxMenu* m_nameHelp;
     wxMenuItem* m_menuItem9;
     wxStatusBar* m_statusBar;
@@ -151,6 +153,7 @@ protected:
     virtual void OnBackgroundKDE(wxCommandEvent& event) { event.Skip(); }
     virtual void OnProfileGaussianSmooth(wxCommandEvent& event) { event.Skip(); }
     virtual void OnProfileClassification(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnProfileCentroid(wxCommandEvent& event) { event.Skip(); }
     virtual void OnAbout(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoStop(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoPause(wxCommandEvent& event) { event.Skip(); }

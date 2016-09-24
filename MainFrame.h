@@ -99,6 +99,7 @@ public:
 	bool m_bLeftSide;
 	
 protected:
+    virtual void OnProfileCentroid(wxCommandEvent& event);
     virtual void OnVideoPause(wxCommandEvent& event);
     virtual void OnVideoCamShift(wxCommandEvent& event);
     virtual void OnTextMMSSEnter(wxCommandEvent& event);
