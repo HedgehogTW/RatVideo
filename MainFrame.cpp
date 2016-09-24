@@ -766,7 +766,7 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 		PostProcess(mROIBG, mROIIn, ratContour);
 		
 		centroid = cv::mean(ratContour[0]);
-		fprintf(fp, "%3d, %3d\n", centroid(0), centroid(1));
+		fprintf(fp, "%.1f, %.1f\n", centroid(0), centroid(1));
 		
 		cv::imshow("Input", img_input);
 //		cv::imshow( "MovingObject", matOut );
