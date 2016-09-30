@@ -338,6 +338,15 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     staticBoxSizer239->Add(flexGridSizer241, 1, wxALL|wxEXPAND, WXC_FROM_DIP(5));
     
+    m_staticText276 = new wxStaticText(m_panelKDE, wxID_ANY, _("Snake Processing"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    
+    flexGridSizer241->Add(m_staticText276, 0, wxALL, WXC_FROM_DIP(5));
+    
+    m_checkBoxEnableSnake = new wxCheckBox(m_panelKDE, wxID_ANY, _("Enable"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
+    m_checkBoxEnableSnake->SetValue(false);
+    
+    flexGridSizer241->Add(m_checkBoxEnableSnake, 0, wxALL, WXC_FROM_DIP(5));
+    
     m_staticText243 = new wxStaticText(m_panelKDE, wxID_ANY, _("lambda out"), wxDefaultPosition, wxDLG_UNIT(m_panelKDE, wxSize(-1,-1)), 0);
     
     flexGridSizer241->Add(m_staticText243, 0, wxALL, WXC_FROM_DIP(5));
@@ -412,66 +421,78 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     m_auimgr21->AddPane(m_panelGlobalSet, wxAuiPaneInfo().Caption(_("Global Setting")).Direction(wxAUI_DOCK_BOTTOM).Layer(0).Row(0).Position(0).BestSize(50,100).MinSize(50,100).MaxSize(50,100).CaptionVisible(true).MaximizeButton(false).CloseButton(false).MinimizeButton(false).PinButton(false));
     
-    wxGridSizer* gridSizer108 = new wxGridSizer(0, 2, 0, 0);
-    m_panelGlobalSet->SetSizer(gridSizer108);
+    wxBoxSizer* boxSizer262 = new wxBoxSizer(wxVERTICAL);
+    m_panelGlobalSet->SetSizer(boxSizer262);
+    
+    wxFlexGridSizer* flexGridSizer264 = new wxFlexGridSizer(0, 2, 0, 0);
+    flexGridSizer264->SetFlexibleDirection( wxBOTH );
+    flexGridSizer264->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+    
+    boxSizer262->Add(flexGridSizer264, 1, wxALL|wxEXPAND, WXC_FROM_DIP(5));
     
     m_staticText110 = new wxStaticText(m_panelGlobalSet, wxID_ANY, _("Frame wait (ms)"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(-1,-1)), 0);
     
-    gridSizer108->Add(m_staticText110, 0, wxALL, WXC_FROM_DIP(5));
+    flexGridSizer264->Add(m_staticText110, 0, wxALL, WXC_FROM_DIP(5));
     
     m_textCtrlFrameWait = new wxTextCtrl(m_panelGlobalSet, wxID_ANY, wxT("100"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(50,-1)), 0);
     #if wxVERSION_NUMBER >= 3000
     m_textCtrlFrameWait->SetHint(wxT(""));
     #endif
     
-    gridSizer108->Add(m_textCtrlFrameWait, 0, wxALL, WXC_FROM_DIP(5));
+    flexGridSizer264->Add(m_textCtrlFrameWait, 0, wxALL, WXC_FROM_DIP(5));
     
     m_staticText114 = new wxStaticText(m_panelGlobalSet, wxID_ANY, _("Start frame"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(-1,-1)), 0);
     
-    gridSizer108->Add(m_staticText114, 0, wxALL|wxALIGN_TOP, WXC_FROM_DIP(5));
+    flexGridSizer264->Add(m_staticText114, 0, wxALL|wxALIGN_TOP, WXC_FROM_DIP(5));
     
     m_textCtrlStartFrame = new wxTextCtrl(m_panelGlobalSet, wxID_ANY, wxT("0"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(50,-1)), 0);
     #if wxVERSION_NUMBER >= 3000
     m_textCtrlStartFrame->SetHint(wxT(""));
     #endif
     
-    gridSizer108->Add(m_textCtrlStartFrame, 0, wxALL|wxALIGN_TOP, WXC_FROM_DIP(5));
+    flexGridSizer264->Add(m_textCtrlStartFrame, 0, wxALL|wxALIGN_TOP, WXC_FROM_DIP(5));
     
     m_staticText122 = new wxStaticText(m_panelGlobalSet, wxID_ANY, _("Sampling rate"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(-1,-1)), 0);
     
-    gridSizer108->Add(m_staticText122, 0, wxALL, WXC_FROM_DIP(5));
+    flexGridSizer264->Add(m_staticText122, 0, wxALL, WXC_FROM_DIP(5));
     
     m_textCtrlSampling = new wxTextCtrl(m_panelGlobalSet, wxID_ANY, wxT("1"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(50,-1)), 0);
     #if wxVERSION_NUMBER >= 3000
     m_textCtrlSampling->SetHint(wxT(""));
     #endif
     
-    gridSizer108->Add(m_textCtrlSampling, 0, wxALL, WXC_FROM_DIP(5));
+    flexGridSizer264->Add(m_textCtrlSampling, 0, wxALL, WXC_FROM_DIP(5));
     
     m_staticText118 = new wxStaticText(m_panelGlobalSet, wxID_ANY, _("Show preprocess"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(-1,-1)), 0);
     
-    gridSizer108->Add(m_staticText118, 0, wxALL, WXC_FROM_DIP(5));
+    flexGridSizer264->Add(m_staticText118, 0, wxALL, WXC_FROM_DIP(5));
     
     m_checkBoxShowPreprocess = new wxCheckBox(m_panelGlobalSet, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(-1,-1)), 0);
     m_checkBoxShowPreprocess->SetValue(false);
     
-    gridSizer108->Add(m_checkBoxShowPreprocess, 0, wxALL, WXC_FROM_DIP(5));
+    flexGridSizer264->Add(m_checkBoxShowPreprocess, 0, wxALL, WXC_FROM_DIP(5));
     
-    m_radioButtonLeftSide = new wxRadioButton(m_panelGlobalSet, wxID_ANY, _("Left side"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(-1,-1)), wxRB_GROUP);
-    m_radioButtonLeftSide->SetValue(1);
+    m_panel270 = new wxPanel(m_panelGlobalSet, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(-1,-1)), wxTAB_TRAVERSAL);
     
-    gridSizer108->Add(m_radioButtonLeftSide, 0, wxALL, WXC_FROM_DIP(5));
+    boxSizer262->Add(m_panel270, 0, wxALL|wxEXPAND, WXC_FROM_DIP(5));
     
-    m_radioButtonRightSide = new wxRadioButton(m_panelGlobalSet, wxID_ANY, _("Right side"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(-1,-1)), 0);
-    m_radioButtonRightSide->SetValue(1);
+    wxBoxSizer* boxSizer257 = new wxBoxSizer(wxHORIZONTAL);
+    m_panel270->SetSizer(boxSizer257);
     
-    gridSizer108->Add(m_radioButtonRightSide, 0, wxALL, WXC_FROM_DIP(5));
+    wxArrayString m_radioBoxWholeRegionArr;
+    m_radioBoxWholeRegionArr.Add(_("whole"));
+    m_radioBoxWholeRegionArr.Add(_("left"));
+    m_radioBoxWholeRegionArr.Add(_("right"));
+    m_radioBoxWholeRegion = new wxRadioBox(m_panel270, wxID_ANY, _("Processing Region"), wxDefaultPosition, wxDLG_UNIT(m_panel270, wxSize(-1,-1)), m_radioBoxWholeRegionArr, 3, 0);
+    m_radioBoxWholeRegion->SetSelection(2);
+    
+    boxSizer257->Add(m_radioBoxWholeRegion, 1, wxALL|wxEXPAND, WXC_FROM_DIP(5));
     
     m_panelMsg = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(-1,-1)), wxTAB_TRAVERSAL);
     wxFont m_panelMsgFont(10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Calibri"));
     m_panelMsg->SetFont(m_panelMsgFont);
     
-    m_auimgr21->AddPane(m_panelMsg, wxAuiPaneInfo().Name(wxT("MsgPane")).Caption(_("Message Pane")).Direction(wxAUI_DOCK_BOTTOM).Layer(0).Row(0).Position(1).BestSize(450,150).MinSize(450,100).MaxSize(450,300).CaptionVisible(true).MaximizeButton(false).CloseButton(true).MinimizeButton(false).PinButton(false));
+    m_auimgr21->AddPane(m_panelMsg, wxAuiPaneInfo().Name(wxT("MsgPane")).Caption(_("Message Pane")).Direction(wxAUI_DOCK_BOTTOM).Layer(0).Row(0).Position(1).BestSize(450,200).MinSize(450,190).MaxSize(450,280).CaptionVisible(true).MaximizeButton(false).CloseButton(true).MinimizeButton(false).PinButton(false));
     m_auimgr21->Update();
     
     wxBoxSizer* boxSizer27 = new wxBoxSizer(wxVERTICAL);
@@ -493,7 +514,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     #endif
     
     SetName(wxT("MainFrameBaseClass"));
-    SetSize(750,580);
+    SetSize(750,650);
     if (GetSizer()) {
          GetSizer()->Fit(this);
     }

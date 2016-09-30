@@ -120,10 +120,11 @@ MainFrame::MainFrame(wxWindow* parent)
 
 	this->Connect(wxID_FILE1, wxID_FILE9, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMRUFile), NULL, this);
 	
-	SetSize(700, 590);
+	SetSize(700, 650);
 	Center();	
 	
-	m_bStopProcess = m_bPause = false;
+	m_OpenFileName.Clear();
+	m_bStopProcess = m_bPause = m_bEnableSnake = false;
 	m_bShowPreprocess = m_checkBoxShowPreprocess->GetValue();
 
 	m_fps = 29.97;
@@ -226,7 +227,7 @@ void MainFrame::OnFileOpen(wxCommandEvent& event)
 		
 	static wxString strInitFile (strHistoryFile);
 
-	wxString wildcard = "avi and mp4 files (*.avi;*.mp4)|*.avi;*.mp4|\
+	wxString wildcard = "avi, mkv, and mp4 files (*.avi;*.mkv;*.mp4)|*.avi;*.mkv;*.mp4|\
 	All Files (*.*)|*.*";
 
 	wxFileDialog* OpenDialog = new wxFileDialog(
@@ -259,7 +260,7 @@ void MainFrame::openFile(wxString &fileName)
 //	if(vidCap.isOpened()==false) {
 //		myMsgOutput( "Load ... " + fileName + " ERROR\n");
 //	}
-	m_Filename = fileName;		
+	m_OpenFileName = fileName;		
 //	m_strSourcePath = fileName;
 	myMsgOutput("\n++++++++++++++++++++++++++++++++++++++++++++++++\n");
 	myMsgOutput( "Load ... " + fileName + "\n");
@@ -291,17 +292,24 @@ void MainFrame::OnBookPageChanged(wxAuiNotebookEvent& event)
 	myMsgOutput("OnBookPageChanged %d\n", tab);
 }
 
-void MainFrame::PreProcessor(const cv::Mat &img_input, cv::Mat &img_output, bool bLeftSide, bool bSmooth)
+void MainFrame::PreProcessor(const cv::Mat &img_input, cv::Mat &img_output, int LeftSide, bool bSmooth)
 {
 	cv::Mat mROI;
 	
-	if(bLeftSide) {
-		mROI = img_input(cv::Range(0, V_HEIGHT), cv::Range(0, V_WIDTH));		
-	}else 
-		mROI = img_input(cv::Range(0, V_HEIGHT), cv::Range(V_WIDTH, img_input.cols));
-		
- //   cv::cvtColor(mROI, img_output, CV_BGR2GRAY);
-	mROI.copyTo(img_output);
+	switch(LeftSide) {
+		case 0: // whole image
+			img_input.copyTo(img_output);
+			break;
+		case 1:  // left
+			mROI = img_input(cv::Range(0, V_HEIGHT), cv::Range(0, V_WIDTH));
+			mROI.copyTo(img_output);
+			break;
+		case 2: // right
+			mROI = img_input(cv::Range(0, V_HEIGHT), cv::Range(V_WIDTH, img_input.cols));
+			mROI.copyTo(img_output);
+			break;
+	}
+
 	if(bSmooth)
 		cv::GaussianBlur(img_output, img_output, cv::Size(3, 3), 1.5);
 }
@@ -330,7 +338,7 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 //	destroyAllWindows();
 	wxString strBGS = m_listBoxBGS->GetString(selBGS);	
 	wxString msg;
-	msg << "\nLoad ... " << m_Filename << " OK\nDo " << strBGS << "\n";
+	msg << "\nLoad ... " << m_Filename << " OK\nDo " << strBGS << ", whole image " << m_nLeftSide << "\n";
 	myMsgOutput(msg );
 		
 	IBGS *bgs = createBGSObj(strBGS);
@@ -367,7 +375,7 @@ void MainFrame::OnVideoFrameProcessor(wxCommandEvent& event)
 		if(frameNumber % m_Sampling) continue;
 		
 		cv::imshow("Input", img_input);
-		PreProcessor(img_input, img_prep, m_bLeftSide);
+		PreProcessor(img_input, img_prep, m_nLeftSide);// m_bLeftSide);
 		bgs->process(img_prep, mMovingObj, mbkgmodel);
 		if(firstTime) {
 			frameNumber++;
@@ -544,14 +552,18 @@ void MainFrame::readControlValues()
 	str.ToDouble(&m_fgProb);
 	
 	m_bClassWMM = m_radioButtonClassWMM->GetValue();
-	m_bLeftSide = m_radioButtonLeftSide->GetValue();
+	m_nLeftSide = m_radioBoxWholeRegion->GetSelection();
 	m_bShowPreprocess = m_checkBoxShowPreprocess->GetValue();
+	m_bEnableSnake = m_checkBoxEnableSnake->GetValue();
 	
 	m_DataPath = m_textCtrlDataPath->GetValue();
 	if(m_DataPath.back() != '/' || m_DataPath.back() != '\\')
 		m_DataPath += "/";
 		
-	m_Filename = m_DataPath + "1218(4).AVI";
+	if(m_OpenFileName.IsEmpty())
+		m_Filename = m_DataPath + "1218(4).AVI";
+	else
+		m_Filename = m_OpenFileName;
 /*	
 	wxString msg;
 	msg << "readControlValues ... \n";
@@ -762,8 +774,22 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 		if (img_input.empty()) break;
 		kdeModel.DetectMovingObject(img_input, matOut);
 		
-		Mat  mROIBG = mBg(cv::Range(0, V_HEIGHT), cv::Range(V_WIDTH, mBg.cols));
-		Mat  mROIIn = img_input(cv::Range(0, V_HEIGHT), cv::Range(V_WIDTH, img_input.cols));
+		Mat  mROIBG, mROIIn;
+		switch(m_nLeftSide) {
+		case 0: // whole image
+			mROIBG = mBg;
+			mROIIn = img_input;
+			break;
+		case 1:  // left
+			mROIBG = mBg(cv::Range(0, V_HEIGHT), cv::Range(0, V_WIDTH));
+			mROIIn = img_input(cv::Range(0, V_HEIGHT), cv::Range(0, V_WIDTH));
+			break;
+		case 2: // right
+			mROIBG = mBg(cv::Range(0, V_HEIGHT), cv::Range(V_WIDTH, mBg.cols));
+			mROIIn = img_input(cv::Range(0, V_HEIGHT), cv::Range(V_WIDTH, img_input.cols));
+			break;
+		}
+	
 		PostProcess(mROIBG, mROIIn, ratContour);
 		
 		centroid = cv::mean(ratContour[0]);
@@ -808,44 +834,55 @@ void MainFrame::PostProcess(Mat& mBg, Mat& mInput, vector<vector<cv::Point>>& ra
 	cv::Mat m = mOtsu.clone();
 	findContours(m, contours, hierarchy, mode, method);
 	
-	vector<vector<cv::Point> > maxContour;
+
 	int maxIdx = -1;
 	double maxArea = 0;
 	int numCont = contours.size();
 	for(int j=0; j<numCont; j++) {
+
 		double area = cv::contourArea(contours[j]);
 		if(area >= maxArea) {
 			maxArea = area;
 			maxIdx = j;
 		}
+
 	}	
+
 	if(maxIdx < 0)  {
 		myMsgOutput( "no contour\n");
 		return;
 	}
 	
+	double compact = contours[maxIdx].size() * contours[maxIdx].size() / maxArea;	
+	
+	wxString str;
+	str.Printf("%.2f, %.2f", maxArea, compact);
+	m_statusBar->SetStatusText(str, 1);
+ 
 	cv::cvtColor(mOtsu, mResult, CV_GRAY2BGR);
-	maxContour.push_back(contours[maxIdx]);
+	ratContour.push_back(contours[maxIdx]);
 	
+	vector<vector<cv::Point> > snakeContour;	
+	if(m_bEnableSnake) {
+		bool hasSmoothingCycle = true;
+		int nNa = 30;  // 30 iterations
+		int nNs = 3;
+		int nNg = 5; // kernel_curve1
+		double stddev = 2; // stddev of Gaussian Kernel
+		int nModel = 0; // 0: graylevel
+		bool bInnerCon = true;	
+		COfeliSnake snake(mMedian);
+		snake.setInitialContour(ratContour);
+		snake.create(hasSmoothingCycle, nNg, stddev, nNa, nNs, m_nLambdaOut, m_nLambdaIn, nModel);
+		snake.EvolveNoshow();
+		snake.RetrieveContour(snakeContour, bInnerCon);
+		cv::drawContours(mInput, snakeContour, 0, cv::Scalar(0, 0, 255), 2);	
+		cv::drawContours(mResult, snakeContour, 0, cv::Scalar(0, 0, 255), 2);		
+	}
 	
-	bool hasSmoothingCycle = true;
-	int nNa = 30;  // 30 iterations
-	int nNs = 3;
-	int nNg = 5; // kernel_curve1
-	double stddev = 2; // stddev of Gaussian Kernel
-	int nModel = 0; // 0: graylevel
-	bool bInnerCon = true;	
-	COfeliSnake snake(mMedian);
-	snake.setInitialContour(maxContour);
-	snake.create(hasSmoothingCycle, nNg, stddev, nNa, nNs, m_nLambdaOut, m_nLambdaIn, nModel);
-	snake.EvolveNoshow();
-	snake.RetrieveContour(ratContour, bInnerCon);
-	
-	cv::drawContours(mInput, ratContour, 0, cv::Scalar(0, 0, 255), 2);	
-	cv::drawContours(mInput, maxContour, 0, cv::Scalar(0, 255, 0), 1);	
 
-	cv::drawContours(mResult, ratContour, 0, cv::Scalar(0, 0, 255), 2);	
-	cv::drawContours(mResult, maxContour, 0, cv::Scalar(0, 255, 0), 1);
+	cv::drawContours(mInput, ratContour, 0, cv::Scalar(0, 255, 0), 1);	
+	cv::drawContours(mResult, ratContour, 0, cv::Scalar(0, 255, 0), 1);
 	
 	cv::imshow("median", mMedian);
 	cv::imshow("mResult", mResult);	
@@ -919,7 +956,7 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 		if(frameNumber % m_Sampling) continue;
 		
 //		cv::imshow("Input", img_input);
-		PreProcessor(img_input, img_prep, m_bLeftSide);
+		PreProcessor(img_input, img_prep, m_nLeftSide);
 		int imgSize = img_prep.rows * img_prep.cols;
 		
 		bgsFD->process(img_prep, mMovingObj, mbkgmodel);
@@ -1145,7 +1182,7 @@ void MainFrame::OnProfileCentroid(wxCommandEvent& event)
 		
 		frame++;
 	}
-	fclose(fp);
+	fclose(fp); 
 	
 	_gnuplotInit(gPlotCentroid, "Centroid", 600, 400, 0, 240); // y min max
 	gPlotCentroid.set_xrange(0, 320);

@@ -4,8 +4,8 @@
 // Do not modify this file by hand!
 //////////////////////////////////////////////////////////////////////
 
-#ifndef RATVIDEO_WXCRAFTER_BASE_CLASSES_H
-#define RATVIDEO_WXCRAFTER_BASE_CLASSES_H
+#ifndef _RATVIDEO_WXCRAFTER_BASE_CLASSES_H
+#define _RATVIDEO_WXCRAFTER_BASE_CLASSES_H
 
 #include <wx/settings.h>
 #include <wx/xrc/xmlres.h>
@@ -29,8 +29,9 @@
 #include <wx/textctrl.h>
 #include <wx/radiobut.h>
 #include <wx/statbox.h>
-#include <wx/listbox.h>
 #include <wx/checkbox.h>
+#include <wx/listbox.h>
+#include <wx/radiobox.h>
 #include <wx/richtext/richtextctrl.h>
 #if wxVERSION_NUMBER >= 2900
 #include <wx/persist.h>
@@ -120,6 +121,8 @@ protected:
     wxTextCtrl* m_textCtrlKernelBW;
     wxStaticText* m_staticText227;
     wxTextCtrl* m_textCtrlFgProb;
+    wxStaticText* m_staticText276;
+    wxCheckBox* m_checkBoxEnableSnake;
     wxStaticText* m_staticText243;
     wxTextCtrl* m_textCtrlLambdaOut;
     wxStaticText* m_staticText247;
@@ -135,8 +138,8 @@ protected:
     wxTextCtrl* m_textCtrlSampling;
     wxStaticText* m_staticText118;
     wxCheckBox* m_checkBoxShowPreprocess;
-    wxRadioButton* m_radioButtonLeftSide;
-    wxRadioButton* m_radioButtonRightSide;
+    wxPanel* m_panel270;
+    wxRadioBox* m_radioBoxWholeRegion;
     wxPanel* m_panelMsg;
     wxRichTextCtrl* m_richTextMsg;
 
@@ -196,6 +199,8 @@ public:
     wxTextCtrl* GetTextCtrlKernelBW() { return m_textCtrlKernelBW; }
     wxStaticText* GetStaticText227() { return m_staticText227; }
     wxTextCtrl* GetTextCtrlFgProb() { return m_textCtrlFgProb; }
+    wxStaticText* GetStaticText276() { return m_staticText276; }
+    wxCheckBox* GetCheckBoxEnableSnake() { return m_checkBoxEnableSnake; }
     wxStaticText* GetStaticText243() { return m_staticText243; }
     wxTextCtrl* GetTextCtrlLambdaOut() { return m_textCtrlLambdaOut; }
     wxStaticText* GetStaticText247() { return m_staticText247; }
@@ -212,13 +217,13 @@ public:
     wxTextCtrl* GetTextCtrlSampling() { return m_textCtrlSampling; }
     wxStaticText* GetStaticText118() { return m_staticText118; }
     wxCheckBox* GetCheckBoxShowPreprocess() { return m_checkBoxShowPreprocess; }
-    wxRadioButton* GetRadioButtonLeftSide() { return m_radioButtonLeftSide; }
-    wxRadioButton* GetRadioButtonRightSide() { return m_radioButtonRightSide; }
+    wxRadioBox* GetRadioBoxWholeRegion() { return m_radioBoxWholeRegion; }
+    wxPanel* GetPanel270() { return m_panel270; }
     wxPanel* GetPanelGlobalSet() { return m_panelGlobalSet; }
     wxRichTextCtrl* GetRichTextMsg() { return m_richTextMsg; }
     wxPanel* GetPanelMsg() { return m_panelMsg; }
     wxAuiManager* GetAuimgr21() { return m_auimgr21; }
-    MainFrameBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("RatVideo"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(750,580), long style = wxCAPTION|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCLOSE_BOX);
+    MainFrameBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("RatVideo"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(750,650), long style = wxCAPTION|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCLOSE_BOX);
     virtual ~MainFrameBaseClass();
 };
 

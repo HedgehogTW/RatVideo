@@ -71,10 +71,10 @@ void _gnuplotPoint(Gnuplot& gnuPlot, const X& pts, const char* color="", const c
 		wxMessageBox("gnuplotShow:: no data", "Error");
 		return;
 	}	
-	int sz = pts.size();
+	int sz = pts.size(); 
 	vector<float> x(sz);
 	vector<float> y(sz);
-	for(int i=0; i<pts.size(); i++) {
+	for(unsigned int i=0; i<pts.size(); i++) {
 		x[i] = pts[i].x;
 		y[i] = pts[i].y;
 	}

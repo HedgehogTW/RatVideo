@@ -32,7 +32,7 @@ public:
 
 
 	IBGS * createBGSObj(wxString& strBGS);
-	void PreProcessor(const cv::Mat &img_input, cv::Mat &img_output, bool bLeftSide, bool bSmooth=false);
+	void PreProcessor(const cv::Mat &img_input, cv::Mat &img_output, int bLeftSide, bool bSmooth=false);
 	void PostProcess(cv::Mat& mBg, cv::Mat& mInput, std::vector<std::vector<cv::Point>>& ratContour);
 	
     void OnExit(wxCommandEvent& event);
@@ -59,6 +59,7 @@ public:
 	static MainFrame *	m_pThis;
 	wxFileHistory* 		m_FileHistory;
 	wxString			m_Filename;
+	wxString			m_OpenFileName;
 
 ///////////////////// config
 	MyConfigData	m_configData;
@@ -90,13 +91,14 @@ public:
 	bool m_bShowPreprocess;
 	bool m_bStopProcess;
 	bool m_bPause;
+	bool m_bEnableSnake;
 	long m_waitTime;
 	long m_startFrame;
 	long m_Sampling;
 	int  m_width;
 	int  m_height;
 	double m_fps;
-	bool m_bLeftSide;
+	int  m_nLeftSide;
 	
 protected:
     virtual void OnProfileCentroid(wxCommandEvent& event);

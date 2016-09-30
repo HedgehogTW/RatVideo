@@ -225,6 +225,18 @@
       <File Name="extract_frame.cpp"/>
     </VirtualDirectory>
   </VirtualDirectory>
+  <VirtualDirectory Name="OfeliSnake">
+    <File Name="OfeliSnake/ac_withoutedges.cpp"/>
+    <File Name="OfeliSnake/ac_withoutedges.hpp"/>
+    <File Name="OfeliSnake/activecontour.cpp"/>
+    <File Name="OfeliSnake/activecontour.hpp"/>
+    <File Name="OfeliSnake/geodesic_ac.cpp"/>
+    <File Name="OfeliSnake/geodesic_ac.hpp"/>
+    <File Name="OfeliSnake/linked_list.hpp"/>
+    <File Name="OfeliSnake/linked_list.tpp"/>
+    <File Name="OfeliSnake/OfeliSnake.cpp"/>
+    <File Name="OfeliSnake/OfeliSnake.h"/>
+  </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="" C_Options="" Assembler="">
@@ -236,7 +248,7 @@
       <ResourceCompiler Options=""/>
     </GlobalSettings>
     <Configuration Name="Debug" CompilerType="MinGW ( mingw64 )" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-g;-O0;-Wall;$(shell wx-config --cflags) " C_Options="-g;-O0;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+      <Compiler Options="-g;-O0;-Wall;$(shell wx-config --cflags)" C_Options="-g;-O0;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
         <IncludePath Value="C:/GSL/include"/>
         <IncludePath Value="C:/opencv/build/x64/mingw/include"/>
@@ -329,16 +341,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <VirtualDirectory Name="OfeliSnake">
-    <File Name="OfeliSnake/ac_withoutedges.cpp"/>
-    <File Name="OfeliSnake/ac_withoutedges.hpp"/>
-    <File Name="OfeliSnake/activecontour.cpp"/>
-    <File Name="OfeliSnake/activecontour.hpp"/>
-    <File Name="OfeliSnake/geodesic_ac.cpp"/>
-    <File Name="OfeliSnake/geodesic_ac.hpp"/>
-    <File Name="OfeliSnake/linked_list.hpp"/>
-    <File Name="OfeliSnake/linked_list.tpp"/>
-    <File Name="OfeliSnake/OfeliSnake.cpp"/>
-    <File Name="OfeliSnake/OfeliSnake.h"/>
-  </VirtualDirectory>
 </CodeLite_Project>
