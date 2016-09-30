@@ -760,7 +760,7 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	Mat kernel = Mat::ones(5, 5, CV_8U);
 	Mat mMedian, mSub, mGray, mOtsu;
 	vector<vector<cv::Point> > ratContour;
-	Scalar centroid;
+	Scalar centroid, oldCentroid(0);
 	FILE* fp = fopen("_centroid.csv", "w");
 	do {
 		if(m_bPause)  {
@@ -791,9 +791,20 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 		}
 	
 		PostProcess(mROIBG, mROIIn, ratContour);
-		
 		centroid = cv::mean(ratContour[0]);
+		if(m_nLeftSide ==2)  centroid(0) += V_WIDTH;
+		
 		fprintf(fp, "%.1f, %.1f\n", centroid(0), centroid(1));
+		
+		if(oldCentroid !=Scalar(0)) {
+			Scalar sDist = centroid - oldCentroid;
+			double dist = sqrt(sDist(0)*sDist(0) + sDist(1)*sDist(1));
+			if(dist > V_WIDTH/2)  {
+				circle(img_input, Point(centroid(0), centroid(1)), 2, Scalar(0, 255, 0), 2);
+				circle(img_input, Point(oldCentroid(0), oldCentroid(1)), 2, Scalar(0, 0, 255), 2);
+				cv::waitKey(2000);
+			}
+		}
 		
 		cv::imshow("Input", img_input);
 //		cv::imshow( "MovingObject", matOut );
@@ -807,7 +818,7 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 		
 		frameNumber ++;
 		if(cv::waitKey(m_waitTime) >= 0) break;
-		
+		oldCentroid = centroid;
 	}while(1);
 	fclose(fp);
 	imwrite("_median.bmp", mMedian);
