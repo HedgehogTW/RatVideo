@@ -7,6 +7,9 @@
 using namespace std;
 using namespace cv;
 
+extern int lickRangeLow[];
+extern int lickRangeUp[];
+
 Profile::Profile()
 {
 }
@@ -108,6 +111,48 @@ bool Profile::GaussianSmoothOneVariable(vector<float>& vecIn, vector<float>&venO
 	return true;
 }
 
+void Profile::generateTrainData(std::string& path, std::string& fname, cv::Point center)
+{
+	//////////////////////////////////////////////
+	// read _centroid
+	//////////////////////////////////////////////
+	std::string filename = path + fname;
+	string str = "Load " + filename + "\n";
+	MainFrame::myMsgOutput(str);
+	FILE* fp = fopen(filename.c_str(), "r");
+	if(fp==NULL) {
+		wxMessageBox( "cannot open _centroid.csv","Error", wxICON_ERROR);
+		return;				
+	}
+	m_vCentroid.clear();
+	int frame = 1;
+	while(!feof(fp)) {
+		float x, y;
+		int n = fscanf(fp, "%f,%f\n", &x, &y);
+		if(n!=2) break;
+		Point2f pt(x-center.x , y-center.y);
+		bool bLick = false;
+		for(int i=0; i<11; i++) {
+			if(frame >=lickRangeLow[i] && frame <= lickRangeUp[i]) {				
+				bLick = true;
+				break;
+			}
+		}
+		Centroid c;
+		c.cen = pt;
+		if(bLick) 	c.lick = 1;
+		else 		c.lick = 0;			
+		m_vCentroid.push_back(c);	
+		frame++;
+	}
+	fclose(fp);
+	int szCentroid = m_vCentroid.size();
+	int szFDSmooth = m_vSmoothFD.size();
+	MainFrame::myMsgOutput("read centroid %d, FD signal size %d\n", szCentroid, szFDSmooth);
+	
+	
+	
+}
 bool Profile::Classification(vector<float>& vecIn, int  minSilence, int minActive, double silenceTh, double fps)
 {
 	if(vecIn.size() <=0) {

@@ -139,7 +139,7 @@ void KDEBg::CreateBackgroundImage(cv::Mat& mBg)
 	// convert background image to HSV
 	cv::imwrite("background.png", bgImage);
 	//cv::namedWindow( "background", 1 );
-	cv::imshow( "background", bgImage );
+//	cv::imshow( "background", bgImage );
 }
 
 void KDEBg::DetectMovingObject(cv::Mat& matIn, cv::Mat& matOut)

@@ -14,7 +14,7 @@
 
 
 //#include "FrameProcessor.h"
-//using namespace std;
+using namespace std;
 //using namespace bgslibrary;
 
 class MyConfigData{
@@ -34,7 +34,7 @@ public:
 	IBGS * createBGSObj(wxString& strBGS);
 	void PreProcessor(const cv::Mat &img_input, cv::Mat &img_output, int bLeftSide, bool bSmooth=false);
 	void PostProcess(cv::Mat& mBg, cv::Mat& mInput, std::vector<std::vector<cv::Point>>& ratContour);
-	
+	void UpdateBackground(cv::Mat& mBg, cv::Mat& mBgMask, cv::Mat& mInput, vector<vector<cv::Point>>& ratContour);
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
 	
@@ -54,7 +54,6 @@ public:
 	void openFile(wxString &dirName);
 	void readVideoProperties(cv::VideoCapture& vidCap);
 	void readControlValues();
-
 	
 	static MainFrame *	m_pThis;
 	wxFileHistory* 		m_FileHistory;
@@ -101,6 +100,7 @@ public:
 	int  m_nLeftSide;
 	
 protected:
+    virtual void OnTrainData(wxCommandEvent& event);
     virtual void OnProfileCentroid(wxCommandEvent& event);
     virtual void OnVideoPause(wxCommandEvent& event);
     virtual void OnVideoCamShift(wxCommandEvent& event);

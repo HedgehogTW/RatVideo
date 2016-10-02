@@ -93,6 +93,9 @@ Gnuplot gPlotView("lines");
 Gnuplot gPlotCentroid("dots");
 MainFrame *	MainFrame::m_pThis=NULL;
 
+int lickRangeLow[] = {6026, 15392, 16345, 26793, 28358, 29164, 33445, 34680, 35113, 44345, 46753};
+int lickRangeUp[]  = {6084, 15404, 16362, 27048, 28604, 29360, 34164, 35098, 35449, 44414, 46898};
+	
 MainFrame::MainFrame(wxWindow* parent)
     : MainFrameBaseClass(parent)
 {
@@ -108,7 +111,7 @@ MainFrame::MainFrame(wxWindow* parent)
 #endif
 
 	m_pThis = this;
-	int statusWidth[4] = {200, 100, 140, 150};
+	int statusWidth[4] = {100, 150, 140, 150};
 	m_statusBar->SetFieldsCount(4, statusWidth);	
 	
 	wxConfigBase *pConfig = wxConfigBase::Get();
@@ -659,7 +662,7 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 {
 	readControlValues();	
 	//////// Profile Gaussian smooth
-	std::string filename = m_DataPath + "nonzeroPixels.csv";
+	std::string filename = m_DataPath + "_nonzeroPixels.csv";
 	if(m_profile.LoadProfileData(filename)==false) 
 		return;
 	
@@ -738,6 +741,7 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	myMsgOutput(str);
 	
 	kdeModel.CreateBackgroundImage(mBg);
+	cv::imshow( "background", mBg );
 	
 	if(bAbort) return;
 	
@@ -755,10 +759,11 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	}
 	
 	m_bStopProcess = m_bPause = false;
-	cv::Mat matOut(m_height, m_width, CV_8UC1);
+	cv::Mat matOut(img_input.size(), CV_8UC1);
+	cv::Mat mBgMask = Mat::zeros(img_input.size(), CV_8UC1);
 	
 	Mat kernel = Mat::ones(5, 5, CV_8U);
-	Mat mMedian, mSub, mGray, mOtsu;
+	Mat mMedian, mSub, mGray, mOtsu, mInGray;
 	vector<vector<cv::Point> > ratContour;
 	Scalar centroid, oldCentroid(0);
 	FILE* fp = fopen("_centroid.csv", "w");
@@ -772,40 +777,60 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 		
 		vidCap >> img_input;
 		if (img_input.empty()) break;
-		kdeModel.DetectMovingObject(img_input, matOut);
+		cv::cvtColor(img_input, mInGray, CV_BGR2GRAY);
+//		kdeModel.DetectMovingObject(img_input, matOut);
 		
-		Mat  mROIBG, mROIIn;
+		
+		Mat  mROIBG, mROIIn;//, mROIBgMask;
 		switch(m_nLeftSide) {
 		case 0: // whole image
 			mROIBG = mBg;
 			mROIIn = img_input;
+//			mROIBgMask = mBgMask;
 			break;
 		case 1:  // left
 			mROIBG = mBg(cv::Range(0, V_HEIGHT), cv::Range(0, V_WIDTH));
 			mROIIn = img_input(cv::Range(0, V_HEIGHT), cv::Range(0, V_WIDTH));
+//			mROIBgMask = mBgMask(cv::Range(0, V_HEIGHT), cv::Range(0, V_WIDTH));
 			break;
 		case 2: // right
 			mROIBG = mBg(cv::Range(0, V_HEIGHT), cv::Range(V_WIDTH, mBg.cols));
 			mROIIn = img_input(cv::Range(0, V_HEIGHT), cv::Range(V_WIDTH, img_input.cols));
+//			mROIBgMask = mBgMask(cv::Range(0, V_HEIGHT), cv::Range(V_WIDTH, img_input.cols));
 			break;
 		}
 	
 		PostProcess(mROIBG, mROIIn, ratContour);
+		if(ratContour.size()==0) continue;
 		centroid = cv::mean(ratContour[0]);
-		if(m_nLeftSide ==2)  centroid(0) += V_WIDTH;
+		if(m_nLeftSide ==2)  {
+			centroid(0) += V_WIDTH;
+			vector<cv::Point> &cc = ratContour[0];
+			for(int i=0; i<cc.size(); i++)
+				cc[i].x += V_WIDTH;
+		}
+		
+//		UpdateBackground(mBg, mBgMask, mInGray, ratContour);
+//		cv::imshow( "background", mBg );
+//		cv::imshow("mask", mBgMask);
 		
 		fprintf(fp, "%.1f, %.1f\n", centroid(0), centroid(1));
 		
 		if(oldCentroid !=Scalar(0)) {
 			Scalar sDist = centroid - oldCentroid;
 			double dist = sqrt(sDist(0)*sDist(0) + sDist(1)*sDist(1));
-			if(dist > V_WIDTH/2)  {
+			if(dist > V_HEIGHT/2)  {
 				circle(img_input, Point(centroid(0), centroid(1)), 2, Scalar(0, 255, 0), 2);
 				circle(img_input, Point(oldCentroid(0), oldCentroid(1)), 2, Scalar(0, 0, 255), 2);
-				cv::waitKey(2000);
+				cv::imshow("Input", img_input);
+				wxString str;
+				str.Printf("_noOverlap_%d.bmp", frameNumber);
+				imwrite(str.ToStdString(), img_input);
+				//cv::waitKey(4000);
 			}
 		}
 		
+
 		cv::imshow("Input", img_input);
 //		cv::imshow( "MovingObject", matOut );
 		
@@ -825,6 +850,23 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	imwrite("_otsu.bmp", mOtsu);
 }
 
+void MainFrame::UpdateBackground(Mat& mBg, Mat& mBgMask, Mat& mInput, vector<vector<cv::Point>>& ratContour)
+{
+	Mat kernel = Mat::ones(5, 5, CV_8U);
+	mBgMask = 0;
+	cv::drawContours(mBgMask, ratContour, 0, cv::Scalar(255,255,255), FILLED );	
+	cv::dilate(mBgMask, mBgMask, kernel, Point(-1,-1), 4);
+	mBgMask = 255 - mBgMask;
+	
+	int size = mBg.rows* mBg.cols;
+	for(int i=0; i<size; i++) {
+		uchar* pBg = mBg.data;
+		uchar* pMask = mBgMask.data;
+		uchar* pIn = mInput.data;
+		if(*(pMask+i) != 0)
+			*(pBg+i) = *(pBg+i)* 0.8 + *(pIn+i)* 0.2;
+	}
+}
 void MainFrame::PostProcess(Mat& mBg, Mat& mInput, vector<vector<cv::Point>>& ratContour)
 {
 	ratContour.clear();
@@ -835,7 +877,7 @@ void MainFrame::PostProcess(Mat& mBg, Mat& mInput, vector<vector<cv::Point>>& ra
 	mSub = mGray - mBg;
 	threshold(mSub, mSub, 0, 255, THRESH_TOZERO);
 	cv::medianBlur(mSub, mMedian, 5);	
-	threshold(mMedian, mOtsu, 0, 255, THRESH_BINARY|THRESH_OTSU);
+	int th = threshold(mMedian, mOtsu, 15, 255, THRESH_BINARY);//|THRESH_OTSU
 	
 	//// find maxima CC
 	vector<vector<cv::Point> > contours;
@@ -845,13 +887,30 @@ void MainFrame::PostProcess(Mat& mBg, Mat& mInput, vector<vector<cv::Point>>& ra
 	cv::Mat m = mOtsu.clone();
 	findContours(m, contours, hierarchy, mode, method);
 	
-
+	int areaLower = 100;
+	int areaUpper = 1300;
+	double compactUpper = 120; // 50 or 60
 	int maxIdx = -1;
 	double maxArea = 0;
+	float sumArea = 0;
 	int numCont = contours.size();
-	for(int j=0; j<numCont; j++) {
-
-		double area = cv::contourArea(contours[j]);
+	for(int j=0; j<contours.size(); j++) {
+		
+		float area = cv::contourArea(contours[j]);
+		sumArea += area;
+/*		
+		if(area < areaLower || area > areaUpper) {
+			contours.erase (contours.begin()+j);
+			j--;
+			continue;			
+		}
+		double compact = contours[j].size() * contours[j].size() / area;
+		if(compact > compactUpper) {
+			contours.erase (contours.begin()+j);
+			j--;
+			continue;			
+		}
+*/		
 		if(area >= maxArea) {
 			maxArea = area;
 			maxIdx = j;
@@ -864,10 +923,10 @@ void MainFrame::PostProcess(Mat& mBg, Mat& mInput, vector<vector<cv::Point>>& ra
 		return;
 	}
 	
-	double compact = contours[maxIdx].size() * contours[maxIdx].size() / maxArea;	
-	
+	float compact = contours[maxIdx].size() * contours[maxIdx].size() / maxArea;	
+	float areaRatio = sumArea/ (mBg.rows*mBg.cols);
 	wxString str;
-	str.Printf("%.2f, %.2f", maxArea, compact);
+	str.Printf("%.2f, %.2f, %.2f, %d", maxArea, compact, areaRatio, th);
 	m_statusBar->SetStatusText(str, 1);
  
 	cv::cvtColor(mOtsu, mResult, CV_GRAY2BGR);
@@ -953,9 +1012,16 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 		if (img_input.empty()) break;
 	}
 	
-	string outFilename = m_DataPath + "nonzeroPixels.csv"; 
+	string outFilename = m_DataPath + "_nonzeroPixels.csv"; 
 	
 	FILE *fp = fopen(outFilename.c_str(), "w");
+	if(fp==NULL) {
+		wxString str;
+		str = "cannot write to " + outFilename;
+		wxMessageBox( str);
+		return;	
+	}
+	myMsgOutput(outFilename);
 	fprintf(fp, "imgSize, frameNumber, FD, WMM, ABL, rFD, rWMM, rABL\n");
     do
     {
@@ -995,7 +1061,7 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 		
 		float ratio = (float)nonZeroWMM/imgSize;
 		if( ratio > 0.22) {
-			myMsgOutput( "too many nonZero in frame %d,  %02d:%05.02f, ratio %f\n", frameNumber, mm, ss, ratio);
+			myMsgOutput( "\ntoo many nonZero in frame %d,  %02d:%05.02f, ratio %f, stop process\n", frameNumber, mm, ss, ratio);
 			break;
 		}
 		fprintf(fp, "%d, %d, %d, %d, %d, %f, %f, %f\n", imgSize, frameNumber, nonZeroFD, nonZeroWMM, nonZeroABL,
@@ -1077,7 +1143,7 @@ void MainFrame::OnViewShowProfile(wxCommandEvent& event)
 void MainFrame::OnProfileGaussianSmooth(wxCommandEvent& event)
 {
 	readControlValues();
-	std::string filename = m_DataPath + "nonzeroPixels.csv";
+	std::string filename = m_DataPath + "_nonzeroPixels.csv";
 
 	if(m_profile.LoadProfileData(filename)==false) 
 		return;
@@ -1162,10 +1228,11 @@ void MainFrame::OnVideoCamShift(wxCommandEvent& event)
 }
 void MainFrame::OnProfileCentroid(wxCommandEvent& event)
 {
-	int lickRangeLow[] = {6026, 15392, 16345, 26793, 28358, 29164, 33445, 34680, 35113, 44345, 46753};
-	int lickRangeUp[]  = {6084, 15404, 16362, 27048, 28604, 29360, 34164, 35098, 35449, 44414, 46898};
+
 	readControlValues();
 	string filename = m_DataPath + "_centroid.csv";
+	string str = "Load " + filename + "\n";
+	myMsgOutput(str);
 	FILE* fp = fopen(filename.c_str(), "r");
 	if(fp==NULL) {
 		wxMessageBox( "cannot open _centroid.csv","Error", wxICON_ERROR);
@@ -1178,7 +1245,7 @@ void MainFrame::OnProfileCentroid(wxCommandEvent& event)
 		float x, y;
 		int n = fscanf(fp, "%f,%f\n", &x, &y);
 		if(n!=2) break;
-		Point2f pt(x + V_WIDTH, 240- y);
+		Point2f pt(x , 240- y);
 		bool bLick = false;
 		for(int i=0; i<11; i++) {
 			if(frame >=lickRangeLow[i] && frame <= lickRangeUp[i]) {				
@@ -1207,7 +1274,7 @@ void MainFrame::OnProfileCentroid(wxCommandEvent& event)
 		wxMessageBox( "cannot open background.png","Error", wxICON_ERROR);
 		return;			
 	}
-	myMsgOutput("image channel: %d\n", img.channels());
+	myMsgOutput("lick frame %d, non-lick %d\n", vecPointLick.size(), vecPoint.size());
 	for(int i=0; i<vecPoint.size(); i++) 
 		circle(img, Point(vecPoint[i].x, 240-vecPoint[i].y), 0, Scalar(255, 0, 0));
 	for(int i=0; i<vecPointLick.size(); i++) 
@@ -1215,4 +1282,38 @@ void MainFrame::OnProfileCentroid(wxCommandEvent& event)
 	
 	imshow("lick location", img);
 	imwrite("lick_location.bmp", img);
+}
+void MainFrame::OnTrainData(wxCommandEvent& event)
+{
+	OnProfileGaussianSmooth(event);
+
+	cv::VideoCapture vidCap;
+	vidCap.open(m_Filename.ToStdString());
+	if(vidCap.isOpened()==false) {
+		myMsgOutput( "Load ... " + m_Filename + " ERROR\n");
+		return;
+	}
+	readVideoProperties(vidCap);
+	vidCap.release();
+	
+	
+	cv::Point center;
+	switch(m_nLeftSide) {
+	case 0: // whole image
+		center = Point(m_width/2, m_height/2);
+		break;
+	case 1:  // left
+		center = Point(V_WIDTH/2, V_HEIGHT/2);
+		break;
+	case 2: // right
+		center = Point((m_width-V_WIDTH)/2 + V_WIDTH, V_HEIGHT/2);
+		break;
+	}	
+	
+	myMsgOutput("video w %d, h%d, center (%d, %d)\n", m_width, m_height, center.x, center.y);
+	
+	string filename = "_centroid.csv";
+	m_profile.generateTrainData(m_DataPath, filename, center);
+	
+
 }

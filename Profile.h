@@ -17,6 +17,12 @@ public:
 	int frameType;
 };
 
+class Centroid{
+public:		
+	cv::Point2f cen;
+	int 		lick;
+};
+
 class Profile
 {
 public:
@@ -28,6 +34,7 @@ public:
 	bool GaussianSmooth(int ksize);
 	bool Classification(std::vector<float>& vecIn, int minSilence, int minActive, double silenceTh, double fps);
 	void PlotClassificationResult(Gnuplot& gnuPlot);
+	void generateTrainData(std::string& path, std::string& filename, cv::Point center);
 	
 	
 	std::vector<int>  		m_vFrameNo; 
@@ -36,6 +43,7 @@ public:
 	std::vector<float>  	m_vSignalFD;
 	std::vector<float>  	m_vSmoothFD;	
 	std::vector<FSegment>  	m_vNoMotion;
+	std::vector<Centroid>  	m_vCentroid;
 };
 
 #endif // PROFILE_H
