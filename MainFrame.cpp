@@ -93,8 +93,9 @@ Gnuplot gPlotView("lines");
 Gnuplot gPlotCentroid("dots");
 MainFrame *	MainFrame::m_pThis=NULL;
 
-int lickRangeLow[] = {6026, 15392, 16345, 26793, 28358, 29164, 33445, 34680, 35113, 44345, 46753};
-int lickRangeUp[]  = {6084, 15404, 16362, 27048, 28604, 29360, 34164, 35098, 35449, 44414, 46898};
+
+int lickRangeLow[GTNUM] = {6026, 15392, 16345, 26793, 28358, 29164, 33445, 34680, 35113, 44345, 46753};
+int lickRangeUp[GTNUM]  = {6084, 15404, 16362, 27048, 28604, 29360, 34164, 35098, 35449, 44414, 46898};
 	
 MainFrame::MainFrame(wxWindow* parent)
     : MainFrameBaseClass(parent)
@@ -1247,7 +1248,7 @@ void MainFrame::OnProfileCentroid(wxCommandEvent& event)
 		if(n!=2) break;
 		Point2f pt(x , 240- y);
 		bool bLick = false;
-		for(int i=0; i<11; i++) {
+		for(int i=0; i<GTNUM; i++) {
 			if(frame >=lickRangeLow[i] && frame <= lickRangeUp[i]) {				
 				bLick = true;
 				break;

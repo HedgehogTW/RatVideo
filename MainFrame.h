@@ -12,7 +12,7 @@
 
 #include "Profile.h"
 
-
+#define GTNUM	11
 //#include "FrameProcessor.h"
 using namespace std;
 //using namespace bgslibrary;

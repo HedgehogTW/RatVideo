@@ -1,8 +1,10 @@
 #include "Profile.h"
 #include <wx/msgdlg.h> 
 
+#include <time.h>
 #include "MainFrame.h"
 #include "MyUtil.h"
+
 
 using namespace std;
 using namespace cv;
@@ -132,7 +134,7 @@ void Profile::generateTrainData(std::string& path, std::string& fname, cv::Point
 		if(n!=2) break;
 		Point2f pt(x-center.x , y-center.y);
 		bool bLick = false;
-		for(int i=0; i<11; i++) {
+		for(int i=0; i<GTNUM; i++) {
 			if(frame >=lickRangeLow[i] && frame <= lickRangeUp[i]) {				
 				bLick = true;
 				break;
@@ -150,8 +152,90 @@ void Profile::generateTrainData(std::string& path, std::string& fname, cv::Point
 	int szFDSmooth = m_vSmoothFD.size();
 	MainFrame::myMsgOutput("read centroid %d, FD signal size %d\n", szCentroid, szFDSmooth);
 	
+	filename = path + "_labelData.csv";
+	fp = fopen(filename.c_str(), "w");
+	if(fp==NULL) {
+		wxMessageBox( filename.c_str(),"Error", wxICON_ERROR);
+		return;				
+	}	
+	int sz = szFDSmooth;
+	if(szCentroid < szFDSmooth) 
+		sz = szCentroid;
+		
+	fprintf(fp, "frame, FD, smoothFD, x, y, label\n");
+	for(int i=0; i<sz; i++) 
+		fprintf(fp, "%d, %f, %f, %f, %f, %d\n", i+1, m_vSignalFD[i], m_vSmoothFD[i], 
+			m_vCentroid[i].cen.x, m_vCentroid[i].cen.y, m_vCentroid[i].lick); 
+	fclose(fp);
 	
+	str = "Output " + filename + "\n";
+	MainFrame::myMsgOutput(str);
 	
+//////////////////////////// output SVM data (all data)
+	filename = path + "_svmLabelData.txt";
+	fp = fopen(filename.c_str(), "w");
+	if(fp==NULL) {
+		wxMessageBox( filename.c_str(),"Error", wxICON_ERROR);
+		return;				
+	}	
+	for(int i=0; i<sz; i++) {
+		if(m_vCentroid[i].lick) {
+			fprintf(fp, "+1 1:%f 2:%f 3:%f\n", m_vSmoothFD[i], m_vCentroid[i].cen.x, m_vCentroid[i].cen.y);
+		}else {
+			fprintf(fp, "-1 1:%f 2:%f 3:%f\n", m_vSmoothFD[i], m_vCentroid[i].cen.x, m_vCentroid[i].cen.y);
+		}
+	}
+	fclose(fp);
+	
+	str = "Output " + filename + "\n";
+	MainFrame::myMsgOutput(str);
+	
+// output LibSVM format, trainData
+	filename = path + "_TrainData.txt";
+	fp = fopen(filename.c_str(), "w");
+	if(fp==NULL) {
+		wxMessageBox( filename.c_str(),"Error", wxICON_ERROR);
+		return;				
+	}	
+	
+	int trainP, trainN;
+	int trainNum = 2000;
+	int whichLabel, positivePart;
+	
+	trainP = trainN = 0;
+	srand(time(NULL));
+	for(int i=0; i<trainNum; i++) {
+		whichLabel = rand() % 2;
+		if(whichLabel) { // pick licking data
+			positivePart = rand() % GTNUM;
+			int lower = lickRangeLow[positivePart];
+			int upper = lickRangeUp[positivePart];
+			int k = rand() %(upper -lower) + lower;
+			fprintf(fp, "+1 1:%f 2:%f 3:%f\n", m_vSmoothFD[k], m_vCentroid[k].cen.x, m_vCentroid[k].cen.y);
+			trainP++;
+		}else {
+			int k = rand() % sz;
+			
+			bool bLick = false;
+			for(int i=0; i<GTNUM; i++) {
+				if(k >=lickRangeLow[i] && k <= lickRangeUp[i]) {				
+					bLick = true;
+					break;
+				}
+			}
+			if(bLick) {
+				fprintf(fp, "+1 1:%f 2:%f 3:%f\n", m_vSmoothFD[k], m_vCentroid[k].cen.x, m_vCentroid[k].cen.y);
+				trainP++;
+			}else {
+				fprintf(fp, "-1 1:%f 2:%f 3:%f\n", m_vSmoothFD[k], m_vCentroid[k].cen.x, m_vCentroid[k].cen.y);
+				trainN++;				
+			}
+		}
+	}
+	fclose(fp);
+	wxString wxstr;
+	wxstr.Printf("Output %s\n\tpostive %d, negtive %d\n", filename, trainP, trainN);
+	MainFrame::myMsgOutput(wxstr);
 }
 bool Profile::Classification(vector<float>& vecIn, int  minSilence, int minActive, double silenceTh, double fps)
 {
