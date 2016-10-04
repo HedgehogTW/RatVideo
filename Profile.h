@@ -34,7 +34,7 @@ public:
 	bool GaussianSmooth(int ksize);
 	bool Classification(std::vector<float>& vecIn, int minSilence, int minActive, double silenceTh, double fps);
 	void PlotClassificationResult(Gnuplot& gnuPlot);
-	void generateTrainData(std::string& path, std::string& filename, cv::Point center);
+	void generateTrainData(std::string& path, std::string& filename, cv::Point center, int trainNum);
 	
 	
 	std::vector<int>  		m_vFrameNo; 

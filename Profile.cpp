@@ -113,7 +113,7 @@ bool Profile::GaussianSmoothOneVariable(vector<float>& vecIn, vector<float>&venO
 	return true;
 }
 
-void Profile::generateTrainData(std::string& path, std::string& fname, cv::Point center)
+void Profile::generateTrainData(std::string& path, std::string& fname, cv::Point center, int trainNum)
 {
 	//////////////////////////////////////////////
 	// read _centroid
@@ -172,7 +172,7 @@ void Profile::generateTrainData(std::string& path, std::string& fname, cv::Point
 	MainFrame::myMsgOutput(str);
 	
 //////////////////////////// output SVM data (all data)
-	filename = path + "_svmLabelData.txt";
+	filename = path + "_svmAllLabelData.txt";
 	fp = fopen(filename.c_str(), "w");
 	if(fp==NULL) {
 		wxMessageBox( filename.c_str(),"Error", wxICON_ERROR);
@@ -199,7 +199,6 @@ void Profile::generateTrainData(std::string& path, std::string& fname, cv::Point
 	}	
 	
 	int trainP, trainN;
-	int trainNum = 2000;
 	int whichLabel, positivePart;
 	
 	trainP = trainN = 0;

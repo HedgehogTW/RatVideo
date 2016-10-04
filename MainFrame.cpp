@@ -14,6 +14,7 @@
 #include <wx/msgdlg.h>
 #include <wx/sound.h>
 #include <wx/filefn.h> 
+#include <wx/numdlg.h> 
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -1286,6 +1287,10 @@ void MainFrame::OnProfileCentroid(wxCommandEvent& event)
 }
 void MainFrame::OnTrainData(wxCommandEvent& event)
 {
+	long trainNum = wxGetNumberFromUser ("Generate data for svm ...", 
+				"Input number of training data", 
+				"Generate training data", 2000, 1000, 40000 );
+	
 	OnProfileGaussianSmooth(event);
 
 	cv::VideoCapture vidCap;
@@ -1311,10 +1316,11 @@ void MainFrame::OnTrainData(wxCommandEvent& event)
 		break;
 	}	
 	
-	myMsgOutput("video w %d, h%d, center (%d, %d)\n", m_width, m_height, center.x, center.y);
-	
+	myMsgOutput("video w %d, h%d, center (%d, %d), # of training data: %d\n", 
+		m_width, m_height, center.x, center.y, trainNum);
+				
 	string filename = "_centroid.csv";
-	m_profile.generateTrainData(m_DataPath, filename, center);
+	m_profile.generateTrainData(m_DataPath, filename, center, trainNum);
 	
 
 }
