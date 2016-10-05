@@ -100,6 +100,7 @@ public:
 	int  m_nLeftSide;
 	
 protected:
+    virtual void OnShowTestResult(wxCommandEvent& event);
     virtual void OnTrainData(wxCommandEvent& event);
     virtual void OnProfileCentroid(wxCommandEvent& event);
     virtual void OnVideoPause(wxCommandEvent& event);

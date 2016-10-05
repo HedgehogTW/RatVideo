@@ -90,6 +90,9 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_menuItemTrainData = new wxMenuItem(m_menuProfile, wxID_ANY, _("Generate TrainData"), wxT(""), wxITEM_NORMAL);
     m_menuProfile->Append(m_menuItemTrainData);
     
+    m_menuItemTestResult = new wxMenuItem(m_menuProfile, wxID_ANY, _("Show Test Result"), wxT(""), wxITEM_NORMAL);
+    m_menuProfile->Append(m_menuItemTestResult);
+    
     m_nameHelp = new wxMenu();
     m_menuBar->Append(m_nameHelp, _("Help"));
     
@@ -548,6 +551,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     this->Connect(m_menuItemProfileClassification->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnProfileClassification), NULL, this);
     this->Connect(m_menuItemProfileCentroid->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnProfileCentroid), NULL, this);
     this->Connect(m_menuItemTrainData->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnTrainData), NULL, this);
+    this->Connect(m_menuItemTestResult->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnShowTestResult), NULL, this);
     this->Connect(m_menuItem9->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
     this->Connect(wxID_OPEN, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnFileOpen), NULL, this);
     this->Connect(wxID_FRAME_PROCESSOR, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoFrameProcessor), NULL, this);
@@ -576,6 +580,7 @@ MainFrameBaseClass::~MainFrameBaseClass()
     this->Disconnect(m_menuItemProfileClassification->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnProfileClassification), NULL, this);
     this->Disconnect(m_menuItemProfileCentroid->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnProfileCentroid), NULL, this);
     this->Disconnect(m_menuItemTrainData->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnTrainData), NULL, this);
+    this->Disconnect(m_menuItemTestResult->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnShowTestResult), NULL, this);
     this->Disconnect(m_menuItem9->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
     this->Disconnect(wxID_OPEN, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnFileOpen), NULL, this);
     this->Disconnect(wxID_FRAME_PROCESSOR, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoFrameProcessor), NULL, this);

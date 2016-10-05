@@ -84,6 +84,7 @@ protected:
     wxMenuItem* m_menuItem253;
     wxMenuItem* m_menuItemProfileCentroid;
     wxMenuItem* m_menuItemTrainData;
+    wxMenuItem* m_menuItemTestResult;
     wxMenu* m_nameHelp;
     wxMenuItem* m_menuItem9;
     wxStatusBar* m_statusBar;
@@ -159,6 +160,7 @@ protected:
     virtual void OnProfileClassification(wxCommandEvent& event) { event.Skip(); }
     virtual void OnProfileCentroid(wxCommandEvent& event) { event.Skip(); }
     virtual void OnTrainData(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnShowTestResult(wxCommandEvent& event) { event.Skip(); }
     virtual void OnAbout(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoStop(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoPause(wxCommandEvent& event) { event.Skip(); }

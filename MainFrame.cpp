@@ -15,6 +15,7 @@
 #include <wx/sound.h>
 #include <wx/filefn.h> 
 #include <wx/numdlg.h> 
+#include <wx/textdlg.h> 
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -1323,4 +1324,134 @@ void MainFrame::OnTrainData(wxCommandEvent& event)
 	m_profile.generateTrainData(m_DataPath, filename, center, trainNum);
 	
 
+}
+void MainFrame::OnShowTestResult(wxCommandEvent& event)
+{
+	readControlValues();
+	wxString trainName = wxGetTextFromUser ("File name of training data", 
+				"Result Analysis", "_TrainData.txt");
+				
+	string trainFile = m_DataPath + trainName.ToStdString();
+	string testFile = m_DataPath + "_svmAllLabelData.txt";
+	string trainFilePredict = trainFile + ".predict";
+	string testFilePredict = testFile + ".predict";
+	
+	vector<int> vecTrainLabel;
+	vector<int> vecTrainLabelPredict;	
+	vector<int> vecTestLabel;
+	vector<int> vecTestLabelPredict;	
+	int label, lick, non_lick;
+	
+	FILE* fp = fopen(trainFile.c_str(), "r");
+	if(fp ==NULL) {
+		wxString msg;
+		msg.Printf("cannot open %s\n", trainFile);
+		//msg = "" + trainFile + endl;
+		myMsgOutput(msg);
+		return;
+	}
+	lick = non_lick = 0;
+	while(!feof(fp)) {
+		int n = fscanf(fp, "%d%*s%*s%*s", &label);
+		if(n!=1)  break;
+		vecTrainLabel.push_back(label);
+		if(label ==1)  lick++;
+		else non_lick++;		
+	}
+	fclose(fp);
+	myMsgOutput("read training data %d, lick %d, non-lick %d\n", vecTrainLabel.size(), lick, non_lick);
+//////////////////////////////////////////////////// trainFilePredict	 
+	fp = fopen(trainFilePredict.c_str(), "r");
+	if(fp ==NULL) {
+		wxString msg;
+		msg.Printf("cannot open %s\n", trainFilePredict);
+		//msg = "" + trainFile + endl;
+		myMsgOutput(msg);
+		return;
+	}
+
+	while(!feof(fp)) {
+		int n = fscanf(fp, "%d", &label);
+		if(n!=1)  break;
+		vecTrainLabelPredict.push_back(label);
+	}
+	fclose(fp);
+//	myMsgOutput("read training data predict %d\n", vecTrainLabelPredict.size());	
+	
+//////////////////////////////////////////////////// test file
+	fp = fopen(testFile.c_str(), "r");
+	if(fp ==NULL) {
+		wxString msg;
+		msg.Printf("cannot open %s\n", testFile);
+		//msg = "" + trainFile + endl;
+		myMsgOutput(msg);
+		return;
+	}
+	lick = non_lick = 0;
+	while(!feof(fp)) {
+		int n = fscanf(fp, "%d%*s%*s%*s", &label);
+		if(n!=1)  break;
+		vecTestLabel.push_back(label);
+		if(label ==1)  lick++;
+		else non_lick++;		
+	}
+	fclose(fp);
+	myMsgOutput("read test data %d, lick %d, non-lick %d\n", vecTestLabel.size(), lick, non_lick);	
+	
+	
+//////////////////////////////////////////////////// testFilePredict	 
+	fp = fopen(testFilePredict.c_str(), "r");
+	if(fp ==NULL) {
+		wxString msg;
+		msg.Printf("cannot open %s\n", testFilePredict);
+		//msg = "" + trainFile + endl;
+		myMsgOutput(msg);
+		return;
+	}
+
+	while(!feof(fp)) {
+		int n = fscanf(fp, "%d", &label);
+		if(n!=1)  break;
+		vecTestLabelPredict.push_back(label);
+	}
+	fclose(fp);
+//	myMsgOutput("read test data predict %d\n", vecTestLabelPredict.size());
+
+////////////////////////// training data result	
+	int sz = vecTrainLabelPredict.size();
+	int a, b, c, d;
+	a = b = c = d = 0;
+	for(int i=0; i<sz; i++){
+		if(vecTrainLabel[i] ==1 && vecTrainLabelPredict[i]==1) a++;
+		else if(vecTrainLabel[i] ==-1 && vecTrainLabelPredict[i]==1) b++;
+		else if(vecTrainLabel[i] ==1 && vecTrainLabelPredict[i]==-1) c++;
+		else if(vecTrainLabel[i] ==-1 && vecTrainLabelPredict[i]==-1) d++;
+	}
+	
+	float sensitivity, specificity, acc;
+	sensitivity = (float)a / (a+c);
+	specificity = (float)d / (b+d);
+	acc = (float)(a+d)/(a+b+c+d);
+	myMsgOutput("Training data result ...\n");
+	myMsgOutput("\t sensitivity %f (%d/%d)\n", sensitivity, a, a+c);
+	myMsgOutput("\t specificity %f (%d/%d)\n", specificity, d, (b+d));
+	myMsgOutput("\t accuracy %f (%d/%d)\n", acc, a+d, (a+b+c+d));
+	
+////////////////////////// test data result	
+	sz = vecTestLabelPredict.size();
+	a = b = c = d = 0;
+	for(int i=0; i<sz; i++){
+		if(vecTestLabel[i] ==1 && vecTestLabelPredict[i]==1) a++;
+		else if(vecTestLabel[i] ==-1 && vecTestLabelPredict[i]==1) b++;
+		else if(vecTestLabel[i] ==1 && vecTestLabelPredict[i]==-1) c++;
+		else if(vecTestLabel[i] ==-1 && vecTestLabelPredict[i]==-1) d++;
+	}
+	
+	sensitivity = (float)a / (a+c);
+	specificity = (float)d / (b+d);
+	acc = (float)(a+d)/(a+b+c+d);
+	myMsgOutput("Test data result ...\n");
+	myMsgOutput("\t sensitivity %f (%d/%d)\n", sensitivity, a, a+c);
+	myMsgOutput("\t specificity %f (%d/%d)\n", specificity, d, (b+d));
+	myMsgOutput("\t accuracy %f (%d/%d)\n", acc, a+d, (a+b+c+d));	
 }

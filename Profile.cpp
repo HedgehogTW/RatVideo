@@ -191,7 +191,7 @@ void Profile::generateTrainData(std::string& path, std::string& fname, cv::Point
 	MainFrame::myMsgOutput(str);
 	
 // output LibSVM format, trainData
-	filename = path + "_TrainData.txt";
+	filename = path + "_TrainData_" + to_string(trainNum) + ".txt";
 	fp = fopen(filename.c_str(), "w");
 	if(fp==NULL) {
 		wxMessageBox( filename.c_str(),"Error", wxICON_ERROR);
