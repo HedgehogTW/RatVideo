@@ -100,11 +100,11 @@ public:
 	int  m_nLeftSide;
 	
 protected:
+    virtual void OnShowPredictedResult(wxCommandEvent& event);
     virtual void OnShowTestResult(wxCommandEvent& event);
     virtual void OnTrainData(wxCommandEvent& event);
     virtual void OnProfileCentroid(wxCommandEvent& event);
     virtual void OnVideoPause(wxCommandEvent& event);
-    virtual void OnVideoCamShift(wxCommandEvent& event);
     virtual void OnTextMMSSEnter(wxCommandEvent& event);
     virtual void OnTextFrameNoEnter(wxCommandEvent& event);
     virtual void OnProfileGaussianSmooth(wxCommandEvent& event);

@@ -75,7 +75,6 @@ protected:
     wxMenuItem* m_menuItem138;
     wxMenuItem* m_menuItemVideoFGPixels;
     wxMenuItem* m_menuItem231;
-    wxMenuItem* m_menuItemVideoCamShift;
     wxMenu* m_menuBackground;
     wxMenuItem* m_menuItemBgKDE;
     wxMenu* m_menuProfile;
@@ -85,6 +84,8 @@ protected:
     wxMenuItem* m_menuItemProfileCentroid;
     wxMenuItem* m_menuItemTrainData;
     wxMenuItem* m_menuItemTestResult;
+    wxMenuItem* m_menuItem282;
+    wxMenuItem* m_menuItemPredictedResult;
     wxMenu* m_nameHelp;
     wxMenuItem* m_menuItem9;
     wxStatusBar* m_statusBar;
@@ -154,13 +155,13 @@ protected:
     virtual void OnVideoFrameProcessor(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoExtractFrames(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoFGPixels(wxCommandEvent& event) { event.Skip(); }
-    virtual void OnVideoCamShift(wxCommandEvent& event) { event.Skip(); }
     virtual void OnBackgroundKDE(wxCommandEvent& event) { event.Skip(); }
     virtual void OnProfileGaussianSmooth(wxCommandEvent& event) { event.Skip(); }
     virtual void OnProfileClassification(wxCommandEvent& event) { event.Skip(); }
     virtual void OnProfileCentroid(wxCommandEvent& event) { event.Skip(); }
     virtual void OnTrainData(wxCommandEvent& event) { event.Skip(); }
     virtual void OnShowTestResult(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnShowPredictedResult(wxCommandEvent& event) { event.Skip(); }
     virtual void OnAbout(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoStop(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoPause(wxCommandEvent& event) { event.Skip(); }

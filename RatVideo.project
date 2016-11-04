@@ -169,13 +169,9 @@
     <File Name="package_bgs/AdaptiveSelectiveBackgroundLearning.h"/>
     <File Name="package_bgs/FrameDifferenceBGS.cpp"/>
     <File Name="package_bgs/FrameDifferenceBGS.h"/>
-    <File Name="package_bgs/GMG.cpp"/>
-    <File Name="package_bgs/GMG.h"/>
     <File Name="package_bgs/IBGS.h"/>
     <File Name="package_bgs/KNNBGS.cpp"/>
     <File Name="package_bgs/KNNBGS.h"/>
-    <File Name="package_bgs/MixtureOfGaussianV1BGS.cpp"/>
-    <File Name="package_bgs/MixtureOfGaussianV1BGS.h"/>
     <File Name="package_bgs/MixtureOfGaussianV2BGS.cpp"/>
     <File Name="package_bgs/MixtureOfGaussianV2BGS.h"/>
     <File Name="package_bgs/StaticFrameDifferenceBGS.cpp"/>
