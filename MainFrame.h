@@ -96,6 +96,7 @@ public:
 	long m_Sampling;
 	int  m_width;
 	int  m_height;
+	int  m_totalFrames;
 	double m_fps;
 	int  m_nLeftSide;
 	

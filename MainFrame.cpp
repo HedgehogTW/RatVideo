@@ -497,7 +497,7 @@ void MainFrame::readVideoProperties(cv::VideoCapture& vidCap)
 	m_fps = vidCap.get(CV_CAP_PROP_FPS);
 	m_width = vidCap.get(CV_CAP_PROP_FRAME_WIDTH );
 	m_height = vidCap.get(CV_CAP_PROP_FRAME_HEIGHT );
-	
+	m_totalFrames = vidCap.get(CV_CAP_PROP_FRAME_COUNT );
 	wxString str;	
 	str.Printf("W%d x H%d, fps %.2f", m_width, m_height, m_fps);
 	m_statusBar->SetStatusText(str, 2);	
@@ -694,7 +694,8 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 
 	
 	wxString msg;
-	msg.Printf("\nLoad %s, w%d x h%d, do KDE background ...\n", m_Filename, m_width, m_height);
+	msg.Printf("\nLoad %s, w%d x h%d, totalFrames %d \ndo KDE background (write _centroid.csv)...\n", 
+		m_Filename, m_width, m_height, m_totalFrames);
 	myMsgOutput(msg );
 	
 
@@ -977,6 +978,8 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 	wxString msg;
 	msg << "\nLoad ... " << m_Filename << " OK\n";
 	myMsgOutput(msg );
+	msg.Printf("Total frames: %d\n", m_totalFrames );
+	myMsgOutput(msg );
 	
 	wxString strAlgo = "FrameDifferenceBGS";
 	IBGS *bgsFD = createBGSObj(strAlgo);
@@ -1024,7 +1027,10 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 		wxMessageBox( str);
 		return;	
 	}
-	myMsgOutput(outFilename);
+	msg = "write  ... " + outFilename + "\n";
+	myMsgOutput(msg );
+	
+//	myMsgOutput(outFilename);
 	fprintf(fp, "imgSize, frameNumber, FD, WMM, ABL, rFD, rWMM, rABL\n");
     do
     {
@@ -1080,7 +1086,7 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 	delete bgsFD;	
 	delete bgsWMM;	
 
-	myMsgOutput( "generate nonzeroPixels.csv ok\n");
+	myMsgOutput( "generate nonzeroPixels.csv ok, write frames: %d\n", frameNumber);
 	wxBell();
 }
 

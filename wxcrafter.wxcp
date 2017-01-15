@@ -671,7 +671,7 @@
           }, {
            "type": "string",
            "m_label": "Label:",
-           "m_value": "FG Pixel Profile"
+           "m_value": "1. FG Pixel Profile"
           }, {
            "type": "string",
            "m_label": "Shortcut:",
@@ -785,7 +785,7 @@
           }, {
            "type": "string",
            "m_label": "Label:",
-           "m_value": "KDE"
+           "m_value": "2. KDE"
           }, {
            "type": "string",
            "m_label": "Shortcut:",

@@ -59,7 +59,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     m_menuVideo->AppendSeparator();
     
-    m_menuItemVideoFGPixels = new wxMenuItem(m_menuVideo, wxID_ANY, _("FG Pixel Profile"), wxT(""), wxITEM_NORMAL);
+    m_menuItemVideoFGPixels = new wxMenuItem(m_menuVideo, wxID_ANY, _("1. FG Pixel Profile"), wxT(""), wxITEM_NORMAL);
     m_menuVideo->Append(m_menuItemVideoFGPixels);
     
     m_menuVideo->AppendSeparator();
@@ -67,7 +67,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_menuBackground = new wxMenu();
     m_menuBar->Append(m_menuBackground, _("Background"));
     
-    m_menuItemBgKDE = new wxMenuItem(m_menuBackground, wxID_BGKDE, _("KDE"), wxT(""), wxITEM_NORMAL);
+    m_menuItemBgKDE = new wxMenuItem(m_menuBackground, wxID_BGKDE, _("2. KDE"), wxT(""), wxITEM_NORMAL);
     m_menuBackground->Append(m_menuItemBgKDE);
     
     m_menuProfile = new wxMenu();
