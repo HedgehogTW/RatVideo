@@ -145,18 +145,18 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     boxSizer160->Add(boxSizer203, 0, wxALL|wxEXPAND, WXC_FROM_DIP(5));
     
-    m_staticText205 = new wxStaticText(m_panelProfile, wxID_ANY, _("Data Path"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
+    m_staticText205 = new wxStaticText(m_panelProfile, wxID_ANY, _("Data"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
     
     boxSizer203->Add(m_staticText205, 0, wxALL, WXC_FROM_DIP(5));
     
-    m_textCtrlDataPath = new wxTextCtrl(m_panelProfile, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(400,-1)), 0);
+    m_textCtrlDataPath = new wxTextCtrl(m_panelProfile, wxID_ANY, wxT(""), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(150,-1)), 0);
     #if wxVERSION_NUMBER >= 3000
     m_textCtrlDataPath->SetHint(wxT(""));
     #endif
     
-    boxSizer203->Add(m_textCtrlDataPath, 0, wxALL, WXC_FROM_DIP(5));
+    boxSizer203->Add(m_textCtrlDataPath, 0, wxALL|wxEXPAND, WXC_FROM_DIP(5));
     
-    m_buttonBrowse = new wxButton(m_panelProfile, wxID_ANY, _("My Button"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
+    m_buttonBrowse = new wxButton(m_panelProfile, wxID_ANY, _("Browse"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
     
     boxSizer203->Add(m_buttonBrowse, 0, wxALL, WXC_FROM_DIP(5));
     

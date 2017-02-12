@@ -1591,10 +1591,20 @@ void MainFrame::OnShowPredictedResult(wxCommandEvent& event)
 }
 void MainFrame::OnBrowseDataPath(wxCommandEvent& event)
 {
-	m_DataPath = wxDirSelector("Choose a folder", m_DataPath);
+/*	m_DataPath = wxDirSelector("Choose a folder", m_DataPath);
 	if ( !m_DataPath.empty() ){
 		if(m_DataPath.back() != '/' && m_DataPath.back() != '\\')
 			m_DataPath += "/";
 		m_textCtrlDataPath->SetValue(m_DataPath);
+	}	*/
+	
+	m_Filename = wxFileSelector("Choose a file to open");
+	if ( !m_Filename.empty() )
+	{
+		m_DataPath = m_Filename.BeforeLast('\\');
+		myMsgOutput("open: " + m_Filename.AfterLast('\\') + "\n");
+		myMsgOutput("data path: " + m_DataPath + "\n");
+		m_textCtrlDataPath->SetValue(m_DataPath);
+		openFile(m_Filename);	
 	}	
 }
