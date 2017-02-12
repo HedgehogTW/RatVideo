@@ -1589,3 +1589,12 @@ void MainFrame::OnShowPredictedResult(wxCommandEvent& event)
 	myMsgOutput("\t accuracy %f (%d/%d)\n", acc, a+d, (a+b+c+d));	
 */	
 }
+void MainFrame::OnBrowseDataPath(wxCommandEvent& event)
+{
+	m_DataPath = wxDirSelector("Choose a folder", m_DataPath);
+	if ( !m_DataPath.empty() ){
+		if(m_DataPath.back() != '/' && m_DataPath.back() != '\\')
+			m_DataPath += "/";
+		m_textCtrlDataPath->SetValue(m_DataPath);
+	}	
+}

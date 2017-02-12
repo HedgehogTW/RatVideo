@@ -101,6 +101,7 @@ public:
 	int  m_nLeftSide;
 	
 protected:
+    virtual void OnBrowseDataPath(wxCommandEvent& event);
     virtual void OnShowPredictedResult(wxCommandEvent& event);
     virtual void OnShowTestResult(wxCommandEvent& event);
     virtual void OnTrainData(wxCommandEvent& event);

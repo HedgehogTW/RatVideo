@@ -27,6 +27,7 @@
 #include <wx/imaglist.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
+#include <wx/button.h>
 #include <wx/radiobut.h>
 #include <wx/statbox.h>
 #include <wx/checkbox.h>
@@ -95,6 +96,7 @@ protected:
     wxPanel* m_panelProfile;
     wxStaticText* m_staticText205;
     wxTextCtrl* m_textCtrlDataPath;
+    wxButton* m_buttonBrowse;
     wxStaticText* m_staticText154;
     wxTextCtrl* m_textCtrlGausKSize;
     wxStaticText* m_staticText179;
@@ -166,6 +168,7 @@ protected:
     virtual void OnVideoStop(wxCommandEvent& event) { event.Skip(); }
     virtual void OnVideoPause(wxCommandEvent& event) { event.Skip(); }
     virtual void OnBookPageChanged(wxAuiNotebookEvent& event) { event.Skip(); }
+    virtual void OnBrowseDataPath(wxCommandEvent& event) { event.Skip(); }
     virtual void OnTextFrameNoEnter(wxCommandEvent& event) { event.Skip(); }
     virtual void OnTextMMSSEnter(wxCommandEvent& event) { event.Skip(); }
 
@@ -175,6 +178,7 @@ public:
     wxAuiToolBar* GetAuibar23() { return m_auibar23; }
     wxStaticText* GetStaticText205() { return m_staticText205; }
     wxTextCtrl* GetTextCtrlDataPath() { return m_textCtrlDataPath; }
+    wxButton* GetButtonBrowse() { return m_buttonBrowse; }
     wxStaticText* GetStaticText154() { return m_staticText154; }
     wxTextCtrl* GetTextCtrlGausKSize() { return m_textCtrlGausKSize; }
     wxStaticText* GetStaticText179() { return m_staticText179; }

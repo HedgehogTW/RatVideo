@@ -156,6 +156,10 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     boxSizer203->Add(m_textCtrlDataPath, 0, wxALL, WXC_FROM_DIP(5));
     
+    m_buttonBrowse = new wxButton(m_panelProfile, wxID_ANY, _("My Button"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
+    
+    boxSizer203->Add(m_buttonBrowse, 0, wxALL, WXC_FROM_DIP(5));
+    
     wxFlexGridSizer* flexGridSizer163 = new wxFlexGridSizer(3, 4, 0, 0);
     flexGridSizer163->SetFlexibleDirection( wxBOTH );
     flexGridSizer163->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
@@ -561,6 +565,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     this->Connect(wxID_PAUSE, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoPause), NULL, this);
     this->Connect(wxID_EXTRACT_FRAME, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoExtractFrames), NULL, this);
     m_auiBook->Connect(wxEVT_COMMAND_AUINOTEBOOK_PAGE_CHANGED, wxAuiNotebookEventHandler(MainFrameBaseClass::OnBookPageChanged), NULL, this);
+    m_buttonBrowse->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnBrowseDataPath), NULL, this);
     m_textCtrlFrameNo->Connect(wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler(MainFrameBaseClass::OnTextFrameNoEnter), NULL, this);
     m_textCtrlMMSS->Connect(wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler(MainFrameBaseClass::OnTextMMSSEnter), NULL, this);
     
@@ -590,6 +595,7 @@ MainFrameBaseClass::~MainFrameBaseClass()
     this->Disconnect(wxID_PAUSE, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoPause), NULL, this);
     this->Disconnect(wxID_EXTRACT_FRAME, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoExtractFrames), NULL, this);
     m_auiBook->Disconnect(wxEVT_COMMAND_AUINOTEBOOK_PAGE_CHANGED, wxAuiNotebookEventHandler(MainFrameBaseClass::OnBookPageChanged), NULL, this);
+    m_buttonBrowse->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnBrowseDataPath), NULL, this);
     m_textCtrlFrameNo->Disconnect(wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler(MainFrameBaseClass::OnTextFrameNoEnter), NULL, this);
     m_textCtrlMMSS->Disconnect(wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler(MainFrameBaseClass::OnTextMMSSEnter), NULL, this);
     
