@@ -129,22 +129,22 @@ MainFrame::MainFrame(wxWindow* parent)
 	SetSize(700, 650);
 	Center();	
 	
-	m_OpenFileName.Clear();
+//	m_OpenFileName.Clear();
 	m_bStopProcess = m_bPause = m_bEnableSnake = false;
 	m_bShowPreprocess = m_checkBoxShowPreprocess->GetValue();
 
-	m_fps = 29.97;
+	m_fps = 0;
 	
 //	DeleteContents();
 	wxString outpath, str; 
 #if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) 
 	outpath = "./config";// + subpath;
 //	m_Filename = "~/tmp/1218(4).AVI";
-	*m_textCtrlDataPath << "~/tmp/";
+//	*m_textCtrlDataPath << "~/tmp/";
 #else
 	outpath = ".\\config";
 //	m_Filename = "d:\\tmp\\1218(4).AVI";
-	*m_textCtrlDataPath << "D:/Dropbox/Rat_Lick/data/";
+//	*m_textCtrlDataPath << "D:/Dropbox/Rat_Lick/data/";
 #endif	
 
 	if(wxDirExists(outpath)==false) {
@@ -224,6 +224,35 @@ void MainFrame::OnAbout(wxCommandEvent& event)
     ::wxAboutBox(info);
 }
 
+void MainFrame::OnFileLoadProfile(wxCommandEvent& event)
+{
+	wxString  strHistoryFile = wxEmptyString;
+
+	static wxString strInitFile (strHistoryFile);
+
+	wxString wildcard = "csv,txt files (*.csv;*.txt)|*.csv;*.txt|\
+	All Files (*.*)|*.*";
+
+	wxFileDialog* OpenDialog = new wxFileDialog(
+	    this, _("Choose a file to open"), wxEmptyString, strInitFile,
+	    wildcard, wxFD_OPEN, wxDefaultPosition);
+	OpenDialog->SetFilterIndex(0);
+	if (OpenDialog->ShowModal() == wxID_OK) {
+	    wxString pathName = OpenDialog->GetPath();
+		
+		strInitFile = pathName;
+		m_ProfileName = pathName;
+		OnViewShowProfile(event);	
+	    //wxSize sz = m_scrollWin->setImage(pathName);
+	    //wxString str;
+	    //str.Printf("W %d, H %d", sz.GetWidth(), sz.GetHeight());
+	    //m_statusBar->SetStatusText(str, 1);	
+	}
+	// Clean up after ourselves
+	OpenDialog->Destroy();
+
+	wxBell();		
+}
 
 void MainFrame::OnFileOpen(wxCommandEvent& event)
 {
@@ -266,10 +295,24 @@ void MainFrame::openFile(wxString &fileName)
 //	if(vidCap.isOpened()==false) {
 //		myMsgOutput( "Load ... " + fileName + " ERROR\n");
 //	}
-	m_OpenFileName = fileName;		
-//	m_strSourcePath = fileName;
+//	m_OpenFileName = fileName;		
+	m_Filename = fileName;
+	m_DataPath = wxPathOnly(m_Filename); //.BeforeLast('\\');
+	m_DataPath += "/";
+			
 	myMsgOutput("\n++++++++++++++++++++++++++++++++++++++++++++++++\n");
-	myMsgOutput( "Load ... " + fileName + "\n");
+	myMsgOutput("Path: " + m_DataPath + "\n");
+	myMsgOutput("Load: " + m_Filename.AfterLast('\\') + "\n");
+	m_textCtrlDataPath->SetValue(m_Filename);
+
+	cv::VideoCapture vidCap;
+	vidCap.open(m_Filename.ToStdString());
+	if(vidCap.isOpened()==false) {
+		myMsgOutput( "Load ... " + m_Filename + " ERROR\n");
+		return;
+	}
+	readVideoProperties(vidCap);		
+
 /*
     namedWindow("Rat0",1);
     while(1){
@@ -562,14 +605,16 @@ void MainFrame::readControlValues()
 	m_bShowPreprocess = m_checkBoxShowPreprocess->GetValue();
 	m_bEnableSnake = m_checkBoxEnableSnake->GetValue();
 	
-	m_DataPath = m_textCtrlDataPath->GetValue();
-	if(m_DataPath.back() != '/' || m_DataPath.back() != '\\')
+	m_Filename = m_textCtrlDataPath->GetValue();
+	m_DataPath = wxPathOnly(m_Filename);//.BeforeLast('\\'); 
+	if(m_DataPath.back() != '/' && m_DataPath.back() != '\\')
 		m_DataPath += "/";
 		
-	if(m_OpenFileName.IsEmpty())
-		m_Filename = m_DataPath + "1218(4).AVI";
-	else
-		m_Filename = m_OpenFileName;
+//	if(m_Filename.IsEmpty())
+//		m_Filename = m_DataPath + "1218(4).AVI";
+//	else
+//		m_Filename = m_OpenFileName;
+
 /*	
 	wxString msg;
 	msg << "readControlValues ... \n";
@@ -666,6 +711,17 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	readControlValues();	
 	//////// Profile Gaussian smooth
 	std::string filename = m_DataPath + "_nonzeroPixels.csv";
+	
+	if(wxFileExists(filename)==false) {
+		filename = wxFileSelector("Choose a Profile file to open");
+		if ( filename.empty() )	
+			return;
+	}
+	
+	m_DataPath = wxPathOnly(filename); //.BeforeLast('\\');
+	m_DataPath += "/";	
+	
+	
 	if(m_profile.LoadProfileData(filename)==false) 
 		return;
 	
@@ -701,7 +757,15 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 
 	cv::Mat img_input, mBg;
 	KDEBg kdeModel;	
-	int frameNumber = 0;
+	int frameNumber;
+	
+	frameNumber = 0;
+	while(frameNumber < m_startFrame){
+		frameNumber++;	
+		vidCap >> img_input;
+		if (img_input.empty()) break;
+	}
+	myMsgOutput("Skip %d frames\n", m_startFrame);
 	
 	int sampling = 20;
 	int nTrainingFrames = 100; //nTrainMin*60*m_fps/sampling;	
@@ -709,6 +773,7 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	
 	myMsgOutput("KDE training: %d frames, sampling %d, KernelBW %d, fgProb %f\n", nTrainingFrames, sampling, m_nKernelBW, m_fgProb);
 	kdeModel.init(m_width, m_height, m_nKernelBW, nTrainingFrames, m_fgProb);
+
 
 	int counter = 0;
 	bool bAbort = false;	
@@ -1017,8 +1082,11 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 		vidCap >> img_input;
 		if (img_input.empty()) break;
 	}
-	
-	string outFilename = m_DataPath + "_nonzeroPixels.csv"; 
+	wxString outFilename = m_DataPath ;
+	if(m_startFrame==0)
+		outFilename += "_nonzeroPixels.csv"; 
+	else
+		outFilename << "_nonzeroPixels_" << m_startFrame << ".csv"; 
 	
 	FILE *fp = fopen(outFilename.c_str(), "w");
 	if(fp==NULL) {
@@ -1120,17 +1188,29 @@ void MainFrame::OnViewShowFrameType(wxCommandEvent& event)
 void MainFrame::OnViewShowProfile(wxCommandEvent& event)
 {
 	readControlValues();
-	string filename = m_DataPath + "nonzeroPixels.csv";
+	wxString filename = m_ProfileName; //m_DataPath + "nonzeroPixels.csv";
 	
+	if(wxFileExists(filename)==false) {
+		filename = wxFileSelector("Choose a Profile file to open");
+		if ( filename.empty() )	
+			return;
+	}
+	
+	m_DataPath = wxPathOnly(filename);//.BeforeLast('\\');
+	m_DataPath += "/";
+	
+	m_ProfileName = filename;
+
 	FILE *fp = fopen(filename.c_str(), "r");
 	if(fp == NULL) {
-		myMsgOutput( "cannot open nonzeroPixels.csv\n");		
+		myMsgOutput( "cannot open " + filename + "\n");		
 		wxMessageBox( "cannot open nonzeroPixels.csv","Error", wxICON_ERROR);
 		return;		
 	}	
 
+	myMsgOutput( "Load profile: " + filename + "\n");	
 	
-	vector<int>  vWMM, vFD;
+	vector<int>  vWMM, vFD, vX;
 	char title [200];
 	fgets(title, 200, fp );
 	while(!feof(fp)) {
@@ -1138,23 +1218,34 @@ void MainFrame::OnViewShowProfile(wxCommandEvent& event)
 		int n = fscanf(fp, "%*d,%d,%d,%d,%*d,%*f,%*f,%*f", &frameNumber, &fd, &nonZeroWMM);
 		if(n!=3)  break;
 		vFD.push_back(fd);
+		vX.push_back(frameNumber);
 //		vWMM.push_back(nonZeroWMM);
 	}
 	fclose(fp);	
-	myMsgOutput( "nonzeroPixels.csv  Profile size %d\n",vWMM.size() );
+	myMsgOutput( "Profile size %d\n",vFD.size() );
 	
 	_gnuplotInit(gPlotView, "Profile", m_nGnuplotW, m_nGnuplotH, m_nRangeYMin, m_nRangeYMax); // y min max
 	gPlotView.set_xrange(m_nRangeXMin, m_nRangeXMax);
 //	_gnuplotLine(gPlotView, "Weighted Moving Mean", vWMM, "#00ff0000");
-	_gnuplotLine(gPlotView, "FrameDiff", vFD, "#000000ff");		
+//	_gnuplotLine(gPlotView, "FrameDiff", vFD, "#000000ff");	
+	_gnuplotLineXY(gPlotView, "FrameDiff", vX, vFD, "#000000ff");	
 }
 
 void MainFrame::OnProfileGaussianSmooth(wxCommandEvent& event)
 {
 	readControlValues();
-	std::string filename = m_DataPath + "_nonzeroPixels.csv";
-
-	if(m_profile.LoadProfileData(filename)==false) 
+	wxString filename = m_DataPath + "_nonzeroPixels.csv";
+	if(wxFileExists(filename)==false) {
+		filename = wxFileSelector("Choose a Profile file to open");
+		if ( filename.empty() )	
+			return;
+	}
+	
+	m_DataPath = wxPathOnly(filename); //.BeforeLast('\\');
+	m_DataPath += "/";
+	
+	std::string sstr = filename.ToStdString();
+	if(m_profile.LoadProfileData(sstr)==false) 
 		return;
 	
 
@@ -1236,8 +1327,20 @@ void MainFrame::OnProfileCentroid(wxCommandEvent& event)
 {
 
 	readControlValues();
-	string filename = m_DataPath + "_centroid.csv";
-	string str = "Load " + filename + "\n";
+	
+	std::string filename = m_DataPath + "_centroid.csv";
+	if(wxFileExists(filename)==false) {
+		filename = wxFileSelector("Choose a Profile file to open");
+		if ( filename.empty() )	
+			return;
+	}
+	
+	m_DataPath = wxPathOnly(filename); //.BeforeLast('\\');
+	m_DataPath += "/";
+	
+	
+	
+	wxString str = "Load " + filename + "\n";
 	myMsgOutput(str);
 	FILE* fp = fopen(filename.c_str(), "r");
 	if(fp==NULL) {
@@ -1601,10 +1704,8 @@ void MainFrame::OnBrowseDataPath(wxCommandEvent& event)
 	m_Filename = wxFileSelector("Choose a file to open");
 	if ( !m_Filename.empty() )
 	{
-		m_DataPath = m_Filename.BeforeLast('\\');
-		myMsgOutput("open: " + m_Filename.AfterLast('\\') + "\n");
-		myMsgOutput("data path: " + m_DataPath + "\n");
-		m_textCtrlDataPath->SetValue(m_DataPath);
+
 		openFile(m_Filename);	
+		m_FileHistory->AddFileToHistory(m_Filename);
 	}	
 }

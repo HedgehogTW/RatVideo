@@ -60,11 +60,13 @@ public:
         wxID_FRAME_PROCESSOR = 10003,
         wxID_PAUSE = 10004,
         wxID_PROFILE_SMOOTH = 10005,
+        wxID_SHOW_PROFILE = 10006,
     };
 protected:
     wxMenuBar* m_menuBar;
     wxMenu* m_menuFile;
     wxMenuItem* m_menuItemFileOpen;
+    wxMenuItem* m_menuItemLoadProfile;
     wxMenuItem* m_menuItemExit;
     wxMenu* m_menuView;
     wxMenuItem* m_menuItemViewMsgPane;
@@ -150,6 +152,7 @@ protected:
 
 protected:
     virtual void OnFileOpen(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnFileLoadProfile(wxCommandEvent& event) { event.Skip(); }
     virtual void OnExit(wxCommandEvent& event) { event.Skip(); }
     virtual void OnViewMsgPane(wxCommandEvent& event) { event.Skip(); }
     virtual void OnViewShowProfile(wxCommandEvent& event) { event.Skip(); }

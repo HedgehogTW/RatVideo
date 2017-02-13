@@ -58,7 +58,7 @@ public:
 	static MainFrame *	m_pThis;
 	wxFileHistory* 		m_FileHistory;
 	wxString			m_Filename;
-	wxString			m_OpenFileName;
+	wxString			m_ProfileName;
 
 ///////////////////// config
 	MyConfigData	m_configData;
@@ -101,6 +101,7 @@ public:
 	int  m_nLeftSide;
 	
 protected:
+    virtual void OnFileLoadProfile(wxCommandEvent& event);
     virtual void OnBrowseDataPath(wxCommandEvent& event);
     virtual void OnShowPredictedResult(wxCommandEvent& event);
     virtual void OnShowTestResult(wxCommandEvent& event);

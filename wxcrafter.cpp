@@ -29,8 +29,11 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_menuFile = new wxMenu();
     m_menuBar->Append(m_menuFile, _("File"));
     
-    m_menuItemFileOpen = new wxMenuItem(m_menuFile, wxID_OPEN, _("Open"), wxT(""), wxITEM_NORMAL);
+    m_menuItemFileOpen = new wxMenuItem(m_menuFile, wxID_OPEN, _("Open Video"), wxT(""), wxITEM_NORMAL);
     m_menuFile->Append(m_menuItemFileOpen);
+    
+    m_menuItemLoadProfile = new wxMenuItem(m_menuFile, wxID_ANY, _("Load Profile"), wxT(""), wxITEM_NORMAL);
+    m_menuFile->Append(m_menuItemLoadProfile);
     
     m_menuItemExit = new wxMenuItem(m_menuFile, wxID_EXIT, _("Exit\tAlt-X"), _("Quit"), wxITEM_NORMAL);
     m_menuFile->Append(m_menuItemExit);
@@ -42,7 +45,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_menuView->Append(m_menuItemViewMsgPane);
     m_menuItemViewMsgPane->Check();
     
-    m_menuItemViewShowProfile = new wxMenuItem(m_menuView, wxID_ANY, _("Show Profile"), wxT(""), wxITEM_NORMAL);
+    m_menuItemViewShowProfile = new wxMenuItem(m_menuView, wxID_SHOW_PROFILE, _("Show Profile"), wxT(""), wxITEM_NORMAL);
     m_menuView->Append(m_menuItemViewShowProfile);
     
     m_menuItemViewShowFrameType = new wxMenuItem(m_menuView, wxID_ANY, _("Show Frame Type"), wxT(""), wxITEM_NORMAL);
@@ -117,6 +120,10 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     m_auibar23->AddTool(wxID_OPEN, _("Open"), wxArtProvider::GetBitmap(wxART_FILE_OPEN, wxART_TOOLBAR, wxDefaultSize), wxNullBitmap, wxITEM_NORMAL, wxT(""), wxT(""), NULL);
     
+    m_auibar23->AddTool(wxID_SHOW_PROFILE, _("Show Profile"), wxXmlResource::Get()->LoadBitmap(wxT("analytics")), wxNullBitmap, wxITEM_NORMAL, _("Show Profile"), wxT(""), NULL);
+    
+    m_auibar23->AddSeparator();
+    
     m_auibar23->AddTool(wxID_FRAME_PROCESSOR, _("FrameProcessor"), wxXmlResource::Get()->LoadBitmap(wxT("pokeball")), wxNullBitmap, wxITEM_NORMAL, _("FrameProcessor"), wxT(""), NULL);
     
     m_auibar23->AddTool(wxID_BGKDE, _("KDE Bg"), wxXmlResource::Get()->LoadBitmap(wxT("layer")), wxNullBitmap, wxITEM_NORMAL, _("KDE background"), wxT(""), NULL);
@@ -145,7 +152,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     boxSizer160->Add(boxSizer203, 0, wxALL|wxEXPAND, WXC_FROM_DIP(5));
     
-    m_staticText205 = new wxStaticText(m_panelProfile, wxID_ANY, _("Data"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
+    m_staticText205 = new wxStaticText(m_panelProfile, wxID_ANY, _("DataFile"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
     
     boxSizer203->Add(m_staticText205, 0, wxALL, WXC_FROM_DIP(5));
     
@@ -544,6 +551,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
 #endif
     // Connect events
     this->Connect(m_menuItemFileOpen->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnFileOpen), NULL, this);
+    this->Connect(m_menuItemLoadProfile->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnFileLoadProfile), NULL, this);
     this->Connect(m_menuItemExit->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnExit), NULL, this);
     this->Connect(m_menuItemViewMsgPane->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewMsgPane), NULL, this);
     this->Connect(m_menuItemViewShowProfile->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewShowProfile), NULL, this);
@@ -560,6 +568,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     this->Connect(m_menuItemPredictedResult->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnShowPredictedResult), NULL, this);
     this->Connect(m_menuItem9->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
     this->Connect(wxID_OPEN, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnFileOpen), NULL, this);
+    this->Connect(wxID_SHOW_PROFILE, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnViewShowProfile), NULL, this);
     this->Connect(wxID_FRAME_PROCESSOR, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoFrameProcessor), NULL, this);
     this->Connect(wxID_STOP, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoStop), NULL, this);
     this->Connect(wxID_PAUSE, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoPause), NULL, this);
@@ -574,6 +583,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
 MainFrameBaseClass::~MainFrameBaseClass()
 {
     this->Disconnect(m_menuItemFileOpen->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnFileOpen), NULL, this);
+    this->Disconnect(m_menuItemLoadProfile->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnFileLoadProfile), NULL, this);
     this->Disconnect(m_menuItemExit->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnExit), NULL, this);
     this->Disconnect(m_menuItemViewMsgPane->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewMsgPane), NULL, this);
     this->Disconnect(m_menuItemViewShowProfile->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnViewShowProfile), NULL, this);
@@ -590,6 +600,7 @@ MainFrameBaseClass::~MainFrameBaseClass()
     this->Disconnect(m_menuItemPredictedResult->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnShowPredictedResult), NULL, this);
     this->Disconnect(m_menuItem9->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrameBaseClass::OnAbout), NULL, this);
     this->Disconnect(wxID_OPEN, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnFileOpen), NULL, this);
+    this->Disconnect(wxID_SHOW_PROFILE, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnViewShowProfile), NULL, this);
     this->Disconnect(wxID_FRAME_PROCESSOR, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoFrameProcessor), NULL, this);
     this->Disconnect(wxID_STOP, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoStop), NULL, this);
     this->Disconnect(wxID_PAUSE, wxEVT_COMMAND_TOOL_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnVideoPause), NULL, this);

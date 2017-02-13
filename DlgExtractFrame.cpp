@@ -30,6 +30,6 @@ void DlgExtractFrame::getParam(std::string & outpath, int &fromMM, int &fromSS, 
 	
 
 	outpath = m_textCtrlOutPath->GetValue();
-	if(outpath.back() != '/' || outpath.back() != '\\')
+	if(outpath.back() != '/' && outpath.back() != '\\')
 		outpath += "/";	
 }

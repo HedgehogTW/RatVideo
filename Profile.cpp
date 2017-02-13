@@ -29,6 +29,9 @@ bool Profile::LoadProfileData(std::string& filename)
 		return false;		
 	}	
 	
+	m_DataPath = wxPathOnly(filename);
+	m_DataPath += "/";	
+	
 	m_vFrameNo.clear(); 
 	m_vSignalWMM.clear();
 	m_vSmoothWMM.clear();
@@ -58,12 +61,14 @@ bool Profile::GaussianSmooth(int ksize)
 	bRet = GaussianSmoothOneVariable(m_vSignalFD, m_vSmoothFD, ksize);
 	if(! bRet) return false;
 	
-	string filename; 
+	std::string filename = m_DataPath + "_smoothProfile.csv";
+/*	
 #if defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__) 
 	filename = "~/tmp/smoothProfile.csv";
 #else
 	filename = "d:\\tmp\\smoothProfile.csv";
 #endif
+*/
 
 	FILE *fp = fopen(filename.c_str(), "w");
 	if(fp==NULL) {
@@ -76,7 +81,7 @@ bool Profile::GaussianSmooth(int ksize)
 		fprintf(fp, "%d, %f, %f, %f, %f\n", m_vFrameNo[i], 
 			m_vSignalWMM[i], m_vSmoothWMM[i], m_vSignalFD[i], m_vSmoothFD[i]);
 	fclose(fp);	
-	
+	MainFrame::myMsgOutput( "Smooth file: " + filename + "\n");
 	MainFrame::myMsgOutput( "Gaussian smooth with ksize %d\n",ksize );	
 	
 	return true;

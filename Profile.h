@@ -36,6 +36,7 @@ public:
 	void PlotClassificationResult(Gnuplot& gnuPlot);
 	void generateTrainData(std::string& path, std::string& filename, cv::Point center, int trainNum);
 	
+	std::string 			m_DataPath;
 	
 	std::vector<int>  		m_vFrameNo; 
 	std::vector<float>  	m_vSignalWMM;
