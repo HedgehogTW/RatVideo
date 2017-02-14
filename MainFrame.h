@@ -84,6 +84,7 @@ public:
 	long	m_nMinSilence;
 	long	m_nMinActive;
 	bool 	m_bClassWMM;	
+	bool    m_bSceneChangeBreak;
 	
 	Profile	m_profile;
 ///////////////////// bgs	
@@ -101,6 +102,7 @@ public:
 	int  m_nLeftSide;
 	
 protected:
+    virtual void OnSceneChangeBreak(wxCommandEvent& event);
     virtual void OnFileLoadProfile(wxCommandEvent& event);
     virtual void OnBrowseDataPath(wxCommandEvent& event);
     virtual void OnShowPredictedResult(wxCommandEvent& event);

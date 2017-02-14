@@ -29,8 +29,8 @@
 #include <wx/textctrl.h>
 #include <wx/button.h>
 #include <wx/radiobut.h>
-#include <wx/statbox.h>
 #include <wx/checkbox.h>
+#include <wx/statbox.h>
 #include <wx/listbox.h>
 #include <wx/radiobox.h>
 #include <wx/richtext/richtextctrl.h>
@@ -123,6 +123,7 @@ protected:
     wxStaticText* m_staticText187;
     wxTextCtrl* m_textCtrlFrameNo;
     wxTextCtrl* m_textCtrlMMSS;
+    wxCheckBox* m_checkBoxSceneChangeBreak;
     wxPanel* m_panelKDE;
     wxStaticText* m_staticText223;
     wxTextCtrl* m_textCtrlKernelBW;
@@ -174,6 +175,7 @@ protected:
     virtual void OnBrowseDataPath(wxCommandEvent& event) { event.Skip(); }
     virtual void OnTextFrameNoEnter(wxCommandEvent& event) { event.Skip(); }
     virtual void OnTextMMSSEnter(wxCommandEvent& event) { event.Skip(); }
+    virtual void OnSceneChangeBreak(wxCommandEvent& event) { event.Skip(); }
 
 public:
     wxMenuBar* GetMenuBar() { return m_menuBar; }
@@ -206,6 +208,7 @@ public:
     wxStaticText* GetStaticText187() { return m_staticText187; }
     wxTextCtrl* GetTextCtrlFrameNo() { return m_textCtrlFrameNo; }
     wxTextCtrl* GetTextCtrlMMSS() { return m_textCtrlMMSS; }
+    wxCheckBox* GetCheckBoxSceneChangeBreak() { return m_checkBoxSceneChangeBreak; }
     wxPanel* GetPanelProfile() { return m_panelProfile; }
     wxStaticText* GetStaticText223() { return m_staticText223; }
     wxTextCtrl* GetTextCtrlKernelBW() { return m_textCtrlKernelBW; }
@@ -235,7 +238,7 @@ public:
     wxRichTextCtrl* GetRichTextMsg() { return m_richTextMsg; }
     wxPanel* GetPanelMsg() { return m_panelMsg; }
     wxAuiManager* GetAuimgr21() { return m_auimgr21; }
-    MainFrameBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("RatVideo"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(750,650), long style = wxCAPTION|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCLOSE_BOX);
+    MainFrameBaseClass(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("RatVideo"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(750,700), long style = wxCAPTION|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCLOSE_BOX);
     virtual ~MainFrameBaseClass();
 };
 

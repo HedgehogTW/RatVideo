@@ -137,10 +137,10 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_auibar23->AddTool(wxID_PROFILE_SMOOTH, _("Profile Gaussian Smooth"), wxXmlResource::Get()->LoadBitmap(wxT("smooth")), wxNullBitmap, wxITEM_NORMAL, _("Profile Gaussian Smooth"), wxT(""), NULL);
     m_auibar23->Realize();
     
-    m_auiBook = new wxAuiNotebook(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(250,200)), wxAUI_NB_TAB_FIXED_WIDTH|wxBK_DEFAULT);
+    m_auiBook = new wxAuiNotebook(this, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(this, wxSize(250,720)), wxAUI_NB_TAB_FIXED_WIDTH|wxBK_DEFAULT);
     m_auiBook->SetName(wxT("m_auiBook"));
     
-    m_auimgr21->AddPane(m_auiBook, wxAuiPaneInfo().Direction(wxAUI_DOCK_CENTER).Layer(0).Row(0).Position(0).BestSize(250,200).MinSize(250,100).MaxSize(250,550).CaptionVisible(false).MaximizeButton(false).CloseButton(false).MinimizeButton(false).PinButton(false));
+    m_auimgr21->AddPane(m_auiBook, wxAuiPaneInfo().Direction(wxAUI_DOCK_CENTER).Layer(0).Row(0).Position(0).BestSize(250,200).MinSize(250,200).MaxSize(250,550).CaptionVisible(false).MaximizeButton(false).CloseButton(false).MinimizeButton(false).PinButton(false));
     
     m_panelProfile = new wxPanel(m_auiBook, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_auiBook, wxSize(-1,-1)), wxTAB_TRAVERSAL);
     m_auiBook->AddPage(m_panelProfile, _("Profile"), true);
@@ -312,6 +312,15 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     #endif
     
     flexGridSizer165->Add(m_textCtrlMMSS, 0, wxALL, WXC_FROM_DIP(5));
+    
+    wxBoxSizer* boxSizer296 = new wxBoxSizer(wxHORIZONTAL);
+    
+    boxSizer160->Add(boxSizer296, 1, wxALL|wxEXPAND, WXC_FROM_DIP(5));
+    
+    m_checkBoxSceneChangeBreak = new wxCheckBox(m_panelProfile, wxID_ANY, _("Scene change break"), wxDefaultPosition, wxDLG_UNIT(m_panelProfile, wxSize(-1,-1)), 0);
+    m_checkBoxSceneChangeBreak->SetValue(false);
+    
+    boxSizer296->Add(m_checkBoxSceneChangeBreak, 0, wxALL, WXC_FROM_DIP(5));
     
     m_panelKDE = new wxPanel(m_auiBook, wxID_ANY, wxDefaultPosition, wxDLG_UNIT(m_auiBook, wxSize(-1,-1)), wxTAB_TRAVERSAL);
     m_auiBook->AddPage(m_panelKDE, _("KDE"), false);
@@ -533,7 +542,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     #endif
     
     SetName(wxT("MainFrameBaseClass"));
-    SetSize(750,650);
+    SetSize(750,700);
     if (GetSizer()) {
          GetSizer()->Fit(this);
     }
@@ -577,6 +586,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     m_buttonBrowse->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnBrowseDataPath), NULL, this);
     m_textCtrlFrameNo->Connect(wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler(MainFrameBaseClass::OnTextFrameNoEnter), NULL, this);
     m_textCtrlMMSS->Connect(wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler(MainFrameBaseClass::OnTextMMSSEnter), NULL, this);
+    m_checkBoxSceneChangeBreak->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSceneChangeBreak), NULL, this);
     
 }
 
@@ -609,6 +619,7 @@ MainFrameBaseClass::~MainFrameBaseClass()
     m_buttonBrowse->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnBrowseDataPath), NULL, this);
     m_textCtrlFrameNo->Disconnect(wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler(MainFrameBaseClass::OnTextFrameNoEnter), NULL, this);
     m_textCtrlMMSS->Disconnect(wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler(MainFrameBaseClass::OnTextMMSSEnter), NULL, this);
+    m_checkBoxSceneChangeBreak->Disconnect(wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(MainFrameBaseClass::OnSceneChangeBreak), NULL, this);
     
     m_auimgr21->UnInit();
     delete m_auimgr21;

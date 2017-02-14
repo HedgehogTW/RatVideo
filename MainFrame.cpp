@@ -126,13 +126,13 @@ MainFrame::MainFrame(wxWindow* parent)
 
 	this->Connect(wxID_FILE1, wxID_FILE9, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainFrame::OnMRUFile), NULL, this);
 	
-	SetSize(700, 650);
+	SetSize(700, 690);
 	Center();	
 	
 //	m_OpenFileName.Clear();
 	m_bStopProcess = m_bPause = m_bEnableSnake = false;
 	m_bShowPreprocess = m_checkBoxShowPreprocess->GetValue();
-
+	m_bSceneChangeBreak = m_checkBoxSceneChangeBreak->GetValue();
 	m_fps = 0;
 	
 //	DeleteContents();
@@ -1137,7 +1137,7 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 		m_statusBar->SetStatusText(str, 3);
 		
 		float ratio = (float)nonZeroWMM/imgSize;
-		if( ratio > 0.22) {
+		if( ratio > 0.22 && m_bSceneChangeBreak) {
 			myMsgOutput( "\ntoo many nonZero in frame %d,  %02d:%05.02f, ratio %f, stop process\n", frameNumber, mm, ss, ratio);
 			break;
 		}
@@ -1708,4 +1708,9 @@ void MainFrame::OnBrowseDataPath(wxCommandEvent& event)
 		openFile(m_Filename);	
 		m_FileHistory->AddFileToHistory(m_Filename);
 	}	
+}
+void MainFrame::OnSceneChangeBreak(wxCommandEvent& event)
+{
+	m_bSceneChangeBreak = m_checkBoxSceneChangeBreak->GetValue();
+//	myMsgOutput("m_bSceneChangeBreak %d\n", m_bSceneChangeBreak);
 }
