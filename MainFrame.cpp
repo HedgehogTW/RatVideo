@@ -742,7 +742,7 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	cv::VideoCapture vidCap;
 	vidCap.open(m_Filename.ToStdString());
 	if(vidCap.isOpened()==false) {
-		myMsgOutput( "Load ... " + m_Filename + " ERROR\n");
+		myMsgOutput( "Load video... " + m_Filename + " ERROR\n");
 		return;
 	}
 
@@ -835,7 +835,10 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 	Mat mMedian, mSub, mGray, mOtsu, mInGray;
 	vector<vector<cv::Point> > ratContour;
 	Scalar centroid, oldCentroid(0);
-	FILE* fp = fopen("_centroid.csv", "w");
+	
+	std::string outfilename = m_DataPath + "_centroid.csv";
+	FILE* fp = fopen(outfilename.c_str(), "w");
+	fprintf(fp, "frameNumber, cx, cy\n");
 	do {
 		if(m_bPause)  {
 			m_bPause = false;
@@ -870,7 +873,13 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 		}
 	
 		PostProcess(mROIBG, mROIIn, ratContour);
-		if(ratContour.size()==0) continue;
+//		myMsgOutput( "contour sz %d\n", ratContour.size());
+		if(ratContour.size()==0) {
+			fprintf(fp, "%d\n", frameNumber);
+			
+			frameNumber ++;
+			continue;
+		}
 		centroid = cv::mean(ratContour[0]);
 		if(m_nLeftSide ==2)  {
 			centroid(0) += V_WIDTH;
@@ -883,7 +892,7 @@ void MainFrame::OnBackgroundKDE(wxCommandEvent& event)
 //		cv::imshow( "background", mBg );
 //		cv::imshow("mask", mBgMask);
 		
-		fprintf(fp, "%.1f, %.1f\n", centroid(0), centroid(1));
+		fprintf(fp, "%d, %.1f, %.1f\n", frameNumber, centroid(0), centroid(1));
 		
 		if(oldCentroid !=Scalar(0)) {
 			Scalar sDist = centroid - oldCentroid;
@@ -960,7 +969,7 @@ void MainFrame::PostProcess(Mat& mBg, Mat& mInput, vector<vector<cv::Point>>& ra
 	int areaUpper = 1300;
 	double compactUpper = 120; // 50 or 60
 	int maxIdx = -1;
-	double maxArea = 0;
+	double maxArea = -999;
 	float sumArea = 0;
 	int numCont = contours.size();
 	for(int j=0; j<contours.size(); j++) {

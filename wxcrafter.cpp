@@ -462,7 +462,7 @@ MainFrameBaseClass::MainFrameBaseClass(wxWindow* parent, wxWindowID id, const wx
     
     flexGridSizer264->Add(m_staticText110, 0, wxALL, WXC_FROM_DIP(5));
     
-    m_textCtrlFrameWait = new wxTextCtrl(m_panelGlobalSet, wxID_ANY, wxT("100"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(50,-1)), 0);
+    m_textCtrlFrameWait = new wxTextCtrl(m_panelGlobalSet, wxID_ANY, wxT("1"), wxDefaultPosition, wxDLG_UNIT(m_panelGlobalSet, wxSize(50,-1)), 0);
     #if wxVERSION_NUMBER >= 3000
     m_textCtrlFrameWait->SetHint(wxT(""));
     #endif

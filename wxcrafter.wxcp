@@ -6154,7 +6154,7 @@
               }, {
                "type": "string",
                "m_label": "Value:",
-               "m_value": "100"
+               "m_value": "1"
               }, {
                "type": "string",
                "m_label": "Text Hint",
