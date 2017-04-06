@@ -33,6 +33,7 @@ public:
 
 	IBGS * createBGSObj(wxString& strBGS);
 	void PreProcessor(const cv::Mat &img_input, cv::Mat &img_output, int bLeftSide, bool bSmooth=false);
+	void generateProfile(wxString outFilename, bool bLeft);
 	void PostProcess(cv::Mat& mBg, cv::Mat& mInput, std::vector<std::vector<cv::Point>>& ratContour);
 	void UpdateBackground(cv::Mat& mBg, cv::Mat& mBgMask, cv::Mat& mInput, vector<vector<cv::Point>>& ratContour);
     void OnExit(wxCommandEvent& event);

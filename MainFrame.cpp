@@ -1038,7 +1038,23 @@ void MainFrame::PostProcess(Mat& mBg, Mat& mInput, vector<vector<cv::Point>>& ra
 void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 {
 	DeleteContents();
-	readControlValues();	
+	readControlValues();		
+
+	wxString outFilenameL = m_DataPath ;
+	wxString outFilenameR = m_DataPath ;
+	if(m_startFrame==0) {
+		outFilenameL += "_nonzeroPixels.csv"; 
+		outFilenameR += "_nonzeroPixels.csv"; 
+	}else{
+		outFilenameL << "_nonzeroPixels_" << m_startFrame << ".csv"; 
+		outFilenameR << "_nonzeroPixels_" << m_startFrame << ".csv"; 
+	}
+	generateProfile(outFilenameL, true);
+	generateProfile(outFilenameR, false);
+}
+void MainFrame::generateProfile(wxString outFilename, bool bLeft)
+{
+	
 	
 	cv::VideoCapture vidCap;
 	vidCap.open(m_Filename.ToStdString());
@@ -1091,11 +1107,7 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 		vidCap >> img_input;
 		if (img_input.empty()) break;
 	}
-	wxString outFilename = m_DataPath ;
-	if(m_startFrame==0)
-		outFilename += "_nonzeroPixels.csv"; 
-	else
-		outFilename << "_nonzeroPixels_" << m_startFrame << ".csv"; 
+
 	
 	FILE *fp = fopen(outFilename.c_str(), "w");
 	if(fp==NULL) {
@@ -1119,7 +1131,7 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 		if(frameNumber % m_Sampling) continue;
 		
 //		cv::imshow("Input", img_input);
-		PreProcessor(img_input, img_prep, m_nLeftSide);
+		PreProcessor(img_input, img_prep, bLeft);
 		int imgSize = img_prep.rows * img_prep.cols;
 		
 		bgsFD->process(img_prep, mMovingObj, mbkgmodel);
