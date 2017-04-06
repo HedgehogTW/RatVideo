@@ -1043,14 +1043,14 @@ void MainFrame::OnVideoFGPixels(wxCommandEvent& event)
 	wxString outFilenameL = m_DataPath ;
 	wxString outFilenameR = m_DataPath ;
 	if(m_startFrame==0) {
-		outFilenameL += "_nonzeroPixels.csv"; 
-		outFilenameR += "_nonzeroPixels.csv"; 
+		outFilenameL += "_nonzeroPixelsL.csv"; 
+		outFilenameR += "_nonzeroPixelsR.csv"; 
 	}else{
-		outFilenameL << "_nonzeroPixels_" << m_startFrame << ".csv"; 
-		outFilenameR << "_nonzeroPixels_" << m_startFrame << ".csv"; 
+		outFilenameL << "_nonzeroPixelsL_" << m_startFrame << ".csv"; 
+		outFilenameR << "_nonzeroPixelsR_" << m_startFrame << ".csv"; 
 	}
-	generateProfile(outFilenameL, true);
-	generateProfile(outFilenameR, false);
+	generateProfile(outFilenameL, 1);  // 1: left, 2: right
+	generateProfile(outFilenameR, 2);
 }
 void MainFrame::generateProfile(wxString outFilename, bool bLeft)
 {
